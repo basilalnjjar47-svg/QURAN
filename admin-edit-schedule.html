@@ -164,10 +164,10 @@
             function addRow(item = { day: '', time: '', teacher: '', plan: '' }) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td data-label="اليوم:"><input type="text" class="form-control day-input" value="${item.day}"></td>
-                    <td data-label="الموعد:"><input type="text" class="form-control time-input" value="${item.time}"></td>
-                    <td data-label="المعلم:"><input type="text" class="form-control teacher-input" value="${item.teacher}"></td>
-                    <td data-label="المقرر:"><input type="text" class="form-control plan-input" value="${item.plan}"></td>
+                    <td data-label="اليوم:"><input type="text" class="form-control day-input" value="${item.day || ''}"></td>
+                    <td data-label="الموعد:"><input type="text" class="form-control time-input" value="${item.time || ''}"></td>
+                    <td data-label="المعلم:"><input type="text" class="form-control teacher-input" value="${item.teacher || ''}"></td>
+                    <td data-label="المقرر:"><input type="text" class="form-control plan-input" value="${item.plan || ''}"></td>
                     <td data-label="إجراء:"><button class="btn btn-sm btn-outline-danger delete-row-btn"><i class="bi bi-trash-fill"></i></button></td>
                 `;
                 tableBody.appendChild(row);

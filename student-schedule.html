@@ -88,11 +88,11 @@
                 const data = await response.json();
                 tableBody.innerHTML = ''; // تفريغ الجدول
 
-                if (data.schedule.length === 0) {
+                if (!data.schedule || data.schedule.length === 0) {
                     tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">لم يتم تحديد جدولك الدراسي بعد.</td></tr>';
                 } else {
                     data.schedule.forEach(item => {
-                        const row = `<tr><td>${item.day}</td><td>${item.time}</td><td>${item.teacher}</td><td>${item.plan}</td><td><span class="badge rounded-pill text-bg-success">قادمة</span></td></tr>`;
+                        const row = `<tr><td>${item.day || ''}</td><td>${item.time || ''}</td><td>${item.teacher || ''}</td><td>${item.plan || ''}</td><td><span class="badge rounded-pill text-bg-success">قادمة</span></td></tr>`;
                         tableBody.insertAdjacentHTML('beforeend', row);
                     });
                 }
