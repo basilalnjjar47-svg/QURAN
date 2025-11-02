@@ -214,7 +214,8 @@
                 }
 
                 try {
-                    const response = await fetch('/api/users', {
+                    // تم تصحيح الرابط هنا ليشير إلى خادم Render
+                    const response = await fetch('https://quran-32vn.onrender.com/api/users', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
