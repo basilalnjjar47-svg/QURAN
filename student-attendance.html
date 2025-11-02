@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سجل الحضور - منصة إتقان</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-content">
+                <div class="logo">
+                    <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    <span>منصة إتقان</span>
+                </div>
+                <div class="student-nav">
+                    <a href="student-dashboard.html" class="nav-item">لوحة التحكم</a>
+                    <a href="student-schedule.html" class="nav-item">جدول الحلقات</a>
+                    <a href="student-attendance.html" class="nav-item active">سجل الحضور</a>
+                    <a href="student-profile.html" class="nav-item">ملفي الشخصي</a>
+                    <a href="index.html" class="nav-item logout">تسجيل الخروج</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="dashboard-header">
+        <div class="container">
+            <h1 class="hero-title">سجل الحضور والغياب</h1>
+            <p id="studentName" class="hero-description"></p>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 40px; padding-bottom: 40px;">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <i class="bi bi-calendar-check-fill card-icon"></i>
+                <h3>سجلك التفصيلي</h3>
+            </div>
+            <div class="card-content">
+                <div class="table-responsive">
+                    <table class="table text-center">
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTableBody">
+                            <!-- سيتم ملء السجل هنا -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const tableBody = document.getElementById('attendanceTableBody');
+            const studentNameHeader = document.getElementById('studentName');
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+
+            if (!currentUser || !currentUser.id) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const SERVER_URL = 'https://quran-32vn.onrender.com';
+
+            try {
+                const response = await fetch(`${SERVER_URL}/api/attendance/${currentUser.id}`);
+                if (!response.ok) throw new Error('فشل جلب سجل الحضور');
+                
+                const data = await response.json();
+                studentNameHeader.textContent = `مرحباً ${data.name}, هذا هو سجل حضورك.`;
+                tableBody.innerHTML = '';
+
+                if (!data.attendance || data.attendance.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">لا يوجد سجل حضور لعرضه.</td></tr>';
+                } else {
+                    // Sort by date descending
+                    data.attendance.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                    data.attendance.forEach(record => {
+                        const statusMap = {
+                            present: { text: 'حاضر', class: 'text-bg-success' },
+                            absent: { text: 'غائب', class: 'text-bg-danger' },
+                            excused: { text: 'بعذر', class: 'text-bg-warning' }
+                        };
+                        const statusInfo = statusMap[record.status] || { text: record.status, class: 'text-bg-secondary' };
+                        const row = `<tr><td>${record.date}</td><td><span class="badge rounded-pill ${statusInfo.class}">${statusInfo.text}</span></td></tr>`;
+                        tableBody.insertAdjacentHTML('beforeend', row);
+                    });
+                }
+            } catch (error) {
+                tableBody.innerHTML = `<tr><td colspan="2" class="text-center text-danger">حدث خطأ أثناء تحميل السجل.</td></tr>`;
+            }
+        });
+    </script>
+</body>
+</html>

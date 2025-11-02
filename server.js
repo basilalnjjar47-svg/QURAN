@@ -38,12 +38,18 @@ const scheduleItemSchema = new mongoose.Schema({
     plan: String
 });
 
+const attendanceSchema = new mongoose.Schema({
+    date: { type: String, required: true }, // تاريخ اليوم بصيغة YYYY-MM-DD
+    status: { type: String, enum: ['present', 'absent', 'excused'], required: true } // الحالة: حاضر، غائب، معذور
+});
+
 const userSchema = new mongoose.Schema({
     id: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['student', 'teacher', 'admin'], required: true },
     grade: String,
+    attendance: [attendanceSchema], // حقل جديد لتخزين سجل الحضور
     group: String, // حقل جديد لتحديد المجموعة (أ, ب, ج, ...)
     schedule: [scheduleItemSchema], // حقل جديد لتخزين جدول الطالب
     // --- إضافة جديدة: حقل لربط الطالب بالمعلم ---
@@ -206,6 +212,42 @@ app.put('/api/schedule/:studentId', async (req, res) => {
         res.json(updatedStudent);
     } catch (error) {
         res.status(500).json({ message: 'حدث خطأ في الخادم' });
+    }
+});
+
+// --- واجهات API جديدة خاصة بالحضور والغياب ---
+
+// جلب سجل حضور طالب معين
+app.get('/api/attendance/:studentId', async (req, res) => {
+    try {
+        const student = await User.findOne({ id: req.params.studentId }, 'name attendance');
+        if (!student) {
+            return res.status(404).json({ message: 'الطالب غير موجود' });
+        }
+        res.json(student);
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ في الخادم' });
+    }
+});
+
+// تسجيل الحضور لمجموعة من الطلاب في يوم معين
+app.post('/api/attendance', async (req, res) => {
+    const { date, records } = req.body; // records is an array of { studentId, status }
+    if (!date || !records) {
+        return res.status(400).json({ message: 'بيانات غير مكتملة' });
+    }
+
+    try {
+        for (const record of records) {
+            // إزالة أي سجل قديم لنفس الطالب في نفس اليوم
+            await User.updateOne({ id: record.studentId }, { $pull: { attendance: { date: date } } });
+            // إضافة السجل الجديد
+            await User.updateOne({ id: record.studentId }, { $push: { attendance: { date: date, status: record.status } } });
+        }
+        res.status(200).json({ message: 'تم تسجيل الحضور بنجاح' });
+    } catch (error) {
+        console.error('Error saving attendance:', error);
+        res.status(500).json({ message: 'حدث خطأ أثناء حفظ الحضور' });
     }
 });
 
