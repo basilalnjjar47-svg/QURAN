@@ -279,9 +279,18 @@ app.post('/api/attendance', async (req, res) => {
 app.get('/api/teacher/students', async (req, res) => {
     try {
         const teacherId = req.query.teacherId;
-        if (!teacherId) return res.status(400).json({ message: 'لم يتم تحديد معرّف المعلم' });
-        // ابحث عن كل الطلاب الذين لديهم هذا الـ teacherId
-        const students = await User.find({ role: 'student', teacherId: teacherId });
+        if (!teacherId) {
+            return res.status(400).json({ message: 'لم يتم تحديد معرّف المعلم' });
+        }
+
+        // 1. ابحث عن المعلم سواء برقم العضوية (id) أو بالمعرف الخاص بقاعدة البيانات (_id)
+        const teacher = await User.findOne({ $or: [{ id: teacherId }, { _id: mongoose.isValidObjectId(teacherId) ? teacherId : null }] });
+        if (!teacher) {
+            return res.status(404).json({ message: 'لم يتم العثور على المعلم' });
+        }
+
+        // 2. ابحث عن الطلاب باستخدام رقم العضوية (id) الصحيح والموحّد للمعلم
+        const students = await User.find({ role: 'student', teacherId: teacher.id });
         res.json(students);
     } catch (error) {
         res.status(500).json({ message: 'حدث خطأ في الخادم' });
