@@ -3,10 +3,14 @@ const http = require('http');
 const { Server } = require("socket.io");
 const mongoose = require('mongoose');
 const path = require('path');
+const cors = require('cors'); // 1. استدعاء المكتبة الجديدة
 
 // --- 1. إعداد الخادم ---
 const app = express();
 const server = http.createServer(app);
+
+app.use(cors()); // 2. استخدام المكتبة للسماح بالطلبات من أي مكان
+
 const io = new Server(server, {
     cors: {
         origin: "*", // للسماح بالاتصالات من أي مكان (للتطوير)
