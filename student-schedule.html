@@ -60,33 +60,46 @@
                                 <th>الحالة</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>الأحد</td>
-                                <td>5:00 مساءً</td>
-                                <td>الشيخ محمد أحمد</td>
-                                <td>مراجعة آخر وجهين من سورة البقرة</td>
-                                <td><span class="badge rounded-pill text-bg-success">قادمة</span></td>
-                            </tr>
-                            <tr>
-                                <td>الثلاثاء</td>
-                                <td>5:00 مساءً</td>
-                                <td>الشيخ محمد أحمد</td>
-                                <td>حفظ وجه جديد من سورة آل عمران</td>
-                                <td><span class="badge rounded-pill text-bg-success">قادمة</span></td>
-                            </tr>
-                            <tr>
-                                <td>الخميس</td>
-                                <td>5:00 مساءً</td>
-                                <td>الشيخ محمد أحمد</td>
-                                <td>تسميع ومراجعة عامة</td>
-                                <td><span class="badge rounded-pill text-bg-success">قادمة</span></td>
-                            </tr>
+                        <tbody id="scheduleTableBody">
+                            <!-- سيتم ملء الجدول هنا بواسطة جافاسكريبت -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const tableBody = document.getElementById('scheduleTableBody');
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+
+            if (!currentUser || !currentUser.id) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const SERVER_URL = 'https://quran-32vn.onrender.com';
+
+            try {
+                const response = await fetch(`${SERVER_URL}/api/schedule/${currentUser.id}`);
+                if (!response.ok) throw new Error('فشل جلب الجدول');
+                
+                const data = await response.json();
+                tableBody.innerHTML = ''; // تفريغ الجدول
+
+                if (data.schedule.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">لم يتم تحديد جدولك الدراسي بعد.</td></tr>';
+                } else {
+                    data.schedule.forEach(item => {
+                        const row = `<tr><td>${item.day}</td><td>${item.time}</td><td>${item.teacher}</td><td>${item.plan}</td><td><span class="badge rounded-pill text-bg-success">قادمة</span></td></tr>`;
+                        tableBody.insertAdjacentHTML('beforeend', row);
+                    });
+                }
+            } catch (error) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">حدث خطأ أثناء تحميل الجدول.</td></tr>`;
+            }
+        });
+    </script>
 </body>
 </html>

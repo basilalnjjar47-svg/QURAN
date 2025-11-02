@@ -30,12 +30,21 @@ mongoose.connect(MONGO_URI)
 
 // --- 3. تعريف نماذج البيانات (Mongoose Schemas) ---
 // نموذج بسيط لتخزين بيانات المستخدمين
+
+const scheduleItemSchema = new mongoose.Schema({
+    day: String,
+    time: String,
+    teacher: String,
+    plan: String
+});
+
 const userSchema = new mongoose.Schema({
     id: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['student', 'teacher', 'admin'], required: true },
     grade: String,
+    schedule: [scheduleItemSchema], // حقل جديد لتخزين جدول الطالب
     // --- إضافة جديدة: حقل لربط الطالب بالمعلم ---
     teacherId: { type: String, default: null } 
 });
@@ -159,6 +168,33 @@ app.delete('/api/users/:userId', async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.userId);
         res.json({ message: 'تم حذف المستخدم بنجاح' });
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ في الخادم' });
+    }
+});
+
+// --- واجهات API جديدة خاصة بالجدول الدراسي ---
+
+// جلب جدول طالب معين
+app.get('/api/schedule/:studentId', async (req, res) => {
+    try {
+        const student = await User.findOne({ id: req.params.studentId, role: 'student' });
+        if (!student) {
+            return res.status(404).json({ message: 'الطالب غير موجود' });
+        }
+        // نرسل اسم الطالب وجدوله
+        res.json({ name: student.name, schedule: student.schedule });
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ في الخادم' });
+    }
+});
+
+// تحديث جدول طالب معين
+app.put('/api/schedule/:studentId', async (req, res) => {
+    try {
+        const newSchedule = req.body.schedule;
+        const updatedStudent = await User.findOneAndUpdate({ id: req.params.studentId }, { schedule: newSchedule }, { new: true });
+        res.json(updatedStudent);
     } catch (error) {
         res.status(500).json({ message: 'حدث خطأ في الخادم' });
     }

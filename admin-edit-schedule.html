@@ -122,61 +122,87 @@
             const addRowBtn = document.getElementById('addRowBtn');
             const saveChangesBtn = document.getElementById('saveChangesBtn');
 
+            // تم تحديث الرابط بعنوان الخادم الحقيقي على Render
+            const SERVER_URL = 'https://quran-32vn.onrender.com';
+
             // Get student ID from URL
             const urlParams = new URLSearchParams(window.location.search);
             const studentId = urlParams.get('studentId');
 
             if (!studentId) {
                 studentInfo.textContent = 'لم يتم تحديد رقم عضوية الطالب.';
+                addRowBtn.disabled = true;
+                saveChangesBtn.disabled = true;
                 return;
             }
 
-            // --- Simulation: Fetch student data and schedule ---
-            // In a real app, you would fetch this from your database
-            const fakeStudentName = `الطالب رقم ${studentId}`; // Example name
-            studentInfo.textContent = `أنت الآن تعدل جدول: ${fakeStudentName} (ID: ${studentId})`;
-            
-            const fakeSchedule = [
-                { day: 'الأحد', time: '5:00 مساءً', teacher: 'الشيخ محمد أحمد', plan: 'مراجعة آخر وجهين من سورة البقرة' },
-                { day: 'الثلاثاء', time: '5:00 مساءً', teacher: 'الشيخ محمد أحمد', plan: 'حفظ وجه جديد من سورة آل عمران' }
-            ];
+            // --- جلب بيانات الطالب وجدوله الحقيقي ---
+            async function fetchSchedule() {
+                try {
+                    const response = await fetch(`${SERVER_URL}/api/schedule/${studentId}`);
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'فشل جلب البيانات');
+                    }
+                    const data = await response.json();
+                    studentInfo.textContent = `أنت الآن تعدل جدول: ${data.name} (ID: ${studentId})`;
+                    renderTable(data.schedule);
+                } catch (error) {
+                    studentInfo.textContent = error.message;
+                    addRowBtn.disabled = true;
+                    saveChangesBtn.disabled = true;
+                }
+            }
 
             function renderTable(schedule) {
                 tableBody.innerHTML = '';
-                schedule.forEach(item => addRow(item));
+                if (schedule && schedule.length > 0) {
+                    schedule.forEach(item => addRow(item));
+                }
             }
 
             function addRow(item = { day: '', time: '', teacher: '', plan: '' }) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td data-label="اليوم:"><input type="text" class="form-control" value="${item.day}"></td>
-                    <td data-label="الموعد:"><input type="text" class="form-control" value="${item.time}"></td>
-                    <td data-label="المعلم:"><input type="text" class="form-control" value="${item.teacher}"></td>
-                    <td data-label="المقرر:"><input type="text" class="form-control" value="${item.plan}"></td>
+                    <td data-label="اليوم:"><input type="text" class="form-control day-input" value="${item.day}"></td>
+                    <td data-label="الموعد:"><input type="text" class="form-control time-input" value="${item.time}"></td>
+                    <td data-label="المعلم:"><input type="text" class="form-control teacher-input" value="${item.teacher}"></td>
+                    <td data-label="المقرر:"><input type="text" class="form-control plan-input" value="${item.plan}"></td>
                     <td data-label="إجراء:"><button class="btn btn-sm btn-outline-danger delete-row-btn"><i class="bi bi-trash-fill"></i></button></td>
                 `;
                 tableBody.appendChild(row);
             }
 
-            // Add new row button
             addRowBtn.addEventListener('click', () => addRow());
 
-            // Delete row button
             tableBody.addEventListener('click', function(e) {
                 if (e.target.closest('.delete-row-btn')) {
                     e.target.closest('tr').remove();
                 }
             });
 
-            // Save changes button
-            saveChangesBtn.addEventListener('click', function() {
-                // In a real app, you would collect all data from the table rows
-                // and send it to your server to save.
-                alert('تم حفظ التغييرات بنجاح (محاكاة).');
+            saveChangesBtn.addEventListener('click', async function() {
+                const scheduleData = Array.from(tableBody.querySelectorAll('tr')).map(row => ({
+                    day: row.querySelector('.day-input').value,
+                    time: row.querySelector('.time-input').value,
+                    teacher: row.querySelector('.teacher-input').value,
+                    plan: row.querySelector('.plan-input').value,
+                }));
+
+                try {
+                    const response = await fetch(`${SERVER_URL}/api/schedule/${studentId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ schedule: scheduleData })
+                    });
+                    if (!response.ok) throw new Error('فشل حفظ التغييرات');
+                    alert('تم حفظ التغييرات بنجاح!');
+                } catch (error) {
+                    alert('حدث خطأ أثناء حفظ التغييرات.');
+                }
             });
 
-            // Initial render
-            renderTable(fakeSchedule);
+            fetchSchedule();
         });
     </script>
 </body>
