@@ -128,18 +128,13 @@
 
             // 1. الاستماع لتحديث رابط الجلسة
             socket.on('session_link_update', (data) => {
-                // إذا كانت الرسالة جماعية، تحقق من الصف. إذا كانت مباشرة، قم بالتحديث فوراً.
-                const isForMyGrade = data.grade && currentUser.grade === data.grade;
-                const isDirectMessage = !data.grade;
-
-                if (isForMyGrade || isDirectMessage) {
-                    console.log('تم استلام رابط جلسة جديد:', data);
-                    joinButton.href = data.link;
-                    joinButton.classList.remove('disabled');
-                    statusText.textContent = 'الجلسة جاهزة! اضغط للدخول.';
-                    statusText.style.color = '#2e7d32';
-                    sessionGradeDisplay.textContent = data.grade || 'جلسة خاصة';
-                }
+                // بما أن الخادم يرسل الرابط للطالب المحدد فقط، يمكننا التحديث مباشرة
+                console.log('تم استلام رابط جلسة جديد:', data);
+                joinButton.href = data.link;
+                joinButton.classList.remove('disabled');
+                statusText.textContent = 'الجلسة جاهزة! اضغط للدخول.';
+                statusText.style.color = '#2e7d32';
+                sessionGradeDisplay.textContent = data.grade || 'جلسة خاصة';
             });
 
             // 2. الاستماع للواجبات الجديدة
