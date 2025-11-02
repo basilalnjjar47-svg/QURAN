@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
             displayUsers(users);
         } catch (error) {
             console.error('Error:', error);
-            usersTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">حدث خطأ أثناء تحميل البيانات.</td></tr>`;
+            usersTableBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">حدث خطأ أثناء تحميل البيانات.</td></tr>`;
         }
     }
 
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
             usersTableBody.innerHTML = ''; // تفريغ الجدول قبل ملئه
 
             if (users.length === 0) {
-                usersTableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">لا يوجد مستخدمون لعرضهم.</td></tr>';
+                usersTableBody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">لا يوجد مستخدمون لعرضهم.</td></tr>';
                 return;
             }
 
@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td>${user.role === 'student' ? 'طالب' : (user.role === 'teacher' ? 'معلم' : 'إداري')}</td>
                         <td>${user.grade || 'N/A'}</td>
                         <td>${user.group || 'N/A'}</td>
+                        <td>${user.teacherId || 'N/A'}</td>
                         <td>
                             <button class="btn btn-sm btn-outline-primary edit-btn" data-user-id="${user._id}">تعديل</button>
                             <button class="btn btn-sm btn-outline-danger delete-btn" data-user-id="${user._id}">حذف</button>

@@ -317,8 +317,8 @@ io.on('connection', (socket) => {
             for (const student of targetStudents) {
                 const studentSocketId = userSockets[student.id];
                 if (studentSocketId) {
-                    io.to(studentSocketId).emit('session_link_update', { link: link, grade: `المجموعة ${teacher.group}` });
-                    console.log(`تم إرسال الرابط إلى الطالب: ${student.name} في المجموعة ${teacher.group}`);
+                    io.to(studentSocketId).emit('session_link_update', { link: link, grade: `جلسة مع معلمك` });
+                    console.log(`تم إرسال الرابط إلى الطالب: ${student.name}`);
                 }
             }
         } catch (error) {
