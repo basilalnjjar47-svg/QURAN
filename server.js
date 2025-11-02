@@ -299,7 +299,20 @@ io.on('connection', (socket) => {
     });
 });
 
+// --- Self-ping لإبقاء السيرفر نشطاً على Render ---
+// هذا الجزء يمنع الخادم من الدخول في وضع السكون
+const axios = require('axios');
+if (process.env.RENDER_EXTERNAL_URL) {
+  const PING_URL = process.env.RENDER_EXTERNAL_URL;
+  setInterval(() => {
+    axios.get(PING_URL)
+      .then(response => console.log(`Self-ping successful at ${new Date().toISOString()}. Status: ${response.status}`))
+      .catch(err => console.error(`Self-ping error to ${PING_URL}:`, err.message));
+  }, 14 * 60 * 1000); // كل 14 دقيقة (أقل من 15 دقيقة التي ينام بعدها الخادم)
+}
+// ----------------------------------------------------
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`الخادم يعمل على المنفذ `);
+    console.log(`الخادم يعمل على المنفذ ${PORT}`);
 });
