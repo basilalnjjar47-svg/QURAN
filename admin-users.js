@@ -6,12 +6,28 @@ document.addEventListener('DOMContentLoaded', function () {
     const addUserModal = new bootstrap.Modal(document.getElementById('addUserModal'));
     const formError = document.getElementById('formError');
     const modalTitle = document.getElementById('addUserModalLabel');
+    const teacherSelect = document.getElementById('teacherSelect');
 
     // تم تحديث الرابط بعنوان الخادم الحقيقي على Render
     const SERVER_URL = 'https://quran-32vn.onrender.com';
 
     // --- بيانات وهمية للمحاكاة المحلية ---
     let editingUserId = null; // لتحديد ما إذا كنا في وضع التعديل أم الإضافة
+
+    // دالة لجلب المعلمين وملء القائمة المنسدلة
+    async function populateTeachersDropdown() {
+        try {
+            const response = await fetch(`${SERVER_URL}/api/teachers`);
+            const teachers = await response.json();
+            teacherSelect.innerHTML = '<option value="">بدون معلم</option>'; // إعادة تعيين
+            teachers.forEach(teacher => {
+                const option = `<option value="${teacher.id}">${teacher.name}</option>`;
+                teacherSelect.insertAdjacentHTML('beforeend', option);
+            });
+        } catch (error) {
+            console.error('فشل جلب قائمة المعلمين:', error);
+        }
+    }
 
     // دالة لجلب وعرض المستخدمين
     async function fetchAndDisplayUsers() {
@@ -44,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td>${user.role === 'student' ? 'طالب' : (user.role === 'teacher' ? 'معلم' : 'إداري')}</td>
                         <td>${user.grade || 'N/A'}</td>
                         <td>${user.group || 'N/A'}</td>
+                        <td>${user.teacherId || 'N/A'}</td>
                         <td>
                             <button class="btn btn-sm btn-outline-primary edit-btn" data-user-id="${user._id}">تعديل</button>
                             <button class="btn btn-sm btn-outline-danger delete-btn" data-user-id="${user._id}">حذف</button>
@@ -56,7 +73,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // إظهار/إخفاء حقل الصف الدراسي بناءً على نوع الحساب
     userRoleSelect.addEventListener('change', function () {
-        studentGradeRow.style.display = this.value === 'student' ? 'flex' : 'none';
+        const isStudent = this.value === 'student';
+        studentGradeRow.style.display = isStudent ? 'flex' : 'none';
+        // إظهار قائمة المعلمين فقط للطلاب
+        teacherSelect.closest('.col-md-12').style.display = isStudent ? 'block' : 'none';
     });
 
     // التعامل مع تقديم نموذج إضافة مستخدم
@@ -71,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
             role: document.getElementById('newUserRole').value,
             grade: document.getElementById('newUserRole').value === 'student' ? document.getElementById('studentGrade').value : null,
             group: document.getElementById('newUserGroup').value || null,
+            teacherId: document.getElementById('teacherSelect').value || null,
         };
 
         const password = document.getElementById('newUserPassword').value;
@@ -166,6 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('newUserGroup').value = userToEdit.group || '';
                     if (userToEdit.role === 'student') {
                         document.getElementById('studentGrade').value = userToEdit.grade;
+                        document.getElementById('teacherSelect').value = userToEdit.teacherId || '';
                     }
                     addUserModal.show();
                 }
@@ -176,5 +198,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // جلب المستخدمين عند تحميل الصفحة
+    populateTeachersDropdown();
     fetchAndDisplayUsers();
 });

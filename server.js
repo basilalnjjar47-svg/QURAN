@@ -93,6 +93,12 @@ app.get('/api/users', async (req, res) => {
     res.json(users);
 });
 
+// جلب المعلمين فقط (للقوائم المنسدلة)
+app.get('/api/teachers', async (req, res) => {
+    const teachers = await User.find({ role: 'teacher' });
+    res.json(teachers);
+});
+
 // إضافة مستخدم جديد
 app.post('/api/users', async (req, res) => {
     try {
@@ -141,7 +147,7 @@ app.post('/api/login', async (req, res) => {
 app.put('/api/users/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
-        const { name, password, role, grade } = req.body;
+        const { name, password, role, grade, group, teacherId } = req.body;
 
         // البحث عن المستخدم بواسطة _id الخاص بـ MongoDB
         const userToUpdate = await User.findById(userId);
@@ -153,6 +159,8 @@ app.put('/api/users/:userId', async (req, res) => {
         userToUpdate.name = name;
         userToUpdate.role = role;
         userToUpdate.grade = grade;
+        userToUpdate.group = group;
+        userToUpdate.teacherId = teacherId; // حفظ معرّف المعلم
         if (password) { // تحديث كلمة المرور فقط إذا تم إدخال واحدة جديدة
             userToUpdate.password = password; // ملاحظة: يجب تشفيرها في تطبيق حقيقي
         }
@@ -201,6 +209,20 @@ app.put('/api/schedule/:studentId', async (req, res) => {
     }
 });
 
+// --- واجهة API جديدة خاصة بالمعلم ---
+
+// جلب الطلاب المرتبطين بمعلم معين
+app.get('/api/teacher/students/:teacherId', async (req, res) => {
+    try {
+        const { teacherId } = req.params;
+        // ابحث عن كل الطلاب الذين لديهم هذا الـ teacherId
+        const students = await User.find({ role: 'student', teacherId: teacherId });
+        res.json(students);
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ في الخادم' });
+    }
+});
+
 // --- 6. منطق Socket.IO للتحديثات اللحظية ---
 
 const userSockets = {}; // لتخزين socket id لكل مستخدم
@@ -242,6 +264,17 @@ io.on('connection', (socket) => {
         if (studentSocketId) {
             // إرسال الواجب إلى الطالب المحدد فقط
             io.to(studentSocketId).emit('new_homework', { text: data.homeworkText });
+        }
+    });
+
+    // الاستماع لحدث "إرسال رابط جلسة مباشر" من المعلم
+    socket.on('send_direct_session_link', (data) => {
+        console.log(`المعلم يرسل رابطاً مباشراً للطالب: ${data.studentId}`);
+        const studentSocketId = userSockets[data.studentId];
+        if (studentSocketId) {
+            // أرسل الرابط مباشرة للطالب بدون التحقق من الصف أو المجموعة
+            io.to(studentSocketId).emit('session_link_update', { link: data.link });
+            console.log(`تم إرسال الرابط المباشر بنجاح.`);
         }
     });
 
