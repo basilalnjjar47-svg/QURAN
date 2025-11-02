@@ -306,32 +306,23 @@ io.on('connection', (socket) => {
 
     // عندما يقوم مستخدم بتسجيل نفسه بعد الدخول
     socket.on('register_user', (userId) => {
-        console.log(`تسجيل المستخدم  مع الـ socket ${socket.id}`);
+        console.log(`تسجيل المستخدم ${userId} مع الـ socket ${socket.id}`);
         userSockets[userId] = socket.id;
     });
 
-    // الاستماع لحدث "إرسال رابط الجلسة" من المعلم
-    socket.on('send_session_link', async (data) => {
-        // المعلم سيرسل فقط الرابط ومعرّفه (ID)
-        const { link, teacherId } = data;
-        console.log(`المعلم  يرسل رابطاً لمجموعته.`);
-        
-        try {
-            // 1. ابحث عن كل الطلاب المرتبطين مباشرة بالمعلم
-            const targetStudents = await User.find({ role: 'student', teacherId: teacherId });
-
-            if (targetStudents.length === 0) console.log(`لم يتم العثور على طلاب للمعلم ${teacherId}`);
-
-            // 2. أرسل الرابط لكل طالب مرتبط بالمعلم
-            for (const student of targetStudents) {
-                const studentSocketId = userSockets[student.id];
-                if (studentSocketId) {
-                    io.to(studentSocketId).emit('session_link_update', { link: link, grade: `جلسة مع معلمك` });
-                    console.log(`تم إرسال الرابط إلى الطالب: ${student.name}`);
-                }
+    // الاستماع لحدث "إرسال رابط لمجموعة طلاب" من المعلم
+    socket.on('send_link_to_students', (data) => {
+        const { studentIds, link } = data;
+        if (!studentIds || !link || studentIds.length === 0) {
+            return;
+        }
+        console.log(`المعلم يرسل رابطاً للطلاب: ${studentIds.join(', ')}`);
+        for (const studentId of studentIds) {
+            const studentSocketId = userSockets[studentId];
+            if (studentSocketId) {
+                io.to(studentSocketId).emit('session_link_update', { link: link, grade: `جلسة مع معلمك` });
+                console.log(`تم إرسال الرابط إلى الطالب: ${studentId}`);
             }
-        } catch (error) {
-            console.error('حدث خطأ أثناء إرسال رابط الجلسة:', error);
         }
     });
 
