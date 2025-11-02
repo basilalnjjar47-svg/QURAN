@@ -129,6 +129,19 @@ app.post('/api/users', async (req, res) => {
     }
 });
 
+// واجهة جديدة للبحث عن مستخدم برقم العضوية
+app.get('/api/user-by-id/:id', async (req, res) => {
+    try {
+        const user = await User.findOne({ id: req.params.id });
+        if (!user) {
+            return res.status(404).json({ message: 'المستخدم غير موجود' });
+        }
+        res.json(user); // إرجاع بيانات المستخدم كاملة أو جزئية حسب الحاجة
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ في الخادم' });
+    }
+});
+
 // --- واجهة جديدة لتسجيل الدخول ---
 app.post('/api/login', async (req, res) => {
     const { id, password, role } = req.body;

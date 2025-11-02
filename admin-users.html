@@ -145,11 +145,12 @@
                                 </select>
                             </div>
                             <div class="col-md-12 mb-3">
-                                <label for="teacherSelect" class="form-label">المعلم المسؤول</label>
-                                <select class="form-select" id="teacherSelect">
-                                    <option value="">بدون معلم</option>
-                                    <!-- سيتم ملء المعلمين هنا بواسطة جافاسكريبت -->
-                                </select>
+                                <label for="teacherIdInput" class="form-label">المعلم المسؤول (أدخل رقم العضوية)</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="teacherIdInput" placeholder="رقم عضوية المعلم">
+                                    <button class="btn btn-outline-secondary" type="button" id="verifyTeacherBtn">تحقق</button>
+                                </div>
+                                <div id="teacherNameDisplay" class="form-text mt-2"></div>
                             </div>
                         </div>
                         <div id="formError" class="alert alert-danger" style="display: none;"></div>

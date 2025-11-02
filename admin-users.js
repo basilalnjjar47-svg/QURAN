@@ -7,28 +7,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const addUserModal = new bootstrap.Modal(document.getElementById('addUserModal'));
     const formError = document.getElementById('formError');
     const modalTitle = document.getElementById('addUserModalLabel');
-    const teacherSelect = document.getElementById('teacherSelect');
+    const teacherIdInput = document.getElementById('teacherIdInput');
+    const verifyTeacherBtn = document.getElementById('verifyTeacherBtn');
+    const teacherNameDisplay = document.getElementById('teacherNameDisplay');
 
     // تم تحديث الرابط بعنوان الخادم الحقيقي على Render
     const SERVER_URL = 'https://quran-32vn.onrender.com';
 
     // --- بيانات وهمية للمحاكاة المحلية ---
     let editingUserId = null; // لتحديد ما إذا كنا في وضع التعديل أم الإضافة
-
-    // دالة لجلب المعلمين وملء القائمة المنسدلة
-    async function populateTeachersDropdown() {
-        try {
-            const response = await fetch(`${SERVER_URL}/api/teachers`);
-            const teachers = await response.json();
-            teacherSelect.innerHTML = '<option value="">بدون معلم</option>'; // إعادة تعيين
-            teachers.forEach(teacher => {
-                const option = `<option value="${teacher.id}">${teacher.name}</option>`;
-                teacherSelect.insertAdjacentHTML('beforeend', option);
-            });
-        } catch (error) {
-            console.error('فشل جلب قائمة المعلمين:', error);
-        }
-    }
 
     // دالة لجلب وعرض المستخدمين
     async function fetchAndDisplayUsers() {
@@ -76,9 +63,35 @@ document.addEventListener('DOMContentLoaded', function () {
         const isStudent = this.value === 'student';
         const isTeacher = this.value === 'teacher';
         studentGradeRow.style.display = isStudent ? 'flex' : 'none';
-        teacherGroupRow.style.display = isTeacher ? 'flex' : 'none';
-        // إظهار قائمة المعلمين فقط للطلاب
-        teacherSelect.closest('.col-md-12').style.display = isStudent ? 'block' : 'none';
+        teacherGroupRow.style.display = isTeacher ? 'flex' : 'none'; 
+    });
+
+    // التحقق من هوية المعلم عند الضغط على زر "تحقق"
+    verifyTeacherBtn.addEventListener('click', async () => {
+        const teacherId = teacherIdInput.value.trim();
+        if (!teacherId) {
+            teacherNameDisplay.textContent = 'الرجاء إدخال رقم عضوية المعلم.';
+            teacherNameDisplay.className = 'form-text text-danger';
+            return;
+        }
+
+        try {
+            const response = await fetch(`${SERVER_URL}/api/user-by-id/${teacherId}`);
+            const user = await response.json();
+
+            if (!response.ok) throw new Error(user.message);
+
+            if (user.role === 'teacher') {
+                teacherNameDisplay.textContent = `تم العثور على المعلم: ${user.name}`;
+                teacherNameDisplay.className = 'form-text text-success fw-bold';
+            } else {
+                teacherNameDisplay.textContent = 'رقم العضوية هذا لا يخص معلماً.';
+                teacherNameDisplay.className = 'form-text text-danger';
+            }
+        } catch (error) {
+            teacherNameDisplay.textContent = error.message || 'فشل التحقق من المعلم.';
+            teacherNameDisplay.className = 'form-text text-danger';
+        }
     });
 
     // التعامل مع تقديم نموذج إضافة مستخدم
@@ -96,10 +109,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (userData.role === 'student') {
             userData.grade = document.getElementById('studentGrade').value;
             userData.group = document.getElementById('newUserGroup').value || null;
-            userData.teacherId = document.getElementById('teacherSelect').value || null; // الربط المباشر
+            userData.teacherId = document.getElementById('teacherIdInput').value.trim() || null; // الربط المباشر
         } else if (userData.role === 'teacher') {
-            // المعلم لم يعد بحاجة إلى مجموعة، يمكن إزالة هذا الحقل لاحقاً
-            userData.group = null; 
+            userData.group = document.getElementById('teacherGroupSelect').value || null;
         }
 
         const password = document.getElementById('newUserPassword').value;
@@ -149,6 +161,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('newUserId').readOnly = false;
         document.getElementById('newUserPassword').placeholder = 'كلمة مرور مؤقتة';
         formError.style.display = 'none';
+        teacherNameDisplay.textContent = ''; // مسح رسالة التحقق
+        teacherIdInput.value = '';
     });
 
     // التعامل مع النقر على أزرار الجدول (تعديل وحذف)
@@ -196,13 +210,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     studentGradeRow.style.display = isStudent ? 'flex' : 'none';
                     teacherGroupRow.style.display = isTeacher ? 'flex' : 'none';
-                    teacherSelect.closest('.col-md-12').style.display = isStudent ? 'block' : 'none';
 
                     if (userToEdit.role === 'student') {
                         document.getElementById('studentGrade').value = userToEdit.grade;
                         document.getElementById('newUserGroup').value = userToEdit.group || '';
                         // التأكد من عرض المعلم المسؤول المحدد مسبقاً
-                        document.getElementById('teacherSelect').value = userToEdit.teacherId || '';
+                        document.getElementById('teacherIdInput').value = userToEdit.teacherId || '';
+                        teacherNameDisplay.textContent = ''; // مسح رسالة التحقق عند فتح النافذة
                     } else if (userToEdit.role === 'teacher') {
                         document.getElementById('teacherGroupSelect').value = userToEdit.group || '';
                     }
@@ -215,6 +229,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // جلب المستخدمين عند تحميل الصفحة
-    populateTeachersDropdown();
     fetchAndDisplayUsers();
 });
