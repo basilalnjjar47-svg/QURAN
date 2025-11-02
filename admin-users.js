@@ -42,7 +42,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td>${user.name || 'غير محدد'}</td>
                         <td>${user.id}</td>
                         <td>${user.role === 'student' ? 'طالب' : (user.role === 'teacher' ? 'معلم' : 'إداري')}</td>
-                        <td>${user.grade || 'لا ينطبق'}</td>
+                        <td>${user.grade || 'N/A'}</td>
+                        <td>${user.group || 'N/A'}</td>
                         <td>
                             <button class="btn btn-sm btn-outline-primary edit-btn" data-user-id="${user._id}">تعديل</button>
                             <button class="btn btn-sm btn-outline-danger delete-btn" data-user-id="${user._id}">حذف</button>
@@ -69,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
             name: document.getElementById('newUserName').value,
             role: document.getElementById('newUserRole').value,
             grade: document.getElementById('newUserRole').value === 'student' ? document.getElementById('studentGrade').value : null,
+            group: document.getElementById('newUserGroup').value || null,
         };
 
         const password = document.getElementById('newUserPassword').value;
@@ -161,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('newUserPassword').placeholder = 'اتركه فارغاً لعدم التغيير';
                     
                     studentGradeRow.style.display = userToEdit.role === 'student' ? 'flex' : 'none';
+                    document.getElementById('newUserGroup').value = userToEdit.group || '';
                     if (userToEdit.role === 'student') {
                         document.getElementById('studentGrade').value = userToEdit.grade;
                     }

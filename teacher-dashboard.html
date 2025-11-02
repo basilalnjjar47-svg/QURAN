@@ -82,6 +82,15 @@
                                 <option value="مستوى عام">مستوى عام (للبالغين)</option>
                             </select>
                         </div>
+                        <div class="mb-3">
+                            <label for="sessionGroup" class="form-label">المجموعة المستهدفة</label>
+                            <select class="form-select" id="sessionGroup" required>
+                                <option selected disabled value="">اختر المجموعة...</option>
+                                <option value="أ">المجموعة أ</option>
+                                <option value="ب">المجموعة ب</option>
+                                <option value="ج">المجموعة ج</option>
+                            </select>
+                        </div>
                         <button type="submit" class="btn btn-primary btn-full">إرسال الرابط للطالب</button>
                     </form>
                 </div>
@@ -155,11 +164,13 @@
             event.preventDefault();
             const zoomLink = document.getElementById('zoomLink').value;
             const sessionGrade = document.getElementById('sessionGrade').value;
+            const sessionGroup = document.getElementById('sessionGroup').value;
             
             // 3. إرسال بيانات الجلسة إلى الخادم عبر Socket.IO
             socket.emit('send_session_link', {
                 link: zoomLink,
-                grade: sessionGrade
+                grade: sessionGrade,
+                group: sessionGroup
             });
 
             alert('تم إرسال الرابط لجميع الطلاب المستهدفين بنجاح!');

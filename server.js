@@ -44,6 +44,7 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     role: { type: String, enum: ['student', 'teacher', 'admin'], required: true },
     grade: String,
+    group: String, // حقل جديد لتحديد المجموعة (أ, ب, ج, ...)
     schedule: [scheduleItemSchema], // حقل جديد لتخزين جدول الطالب
     // --- إضافة جديدة: حقل لربط الطالب بالمعلم ---
     teacherId: { type: String, default: null } 
@@ -214,12 +215,24 @@ io.on('connection', (socket) => {
     });
 
     // الاستماع لحدث "إرسال رابط الجلسة" من المعلم
-    socket.on('send_session_link', (data) => {
-        console.log('المعلم أرسل رابط جلسة:', data);
-        // هنا يفترض أن نجد كل الطلاب المرتبطين بهذا المعلم
-        // للتبسيط الآن، سنقوم بالبث لجميع الطلاب من نفس الصف
-        // في تطبيق حقيقي، يجب أن تبحث في قاعدة البيانات عن طلاب هذا المعلم
-        io.emit('session_link_update', data); // بث للجميع حالياً
+    socket.on('send_session_link', async (data) => {
+        console.log(`المعلم يرسل رابطاً للصف: ${data.grade}, المجموعة: ${data.group}`);
+
+        try {
+            // 1. ابحث عن كل الطلاب الذين يطابقون الصف والمجموعة
+            const targetStudents = await User.find({ role: 'student', grade: data.grade, group: data.group });
+
+            // 2. أرسل الرابط لكل طالب على حدة
+            for (const student of targetStudents) {
+                const studentSocketId = userSockets[student.id];
+                if (studentSocketId) {
+                    io.to(studentSocketId).emit('session_link_update', { link: data.link, grade: data.grade });
+                    console.log(`تم إرسال الرابط إلى الطالب: ${student.name}`);
+                }
+            }
+        } catch (error) {
+            console.error('حدث خطأ أثناء إرسال رابط الجلسة:', error);
+        }
     });
 
     // الاستماع لحدث "تعيين واجب" من المعلم

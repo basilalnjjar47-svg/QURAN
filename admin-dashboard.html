@@ -138,6 +138,17 @@
                                 <input type="password" class="form-control" id="newUserPassword" required placeholder="كلمة مرور مؤقتة">
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="newUserGroup" class="form-label">المجموعة</label>
+                                <select class="form-select" id="newUserGroup">
+                                    <option selected value="">بدون مجموعة</option>
+                                    <option value="أ">المجموعة أ</option>
+                                    <option value="ب">المجموعة ب</option>
+                                    <option value="ج">المجموعة ج</option>
+                                </select>
+                            </div>
+                        </div>
                         <!-- Grade selection, hidden by default -->
                         <div class="row" id="studentGradeRow" style="display: none;">
                             <div class="col-md-12 mb-3">
@@ -204,6 +215,7 @@
                     password: document.getElementById('newUserPassword').value,
                     role: document.getElementById('newUserRole').value,
                     grade: document.getElementById('newUserRole').value === 'student' ? document.getElementById('studentGrade').value : null,
+                    group: document.getElementById('newUserGroup').value || null,
                 };
 
                 // التحقق من الحقول الأساسية
