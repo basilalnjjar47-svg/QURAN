@@ -90,17 +90,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const userData = {
             name: document.getElementById('newUserName').value,
-            role: document.getElementById('newUserRole').value,
-            grade: null,
-            group: null,
-            teacherId: document.getElementById('teacherSelect').value || null,
+            role: document.getElementById('newUserRole').value
         };
 
         if (userData.role === 'student') {
             userData.grade = document.getElementById('studentGrade').value;
             userData.group = document.getElementById('newUserGroup').value || null;
+            userData.teacherId = document.getElementById('teacherSelect').value || null; // الربط المباشر
         } else if (userData.role === 'teacher') {
-            userData.group = document.getElementById('teacherGroupSelect').value || null;
+            // المعلم لم يعد بحاجة إلى مجموعة، يمكن إزالة هذا الحقل لاحقاً
+            userData.group = null; 
         }
 
         const password = document.getElementById('newUserPassword').value;
@@ -202,6 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (userToEdit.role === 'student') {
                         document.getElementById('studentGrade').value = userToEdit.grade;
                         document.getElementById('newUserGroup').value = userToEdit.group || '';
+                        // التأكد من عرض المعلم المسؤول المحدد مسبقاً
                         document.getElementById('teacherSelect').value = userToEdit.teacherId || '';
                     } else if (userToEdit.role === 'teacher') {
                         document.getElementById('teacherGroupSelect').value = userToEdit.group || '';

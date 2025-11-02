@@ -116,6 +116,7 @@
             const SERVER_URL = 'https://quran-32vn.onrender.com';
 
             try {
+                // استدعاء الرابط الجديد الذي يعتمد على الربط المباشر
                 const response = await fetch(`${SERVER_URL}/api/teacher/students?teacherId=${currentTeacher.id}`);
                 const students = await response.json();
 

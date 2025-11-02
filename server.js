@@ -262,18 +262,13 @@ app.post('/api/attendance', async (req, res) => {
 
 // --- واجهة API جديدة خاصة بالمعلم ---
 
-// جلب طلاب مجموعة المعلم
+// جلب الطلاب المرتبطين بمعلم معين بشكل مباشر
 app.get('/api/teacher/students', async (req, res) => {
     try {
         const teacherId = req.query.teacherId;
-        const teacher = await User.findOne({ id: teacherId, role: 'teacher' });
-
-        if (!teacher || !teacher.group) {
-            return res.json([]); // إرجاع مصفوفة فارغة إذا لم يكن للمعلم مجموعة
-        }
-
-        // ابحث عن كل الطلاب الذين ينتمون لنفس مجموعة المعلم
-        const students = await User.find({ role: 'student', group: teacher.group });
+        if (!teacherId) return res.status(400).json({ message: 'لم يتم تحديد معرّف المعلم' });
+        // ابحث عن كل الطلاب الذين لديهم هذا الـ teacherId
+        const students = await User.find({ role: 'student', teacherId: teacherId });
         res.json(students);
     } catch (error) {
         res.status(500).json({ message: 'حدث خطأ في الخادم' });
@@ -300,17 +295,12 @@ io.on('connection', (socket) => {
         console.log(`المعلم  يرسل رابطاً لمجموعته.`);
         
         try {
-            // 1. ابحث عن المعلم في قاعدة البيانات لمعرفة مجموعته
-            const teacher = await User.findOne({ id: teacherId, role: 'teacher' });
-            if (!teacher || !teacher.group) {
-                console.log(`المعلم  غير موجود أو ليس له مجموعة معينة.`);
-                return;
-            }
+            // 1. ابحث عن كل الطلاب المرتبطين مباشرة بالمعلم
+            const targetStudents = await User.find({ role: 'student', teacherId: teacherId });
 
-            // 2. ابحث عن كل الطلاب الذين ينتمون لنفس مجموعة المعلم
-            const targetStudents = await User.find({ role: 'student', group: teacher.group });
+            if (targetStudents.length === 0) console.log(`لم يتم العثور على طلاب للمعلم ${teacherId}`);
 
-            // 3. أرسل الرابط لكل طالب في هذه المجموعة
+            // 2. أرسل الرابط لكل طالب مرتبط بالمعلم
             for (const student of targetStudents) {
                 const studentSocketId = userSockets[student.id];
                 if (studentSocketId) {

@@ -128,12 +128,7 @@
         } else {
             document.getElementById('teacherWelcome').textContent = `مرحباً بك يا ${currentTeacher.name}`;
             socket.emit('register_user', currentTeacher.id);
-            if (currentTeacher.group) {
-                document.getElementById('teacherGroupInfo').textContent = `سيتم إرسال هذا الرابط لطلاب المجموعة (${currentTeacher.group}) المسجلين لديك.`;
-            } else {
-                document.getElementById('teacherGroupInfo').textContent = 'لم يتم تعيين مجموعة لك بعد. يرجى مراجعة الإدارة.';
-                document.querySelector('#sessionLinkForm button').disabled = true;
-            }
+            document.getElementById('teacherGroupInfo').textContent = `سيتم إرسال هذا الرابط لجميع الطلاب المسجلين لديك.`;
         }
         // --------------------------------
 
