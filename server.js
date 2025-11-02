@@ -15,7 +15,7 @@ const io = new Server(server, {
 
 // --- 2. الاتصال بقاعدة البيانات ---
 // !!! هام: استبدل هذا السطر بمفتاح الاتصال الخاص بك !!!
-const MONGO_URI = "mongodb+srv://yousefelnagar2017_db_user:IBsQ8UMogJcyFgRw@cluster0.istckzk.mongodb.net/?appName=Cluster0";
+const MONGO_URI = process.env.MONGO_URI;
 
 mongoose.connect(MONGO_URI)
     .then(() => {
