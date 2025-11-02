@@ -38,11 +38,11 @@
     </header>
 
     <main class="container" style="padding-top: 40px; padding-bottom: 40px;">
-        <div class="dashboard-card">
-            <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="dashboard-card shadow-sm">
+            <div class="card-header bg-light d-flex flex-wrap justify-content-between align-items-center gap-3">
                 <div>
                     <i class="bi bi-check-circle-fill card-icon"></i>
-                    <h3 id="attendance-header">كشف حضور المجموعة</h3>
+                    <h3 id="attendance-header" class="d-inline-block mb-0">كشف حضور المجموعة</h3>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <label for="attendanceDate" class="form-label mb-0">تاريخ اليوم:</label>
@@ -50,7 +50,7 @@
                 </div>
             </div>
             <div class="card-content">
-                <div class="table-responsive">
+                <div id="attendance-list" class="list-group">
                     <table class="table">
                         <thead>
                             <tr>
@@ -61,10 +61,10 @@
                         <tbody id="attendanceTableBody">
                             <!-- سيتم ملء الطلاب هنا -->
                         </tbody>
-                    </table>
+                    </table> 
                 </div>
-                <div class="mt-4 text-start">
-                    <button id="saveAttendanceBtn" class="btn btn-primary">
+                <div class="mt-4 text-center">
+                    <button id="saveAttendanceBtn" class="btn btn-primary btn-lg px-5">
                         <i class="bi bi-save-fill"></i> حفظ سجل الحضور
                     </button>
                 </div>
@@ -99,22 +99,22 @@
                 tableBody.innerHTML = '';
                 if (students.length === 0) {
                     tableBody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">لا يوجد طلاب في مجموعتك.</td></tr>';
-                    saveBtn.disabled = true;
+                    saveBtn.disabled = true; 
                 } else {
                     students.forEach(student => {
                         const row = `
                             <tr data-student-id="${student.id}">
-                                <td>${student.name}</td>
+                                <td class="fw-bold">${student.name}</td>
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
                                         <input type="radio" class="btn-check" name="status-${student.id}" id="present-${student.id}" value="present" autocomplete="off" checked>
-                                        <label class="btn btn-outline-success" for="present-${student.id}">حاضر</label>
+                                        <label class="btn btn-outline-success px-4" for="present-${student.id}"><i class="bi bi-check-circle me-1"></i> حاضر</label>
 
                                         <input type="radio" class="btn-check" name="status-${student.id}" id="absent-${student.id}" value="absent" autocomplete="off">
-                                        <label class="btn btn-outline-danger" for="absent-${student.id}">غائب</label>
+                                        <label class="btn btn-outline-danger px-4" for="absent-${student.id}"><i class="bi bi-x-circle me-1"></i> غائب</label>
 
                                         <input type="radio" class="btn-check" name="status-${student.id}" id="excused-${student.id}" value="excused" autocomplete="off">
-                                        <label class="btn btn-outline-warning" for="excused-${student.id}">بعذر</label>
+                                        <label class="btn btn-outline-warning px-4" for="excused-${student.id}"><i class="bi bi-exclamation-circle me-1"></i> بعذر</label>
                                     </div>
                                 </td>
                             </tr>

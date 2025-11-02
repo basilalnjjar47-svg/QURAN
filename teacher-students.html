@@ -116,7 +116,7 @@
             const SERVER_URL = 'https://quran-32vn.onrender.com';
 
             try {
-                const response = await fetch(`${SERVER_URL}/api/teacher/students/${currentTeacher.id}`);
+                const response = await fetch(`${SERVER_URL}/api/teacher/students?teacherId=${currentTeacher.id}`);
                 const students = await response.json();
 
                 tableBody.innerHTML = '';

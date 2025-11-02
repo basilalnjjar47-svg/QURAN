@@ -95,8 +95,17 @@ app.use(express.json()); // للسماح باستقبال بيانات JSON
 
 // جلب كل المستخدمين
 app.get('/api/users', async (req, res) => {
-    const users = await User.find({});
-    res.json(users);
+    try {
+        const filter = {};
+        // فلترة حسب الدور (طالب، معلم) إذا تم تحديده
+        if (req.query.role) filter.role = req.query.role;
+        // فلترة حسب المجموعة إذا تم تحديدها
+        if (req.query.group) filter.group = req.query.group;
+        const users = await User.find(filter);
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ في الخادم' });
+    }
 });
 
 // جلب المعلمين فقط (للقوائم المنسدلة)
@@ -253,12 +262,18 @@ app.post('/api/attendance', async (req, res) => {
 
 // --- واجهة API جديدة خاصة بالمعلم ---
 
-// جلب الطلاب المرتبطين بمعلم معين
-app.get('/api/teacher/students/:teacherId', async (req, res) => {
+// جلب طلاب مجموعة المعلم
+app.get('/api/teacher/students', async (req, res) => {
     try {
-        const { teacherId } = req.params;
-        // ابحث عن كل الطلاب الذين لديهم هذا الـ teacherId
-        const students = await User.find({ role: 'student', teacherId: teacherId });
+        const teacherId = req.query.teacherId;
+        const teacher = await User.findOne({ id: teacherId, role: 'teacher' });
+
+        if (!teacher || !teacher.group) {
+            return res.json([]); // إرجاع مصفوفة فارغة إذا لم يكن للمعلم مجموعة
+        }
+
+        // ابحث عن كل الطلاب الذين ينتمون لنفس مجموعة المعلم
+        const students = await User.find({ role: 'student', group: teacher.group });
         res.json(students);
     } catch (error) {
         res.status(500).json({ message: 'حدث خطأ في الخادم' });
