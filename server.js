@@ -188,7 +188,7 @@ app.put('/api/users/:userId', async (req, res) => {
         userToUpdate.role = role;
         userToUpdate.grade = grade;
         userToUpdate.group = group;
-        userToUpdate.teacherId = teacherId; // حفظ معرّف المعلم
+        userToUpdate.teacherId = teacherId; // حفظ معرّف المعلم كنص
         if (password) { // تحديث كلمة المرور فقط إذا تم إدخال واحدة جديدة
             userToUpdate.password = password; // ملاحظة: يجب تشفيرها في تطبيق حقيقي
         }
