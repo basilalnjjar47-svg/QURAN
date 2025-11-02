@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الطالب</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Bootstrap Icons for convenience -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-content">
+                <div class="logo">
+                    <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span>منصة إتقان</span>
+                </div>
+                <!-- Student Navigation -->
+                <div class="student-nav">
+                    <a href="#" class="nav-item active">لوحة التحكم</a>
+                    <a href="student-schedule.html" class="nav-item">جدول الحلقات</a>
+                    <a href="student-profile.html" class="nav-item">ملفي الشخصي</a>
+                    <a href="index.html" class="nav-item logout">تسجيل الخروج</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <h1 id="welcomeMessage" class="hero-title"></h1>
+            <p id="welcomeDescription" class="hero-description"></p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="app-container" class="container" style="padding-top: 40px; padding-bottom: 40px;">
+        <div class="dashboard-grid">
+            <!-- Next Halaqa Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="bi bi-calendar-event-fill card-icon"></i>
+                    <h3>الحلقة القادمة</h3>
+                </div>
+                <div class="card-content">
+                    <p><strong>المعلم:</strong> الشيخ محمد أحمد</p>
+                    <p><strong>الموعد:</strong> غداً، الساعة 5:00 مساءً</p>
+                    <p><strong>الصف لهذه الحلقة:</strong> <span id="sessionGradeDisplay">غير محدد</span></p>
+                    <a href="#" id="joinSessionBtn" class="btn btn-primary disabled" target="_blank">
+                        <i class="bi bi-camera-video-fill"></i> دخول الحلقة الآن
+                    </a>
+                    <small id="sessionLinkStatus" class="status-text">لم يقم المعلم بتحديد رابط الجلسة بعد.</small>
+                </div>
+            </div>
+
+            <!-- Homework Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="bi bi-journal-check card-icon"></i>
+                    <h3>الواجبات المطلوبة</h3>
+                </div>
+                <div class="card-content">
+                    <p id="homeworkContent">لا توجد واجبات حالياً.</p>
+                </div>
+            </div>
+
+            <!-- Progress Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="bi bi-graph-up-arrow card-icon"></i>
+                    <h3>مستوى التقدم</h3>
+                </div>
+                <div class="card-content">
+                    <p><strong>آخر سورة:</strong> سورة البقرة</p>
+                    <div class="progress-container">
+                        <span>0%</span>
+                        <div class="progress-bar-wrapper">
+                            <div class="progress-bar-inner" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 1. استدعاء مكتبة lit-html -->
+    <!-- استدعاء مكتبة Socket.IO Client -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const joinButton = document.getElementById('joinSessionBtn');
+            const statusText = document.getElementById('sessionLinkStatus');
+            const sessionGradeDisplay = document.getElementById('sessionGradeDisplay');
+            const homeworkContent = document.getElementById('homeworkContent');
+
+            // --- جلب بيانات المستخدم وتخصيص الصفحة ---
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+
+            if (currentUser) {
+                document.getElementById('welcomeMessage').textContent = `أهلاً بك يا ${currentUser.name}`;
+                document.getElementById('welcomeDescription').textContent = 'هنا تجد ملخصاً لنشاطك وحلقتك القادمة';
+            } else {
+                window.location.href = 'INDEX.HTML';
+                return;
+            }
+            // -----------------------------------------
+
+            // --- الجزء الجديد: التعامل مع التحديثات اللحظية ---
+            // هام: استبدل هذا الرابط بعنوان الخادم الخاص بك على Render
+            const socket = io("https://your-server-name.onrender.com");
+
+            // تسجيل الطالب لدى الخادم
+            if (currentUser && currentUser.id) {
+                socket.emit('register_user', currentUser.id);
+            }
+
+            // 1. الاستماع لتحديث رابط الجلسة
+            socket.on('session_link_update', (data) => {
+                // التحقق مما إذا كانت الجلسة للصف الدراسي الخاص بالطالب
+                // في تطبيق حقيقي، هذا التحقق قد يكون أدق
+                if (currentUser.grade === data.grade) {
+                    console.log('تم استلام رابط جلسة جديد:', data);
+                    joinButton.href = data.link;
+                    joinButton.classList.remove('disabled');
+                    statusText.textContent = 'الجلسة جاهزة! اضغط للدخول.';
+                    statusText.style.color = '#2e7d32';
+                    sessionGradeDisplay.textContent = data.grade;
+                }
+            });
+
+            // 2. الاستماع للواجبات الجديدة
+            socket.on('new_homework', (data) => {
+                console.log('تم استلام واجب جديد:', data);
+                homeworkContent.textContent = data.text;
+            });
+            // ----------------------------------------------------
+
+            // الكود القديم للتحقق من الواجبات يمكن إزالته أو تعديله
+            const assignedHomework = localStorage.getItem('assignedHomework');
+            if (assignedHomework) {
+                homeworkContent.textContent = assignedHomework;
+            }
+        });
+
+        // --- الطريقة الجديدة باستخدام Render ---
+        // (الكود المتبقي يبقى كما هو)
+        // import {html, render} from 'https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js';
+
+        // // دالة لعمل render للصفحة
+        // function renderApp() {
+        //     const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+        //     if (!currentUser) {
+        //         window.location.href = 'INDEX.HTML';
+        //         return;
+        //     }
+
+        //     // وصف شكل الواجهة باستخدام قالب HTML
+        //     const template = html`
+        //         <header class="dashboard-header">
+        //             <div class="container">
+        //                 <h1 class="hero-title">أهلاً بك يا ${currentUser.name}</h1>
+        //                 <p class="hero-description">هنا تجد ملخصاً لنشاطك وحلقتك القادمة</p>
+        //             </div>
+        //         </header>
+
+        //         <main class="container" style="padding-top: 40px; padding-bottom: 40px;">
+        //             <div class="dashboard-grid">
+        //                 <!-- البطاقات الأخرى يمكن تحويلها بنفس الطريقة -->
+        //                 <div class="dashboard-card">
+        //                     <div class="card-header">
+        //                         <i class="bi bi-calendar-event-fill card-icon"></i>
+        //                         <h3>الحلقة القادمة</h3>
+        //                     </div>
+        //                     <div class="card-content">
+        //                         <p><strong>المعلم:</strong> الشيخ محمد أحمد</p>
+        //                         <p><strong>الموعد:</strong> غداً، الساعة 5:00 مساءً</p>
+        //                         <p><strong>الصف لهذه الحلقة:</strong> <span id="sessionGradeDisplay">غير محدد</span></p>
+        //                         <a href="#" id="joinSessionBtn" class="btn btn-primary disabled" target="_blank">
+        //                             <i class="bi bi-camera-video-fill"></i> دخول الحلقة الآن
+        //                         </a>
+        //                         <small id="sessionLinkStatus" class="status-text">لم يقم المعلم بتحديد رابط الجلسة بعد.</small>
+        //                     </div>
+        //                 </div>
+        //                 <div class="dashboard-card">
+        //                     <div class="card-header">
+        //                         <i class="bi bi-journal-check card-icon"></i>
+        //                         <h3>الواجبات المطلوبة</h3>
+        //                     </div>
+        //                     <div class="card-content">
+        //                         <p id="homeworkContent">لا توجد واجبات حالياً.</p>
+        //                     </div>
+        //                 </div>
+        //                 <div class="dashboard-card">
+        //                     <div class="card-header">
+        //                         <i class="bi bi-graph-up-arrow card-icon"></i>
+        //                         <h3>مستوى التقدم</h3>
+        //                     </div>
+        //                     <div class="card-content">
+        //                         <p><strong>آخر سورة:</strong> سورة البقرة</p>
+        //                         <div class="progress-container">
+        //                             <span>0%</span>
+        //                             <div class="progress-bar-wrapper">
+        //                                 <div class="progress-bar-inner" style="width: 0%;"></div>
+        //                             </div>
+        //                         </div>
+        //                     </div>
+        //                 </div>
+        //             </div>
+        //         </main>
+        //     `;
+
+        //     // الأمر السحري: قم بعمل render لهذا القالب داخل الحاوية
+        //     const container = document.getElementById('app-container');
+        //     render(template, container);
+        // }
+
+        // // استدعاء الدالة عند تحميل الصفحة
+        // // renderApp();
+    </script>
+</body>
+</html>
+                joinButton.classList.remove('disabled');
+                statusText.textContent = 'الجلسة جاهزة! اضغط للدخول.';
+                statusText.style.color = '#2e7d32';
+            }
+            else {
+                joinButton.classList.add('disabled');
+                statusText.textContent = 'لم يقم المعلم بتحديد رابط الجلسة بعد.';
+                statusText.style.color = '#d32f2f';
+            }
+            if (receivedSessionGrade) { // إذا وجد الصف الخاص بالحلقة
+                sessionGradeDisplay.textContent = receivedSessionGrade;
+            }
+
+            // Check for homework from localStorage
+            const assignedHomework = localStorage.getItem('assignedHomework');
+            if (assignedHomework) {
+                homeworkContent.textContent = assignedHomework;
+            }
+        });
+
+        // --- الطريقة الجديدة باستخدام Render ---
+        // هذه الطريقة يمكن أن تحل محل الطريقة القديمة بالكامل في المستقبل
+        // import {html, render} from 'https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js';
+
+        // // دالة لعمل render للصفحة
+        // function renderApp() {
+        //     const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+        //     if (!currentUser) {
+        //         window.location.href = 'INDEX.HTML';
+        //         return;
+        //     }
+
+        //     // وصف شكل الواجهة باستخدام قالب HTML
+        //     const template = html`
+        //         <header class="dashboard-header">
+        //             <div class="container">
+        //                 <h1 class="hero-title">أهلاً بك يا ${currentUser.name}</h1>
+        //                 <p class="hero-description">هنا تجد ملخصاً لنشاطك وحلقتك القادمة</p>
+        //             </div>
+        //         </header>
+
+        //         <main class="container" style="padding-top: 40px; padding-bottom: 40px;">
+        //             <div class="dashboard-grid">
+        //                 <!-- البطاقات الأخرى يمكن تحويلها بنفس الطريقة -->
+        //                 <div class="dashboard-card">
+        //                     <div class="card-header">
+        //                         <i class="bi bi-calendar-event-fill card-icon"></i>
+        //                         <h3>الحلقة القادمة</h3>
+        //                     </div>
+        //                     <div class="card-content">
+        //                         <p><strong>المعلم:</strong> الشيخ محمد أحمد</p>
+        //                         <p><strong>الموعد:</strong> غداً، الساعة 5:00 مساءً</p>
+        //                     </div>
+        //                 </div>
+        //                 <div class="dashboard-card">
+        //                     <div class="card-header">
+        //                         <i class="bi bi-journal-check card-icon"></i>
+        //                         <h3>الواجبات المطلوبة</h3>
+        //                     </div>
+        //                     <div class="card-content">
+        //                         <p>${localStorage.getItem('assignedHomework') || 'لا توجد واجبات حالياً.'}</p>
+        //                     </div>
+        //                 </div>
+        //                 <div class="dashboard-card">
+        //                     <div class="card-header">
+        //                         <i class="bi bi-graph-up-arrow card-icon"></i>
+        //                         <h3>مستوى التقدم</h3>
+        //                     </div>
+        //                     <div class="card-content">
+        //                         <p><strong>آخر سورة:</strong> سورة البقرة</p>
+        //                     </div>
+        //                 </div>
+        //             </div>
+        //         </main>
+        //     `;
+
+        //     // الأمر السحري: قم بعمل render لهذا القالب داخل الحاوية
+        //     const container = document.getElementById('app-container');
+        //     render(template, container);
+        // }
+
+        // // استدعاء الدالة عند تحميل الصفحة
+        // // renderApp();
+    </script>
+</body>
+</html>

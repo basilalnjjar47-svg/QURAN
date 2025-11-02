@@ -1,0 +1,210 @@
+const express = require('express');
+const http = require('http');
+const { Server } = require("socket.io");
+const mongoose = require('mongoose');
+const path = require('path');
+
+// --- 1. إعداد الخادم ---
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "*", // للسماح بالاتصالات من أي مكان (للتطوير)
+    }
+});
+
+// --- 2. الاتصال بقاعدة البيانات ---
+// !!! هام: استبدل هذا السطر بمفتاح الاتصال الخاص بك !!!
+const MONGO_URI = "mongodb+srv://yousefelnagar2017_db_user:IBsQ8UMogJcyFgRw@cluster0.istckzk.mongodb.net/?appName=Cluster0";
+
+mongoose.connect(MONGO_URI)
+    .then(() => {
+        console.log('تم الاتصال بقاعدة بيانات MongoDB بنجاح');
+        createDefaultAdminIfNeeded(); // استدعاء الدالة لإنشاء الأدمن
+    })
+    .catch(err => console.error('فشل الاتصال بقاعدة البيانات:', err));
+
+// --- 3. تعريف نماذج البيانات (Mongoose Schemas) ---
+// نموذج بسيط لتخزين بيانات المستخدمين
+const userSchema = new mongoose.Schema({
+    id: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
+    password: { type: String, required: true },
+    role: { type: String, enum: ['student', 'teacher', 'admin'], required: true },
+    grade: String,
+    // --- إضافة جديدة: حقل لربط الطالب بالمعلم ---
+    teacherId: { type: String, default: null } 
+});
+const User = mongoose.model('User', userSchema);
+
+// --- دالة لإنشاء حساب المدير الافتراضي ---
+async function createDefaultAdminIfNeeded() {
+    try {
+        // 1. البحث هل يوجد أي مستخدم بصلاحية مدير
+        const adminExists = await User.findOne({ role: 'admin' });
+
+        if (!adminExists) {
+            // 2. إذا لم يوجد، قم بإنشاء واحد جديد
+            const defaultAdmin = new User({
+                id: 'admin', // رقم عضوية الأدمن
+                name: 'المدير العام', // اسم الأدمن
+                password: 'admin', // كلمة مرور الأدمن (مهم: يجب تغييرها لاحقاً)
+                role: 'admin'
+            });
+            await defaultAdmin.save();
+            console.log('*****************************************************');
+            console.log('>> تم إنشاء حساب المدير الافتراضي بنجاح.');
+            console.log('>> رقم العضوية: admin');
+            console.log('>> كلمة المرور: admin');
+            console.log('*****************************************************');
+        }
+    } catch (error) {
+        console.error('!! حدث خطأ أثناء إنشاء حساب المدير الافتراضي:', error);
+    }
+}
+
+// --- 4. إعداد Express لخدمة الملفات الثابتة ---
+// لن نستخدم هذا في بيئة الإنتاج، لأن Netlify سيقوم بخدمة الملفات
+// app.use(express.static(path.join(__dirname)));
+app.get("/", (req, res) => {
+    res.send("خادم منصة إتقان يعمل بنجاح. هذا الرابط مخصص للاتصال البرمجي فقط.");
+});
+app.use(express.json()); // للسماح باستقبال بيانات JSON
+
+// --- 5. واجهات API لإدارة المستخدمين (بديل للمصفوفات المحلية) ---
+
+// جلب كل المستخدمين
+app.get('/api/users', async (req, res) => {
+    const users = await User.find({});
+    res.json(users);
+});
+
+// إضافة مستخدم جديد
+app.post('/api/users', async (req, res) => {
+    try {
+        const userExists = await User.findOne({ id: req.body.id });
+        if (userExists) {
+            return res.status(400).json({ message: 'رقم العضوية هذا مستخدم بالفعل.' });
+        }
+        const newUser = new User(req.body);
+        await newUser.save();
+        res.status(201).json(newUser);
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ في الخادم' });
+    }
+});
+
+// --- واجهة جديدة لتسجيل الدخول ---
+app.post('/api/login', async (req, res) => {
+    const { id, password, role } = req.body;
+
+    const user = await User.findOne({ id: id });
+
+    if (!user) {
+        return res.status(404).json({ message: 'رقم العضوية غير موجود.' });
+    }
+
+    // في تطبيق حقيقي، يجب مقارنة كلمة المرور المشفرة
+    if (user.password !== password) {
+        return res.status(401).json({ message: 'كلمة المرور غير صحيحة.' });
+    }
+
+    if (user.role !== role) {
+        return res.status(403).json({ message: `هذا الحساب ليس من نوع '${role}'.` });
+    }
+
+    const pages = {
+        student: 'student-dashboard.html',
+        teacher: 'teacher-dashboard.html',
+        admin: 'admin-dashboard.html'
+    };
+    res.json({ message: 'تم تسجيل الدخول بنجاح', user: user, redirectTo: pages[role] });
+});
+
+// --- واجهات جديدة للتعديل والحذف ---
+
+// تعديل مستخدم قائم
+app.put('/api/users/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { name, password, role, grade } = req.body;
+
+        // البحث عن المستخدم بواسطة _id الخاص بـ MongoDB
+        const userToUpdate = await User.findById(userId);
+        if (!userToUpdate) {
+            return res.status(404).json({ message: 'المستخدم غير موجود' });
+        }
+
+        // تحديث البيانات
+        userToUpdate.name = name;
+        userToUpdate.role = role;
+        userToUpdate.grade = grade;
+        if (password) { // تحديث كلمة المرور فقط إذا تم إدخال واحدة جديدة
+            userToUpdate.password = password; // ملاحظة: يجب تشفيرها في تطبيق حقيقي
+        }
+
+        const updatedUser = await userToUpdate.save();
+        res.json(updatedUser);
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ في الخادم' });
+    }
+});
+
+// حذف مستخدم
+app.delete('/api/users/:userId', async (req, res) => {
+    try {
+        await User.findByIdAndDelete(req.params.userId);
+        res.json({ message: 'تم حذف المستخدم بنجاح' });
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ في الخادم' });
+    }
+});
+
+// --- 6. منطق Socket.IO للتحديثات اللحظية ---
+
+const userSockets = {}; // لتخزين socket id لكل مستخدم
+
+io.on('connection', (socket) => {
+    console.log('مستخدم جديد اتصل عبر Socket.IO:', socket.id);
+
+    // عندما يقوم مستخدم بتسجيل نفسه بعد الدخول
+    socket.on('register_user', (userId) => {
+        console.log(`تسجيل المستخدم ${userId} مع الـ socket ${socket.id}`);
+        userSockets[userId] = socket.id;
+    });
+
+    // الاستماع لحدث "إرسال رابط الجلسة" من المعلم
+    socket.on('send_session_link', (data) => {
+        console.log('المعلم أرسل رابط جلسة:', data);
+        // هنا يفترض أن نجد كل الطلاب المرتبطين بهذا المعلم
+        // للتبسيط الآن، سنقوم بالبث لجميع الطلاب من نفس الصف
+        // في تطبيق حقيقي، يجب أن تبحث في قاعدة البيانات عن طلاب هذا المعلم
+        io.emit('session_link_update', data); // بث للجميع حالياً
+    });
+
+    // الاستماع لحدث "تعيين واجب" من المعلم
+    socket.on('assign_homework', (data) => {
+        console.log(`المعلم يعين واجباً للطالب ${data.studentId}: ${data.homeworkText}`);
+        const studentSocketId = userSockets[data.studentId];
+        if (studentSocketId) {
+            // إرسال الواجب إلى الطالب المحدد فقط
+            io.to(studentSocketId).emit('new_homework', { text: data.homeworkText });
+        }
+    });
+
+    socket.on('disconnect', () => {
+        // إزالة المستخدم من القائمة عند قطع الاتصال
+        for (const userId in userSockets) {
+            if (userSockets[userId] === socket.id) {
+                delete userSockets[userId];
+                break;
+            }
+        }
+        console.log('مستخدم قطع الاتصال:', socket.id);
+    });
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`الخادم يعمل على المنفذ ${PORT}`);
+});

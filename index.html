@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة تحفيظ القرآن الكريم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <nav class="navbar-main">
+        <div class="container">
+            <div class="navbar-content">
+                <div class="logo">
+                    <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span>منصة إتقان</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#roles">ابدأ الآن</a></li>
+                    <li><a href="#methodology">منهجيتنا</a></li>
+                    <li><a href="#features">المميزات</a></li>
+                    <li><a href="#stats">إحصائيات</a></li>
+                </ul>
+                <a href="#footer" class="btn btn-outline-light d-none d-lg-flex">تواصل معنا</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="hero" class="hero">
+        <div class="hero-overlay"></div>
+        <div class="islamic-pattern-overlay"></div>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">منصة إتقان لتحفيظ القرآن الكريم</h1>
+                <p class="hero-subtitle">رحلتك نحو حفظ كتاب الله تبدأ هنا</p>
+                <a href="#roles" class="btn btn-hero">
+                    <span>ابدأ رحلتك الآن</span>
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="roles" class="roles-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">اختر نوع حسابك</h2>
+                <p class="section-description">
+                    انضم إلينا كطالب شغوف، أو كمعلم ملهم، أو كإداري مشرف
+                </p>
+            </div>
+
+            <div class="roles-grid">
+                <div class="role-card">
+                    <div class="role-icon student-icon">
+                        <i class="bi bi-book-half"></i>
+                    </div>
+                    <h3 class="role-title">الطالب</h3>
+                    <p class="role-description">للطلاب الراغبين في حفظ القرآن الكريم</p>
+                    <button class="btn btn-primary" onclick="openLoginDialog('student')">
+                        تسجيل دخول كطالب
+                    </button>
+                </div>
+
+                <div class="role-card">
+                    <div class="role-icon teacher-icon">
+                        <i class="bi bi-person-workspace"></i>
+                    </div>
+                    <h3 class="role-title">المعلم</h3>
+                    <p class="role-description">للمعلمين والمشرفين على حلقات التحفيظ</p>
+                    <button class="btn btn-primary" onclick="openLoginDialog('teacher')">
+                        تسجيل دخول كمعلم
+                    </button>
+                </div>
+
+                <div class="role-card">
+                    <div class="role-icon admin-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h3 class="role-title">الإداري</h3>
+                    <p class="role-description">للإدارة والإشراف العام على المنصة</p>
+                    <button class="btn btn-primary" onclick="openLoginDialog('admin')">
+                        تسجيل دخول كإداري
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="methodology" class="methodology-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">منهجيتنا في التعليم</h2>
+                <p class="section-description">نؤمن بأن التعليم المتقن يبدأ من منهجية واضحة ومحفزة</p>
+            </div>
+            <div class="methodology-grid">
+                <div class="method-item">
+                    <div class="method-icon"><i class="bi bi-person-check-fill"></i></div>
+                    <h4 class="method-title">متابعة فردية</h4>
+                    <p class="method-text">اهتمام شخصي بكل طالب لضمان أفضل النتائج.</p>
+                </div>
+                <div class="method-item">
+                    <div class="method-icon"><i class="bi bi-journals"></i></div>
+                    <h4 class="method-title">مقررات متدرجة</h4>
+                    <p class="method-text">خطط دراسية مرنة تناسب جميع المستويات والأعمار.</p>
+                </div>
+                <div class="method-item">
+                    <div class="method-icon"><i class="bi bi-lightbulb-fill"></i></div>
+                    <h4 class="method-title">بيئة محفزة</h4>
+                    <p class="method-text">نظام نقاط ومسابقات لزيادة الدافعية لدى الطلاب.</p>
+                </div>
+                <div class="method-item">
+                    <div class="method-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                    <h4 class="method-title">تقارير دورية</h4>
+                    <p class="method-text">تقارير أداء مفصلة لمتابعة مستوى التقدم باستمرار.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">مميزات المنصة</h2>
+                <p class="section-description">
+                    أدوات متكاملة مصممة لتجعل رحلة حفظ القرآن أكثر سهولة وفعالية
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <h3>متابعة يومية</h3>
+                    <p>نظام متابعة دقيق لتقدم الحفظ اليومي والأسبوعي</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h3>إدارة المجموعات</h3>
+                    <p>تنظيم الطلاب في مجموعات حسب المستوى والعمر</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-trophy"></i>
+                    </div>
+                    <h3>مسابقات قرآنية</h3>
+                    <p>مسابقات محفزة لتشجيع الطلاب على الحفظ والمراجعة</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </div>
+                    <h3>تقارير شاملة</h3>
+                    <p>تقارير تفصيلية عن الأداء والتقدم في الحفظ</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="stats" class="stats-section">
+        <div class="islamic-pattern-overlay dark"></div>
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">أرقام تتحدث عن إنجازاتنا</h2>
+                <p class="section-description">نفخر بمسيرة طلابنا ومعلمينا، ونسعى للمزيد</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <i class="bi bi-people-fill stat-icon"></i>
+                    <h3 class="stat-number" data-target="0">0</h3>
+                    <p class="stat-title">طالب وطالبة</p>
+                </div>
+                <div class="stat-item">
+                    <i class="bi bi-person-video3 stat-icon"></i>
+                    <h3 class="stat-number" data-target="0">0</h3>
+                    <p class="stat-title">معلم ومعلمة</p>
+                </div>
+                <div class="stat-item">
+                    <i class="bi bi-journal-bookmark-fill stat-icon"></i>
+                    <h3 class="stat-number" data-target="0">0</h3>
+                    <p class="stat-title">ساعة تلاوة</p>
+                </div>
+                <div class="stat-item">
+                    <i class="bi bi-award-fill stat-icon"></i>
+                    <h3 class="stat-number" data-target="0">0</h3>
+                    <p class="stat-title">خاتم وخاتمة</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="footer" class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="logo">
+                        <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        <span>منصة إتقان</span>
+                    </div>
+                    <p>منصة شاملة ومتكاملة لتحفيظ القرآن الكريم، توفر بيئة تعليمية متميزة للطلاب والمعلمين.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>روابط سريعة</h4>
+                    <ul>
+                        <li><a href="#roles">ابدأ الآن</a></li>
+                        <li><a href="#methodology">منهجيتنا</a></li>
+                        <li><a href="#features">المميزات</a></li>
+                        <li><a href="#stats">إحصائيات</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>تواصل معنا</h4>
+                    <p>البريد الإلكتروني: <a href="mailto:info@itqan.com">info@itqan.com</a></p>
+                    <p>الهاتف: 920000000 (966+)</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 منصة إتقان. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="loginDialog" class="dialog-overlay">
+        <div class="dialog">
+            <div class="dialog-image-section">
+                <div class="dialog-image-content">
+                    <h3>منصة إتقان</h3>
+                    <p>رحلتك نحو حفظ كتاب الله</p>
+                </div>
+            </div>
+            <div class="dialog-form-section">
+                <button class="dialog-close" onclick="closeLoginDialog()">×</button>
+                <h3 id="dialogTitle" class="mb-3">تسجيل الدخول</h3>
+                <p id="dialogDescription" class="mb-4"></p>
+                <form id="loginFormInDialog">
+                    <input type="text" class="form-control mb-3" id="dialogUserId" name="userId" required placeholder="رقم العضوية">
+                    <input type="password" class="form-control mb-3" id="dialogPassword" name="password" required placeholder="كلمة المرور">
+                    <div id="dialogLoginError" class="text-danger mb-3" style="display: none;">رقم العضوية أو كلمة المرور غير صحيحة.</div>
+                    <button type="submit" class="btn btn-primary btn-full">تسجيل الدخول</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-transition-overlay">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

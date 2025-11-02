@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المستخدمين - لوحة تحكم الأدمن</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-content">
+                <div class="logo">
+                    <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span>منصة إتقان</span>
+                </div>
+                <!-- Admin Navigation -->
+                <div class="student-nav">
+                    <a href="admin-dashboard.html" class="nav-item">لوحة التحكم</a>
+                    <a href="admin-users.html" class="nav-item active">إدارة المستخدمين</a>
+                    <a href="admin-operations.html" class="nav-item">العمليات</a>
+                    <a href="admin-reports.html" class="nav-item">التقارير</a>
+                    <a href="index.html" class="nav-item logout">تسجيل الخروج</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <h1 class="hero-title">إدارة المستخدمين</h1>
+            <p class="hero-description">هنا يمكنك عرض وإدارة جميع المستخدمين في المنصة.</p>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 40px; padding-bottom: 40px;">
+        <div class="dashboard-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="bi bi-people-fill card-icon"></i>
+                    <h3>قائمة المستخدمين</h3>
+                </div>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                    <i class="bi bi-person-plus-fill"></i> إضافة مستخدم جديد
+                </button>
+            </div>
+            <div class="card-content">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>الاسم الكامل</th>
+                                <th>رقم العضوية</th>
+                                <th>نوع الحساب</th>
+                                <th>الصف الدراسي</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- سيتم ملء الصفوف هنا بواسطة جافاسكريبت -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add User Modal (نفس النافذة المستخدمة في لوحة التحكم) -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="border-radius: 15px;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">إضافة مستخدم جديد</h5>
+                    <button type="button" class="btn-close ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="addUserForm">
+                        <!-- نفس حقول النموذج الموجودة في admin-dashboard.html -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="newUserName" class="form-label">الاسم الكامل</label>
+                                <input type="text" class="form-control" id="newUserName" required placeholder="مثال: أحمد علي">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="newUserRole" class="form-label">نوع الحساب</label>
+                                <select class="form-select" id="newUserRole" required>
+                                    <option selected disabled value="">اختر...</option>
+                                    <option value="student">طالب</option>
+                                    <option value="teacher">معلم</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="newUserId" class="form-label">رقم العضوية (ID)</label>
+                                <input type="text" class="form-control" id="newUserId" required placeholder="رقم فريد للمستخدم">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="newUserPassword" class="form-label">كلمة المرور</label>
+                                <input type="password" class="form-control" id="newUserPassword" required placeholder="كلمة مرور مؤقتة">
+                            </div>
+                        </div>
+                        <div class="row" id="studentGradeRow" style="display: none;">
+                            <div class="col-md-12 mb-3">
+                                <label for="studentGrade" class="form-label">الصف الدراسي للطالب</label>
+                                <select class="form-select" id="studentGrade">
+                                    <!-- نفس خيارات الصفوف الدراسية -->
+                                    <option selected disabled value="">اختر الصف الدراسي...</option>
+                                    <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
+                                    <option value="مستوى عام">مستوى عام (للبالغين)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="formError" class="alert alert-danger" style="display: none;"></div>
+                        <button type="submit" class="btn btn-primary btn-full mt-3">إضافة المستخدم</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- سكريبت خاص بصفحة إدارة المستخدمين -->
+    <script src="admin-users.js"></script>
+</body>
+</html>

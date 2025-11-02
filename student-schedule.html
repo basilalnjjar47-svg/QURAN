@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جدول الحلقات - منصة إتقان</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-content">
+                <div class="logo">
+                    <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span>منصة إتقان</span>
+                </div>
+                <!-- Student Navigation -->
+                <div class="student-nav">
+                    <a href="student-dashboard.html" class="nav-item">لوحة التحكم</a>
+                    <a href="#" class="nav-item active">جدول الحلقات</a>
+                    <a href="student-profile.html" class="nav-item">ملفي الشخصي</a>
+                    <a href="index.html" class="nav-item logout">تسجيل الخروج</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <h1 class="hero-title">جدول الحلقات</h1>
+            <p class="hero-description">هنا تجد مواعيد حلقاتك الأسبوعية</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container" style="padding-top: 40px; padding-bottom: 40px;">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <i class="bi bi-calendar-week-fill card-icon"></i>
+                <h3>جدولك الأسبوعي</h3>
+            </div>
+            <div class="card-content">
+                <div class="table-responsive">
+                    <table class="table text-center">
+                        <thead>
+                            <tr>
+                                <th>اليوم</th>
+                                <th>الموعد</th>
+                                <th>المعلم</th>
+                                <th>المقرر</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>الأحد</td>
+                                <td>5:00 مساءً</td>
+                                <td>الشيخ محمد أحمد</td>
+                                <td>مراجعة آخر وجهين من سورة البقرة</td>
+                                <td><span class="badge rounded-pill text-bg-success">قادمة</span></td>
+                            </tr>
+                            <tr>
+                                <td>الثلاثاء</td>
+                                <td>5:00 مساءً</td>
+                                <td>الشيخ محمد أحمد</td>
+                                <td>حفظ وجه جديد من سورة آل عمران</td>
+                                <td><span class="badge rounded-pill text-bg-success">قادمة</span></td>
+                            </tr>
+                            <tr>
+                                <td>الخميس</td>
+                                <td>5:00 مساءً</td>
+                                <td>الشيخ محمد أحمد</td>
+                                <td>تسميع ومراجعة عامة</td>
+                                <td><span class="badge rounded-pill text-bg-success">قادمة</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

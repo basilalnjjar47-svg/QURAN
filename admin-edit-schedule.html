@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعديل جدول الطالب - لوحة تحكم الأدمن</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Responsive Table Styles */
+        @media screen and (max-width: 768px) {
+            .responsive-table thead {
+                display: none;
+            }
+            .responsive-table tbody tr {
+                display: block;
+                border: 1px solid #dee2e6;
+                border-radius: 0.5rem;
+                margin-bottom: 1rem;
+                padding: 0.5rem 1rem;
+            }
+            .responsive-table tbody td {
+                display: flex; /* استخدام Flexbox للمحاذاة */
+                justify-content: space-between; /* توزيع المساحة بين العنوان والمحتوى */
+                align-items: center; /* محاذاة العناصر عمودياً */
+                border: none;
+                padding: 0.75rem 0;
+                border-bottom: 1px solid #f1f1f1; /* إضافة خط فاصل رقيق */
+            }
+            .responsive-table tbody tr td:last-child {
+                border-bottom: none; /* إزالة الخط الفاصل من آخر عنصر */
+            }
+            .responsive-table tbody td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                flex-basis: 40%; /* تحديد عرض ثابت للعنوان */
+                text-align: right;
+            }
+            .text-start {
+                text-align: center !important; /* توسيط زر حفظ التغييرات */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-content">
+                <div class="logo">
+                    <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span>منصة إتقان</span>
+                </div>
+                <!-- Admin Navigation -->
+                <div class="student-nav">
+                    <a href="admin-dashboard.html" class="nav-item">لوحة التحكم</a>
+                    <a href="admin-users.html" class="nav-item">إدارة المستخدمين</a>
+                    <a href="admin-operations.html" class="nav-item">العمليات</a>
+                    <a href="admin-reports.html" class="nav-item">التقارير</a>
+                    <a href="index.html" class="nav-item logout">تسجيل الخروج</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <h1 class="hero-title">تعديل جدول الطالب</h1>
+            <p id="studentInfo" class="hero-description"></p>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 40px; padding-bottom: 40px;">
+        <div class="dashboard-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="bi bi-calendar-week-fill card-icon"></i>
+                    <h3>جدول الطالب الأسبوعي</h3>
+                </div>
+                <button id="addRowBtn" class="btn btn-primary">
+                    <i class="bi bi-plus-circle-fill"></i> إضافة صف جديد
+                </button>
+            </div>
+            <div class="card-content">
+                <div class="table-responsive">
+                    <table class="table text-center responsive-table">
+                        <thead>
+                            <tr>
+                                <th>اليوم</th>
+                                <th>الموعد</th>
+                                <th>المعلم</th>
+                                <th>المقرر</th>
+                                <th>إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleTableBody">
+                            <!-- الصفوف ستتم إضافتها هنا بشكل ديناميكي -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4 text-start">
+                    <button id="saveChangesBtn" class="btn btn-primary">
+                        <i class="bi bi-check-circle-fill"></i> حفظ جميع التغييرات
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const studentInfo = document.getElementById('studentInfo');
+            const tableBody = document.getElementById('scheduleTableBody');
+            const addRowBtn = document.getElementById('addRowBtn');
+            const saveChangesBtn = document.getElementById('saveChangesBtn');
+
+            // Get student ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const studentId = urlParams.get('studentId');
+
+            if (!studentId) {
+                studentInfo.textContent = 'لم يتم تحديد رقم عضوية الطالب.';
+                return;
+            }
+
+            // --- Simulation: Fetch student data and schedule ---
+            // In a real app, you would fetch this from your database
+            const fakeStudentName = `الطالب رقم ${studentId}`; // Example name
+            studentInfo.textContent = `أنت الآن تعدل جدول: ${fakeStudentName} (ID: ${studentId})`;
+            
+            const fakeSchedule = [
+                { day: 'الأحد', time: '5:00 مساءً', teacher: 'الشيخ محمد أحمد', plan: 'مراجعة آخر وجهين من سورة البقرة' },
+                { day: 'الثلاثاء', time: '5:00 مساءً', teacher: 'الشيخ محمد أحمد', plan: 'حفظ وجه جديد من سورة آل عمران' }
+            ];
+
+            function renderTable(schedule) {
+                tableBody.innerHTML = '';
+                schedule.forEach(item => addRow(item));
+            }
+
+            function addRow(item = { day: '', time: '', teacher: '', plan: '' }) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td data-label="اليوم:"><input type="text" class="form-control" value="${item.day}"></td>
+                    <td data-label="الموعد:"><input type="text" class="form-control" value="${item.time}"></td>
+                    <td data-label="المعلم:"><input type="text" class="form-control" value="${item.teacher}"></td>
+                    <td data-label="المقرر:"><input type="text" class="form-control" value="${item.plan}"></td>
+                    <td data-label="إجراء:"><button class="btn btn-sm btn-outline-danger delete-row-btn"><i class="bi bi-trash-fill"></i></button></td>
+                `;
+                tableBody.appendChild(row);
+            }
+
+            // Add new row button
+            addRowBtn.addEventListener('click', () => addRow());
+
+            // Delete row button
+            tableBody.addEventListener('click', function(e) {
+                if (e.target.closest('.delete-row-btn')) {
+                    e.target.closest('tr').remove();
+                }
+            });
+
+            // Save changes button
+            saveChangesBtn.addEventListener('click', function() {
+                // In a real app, you would collect all data from the table rows
+                // and send it to your server to save.
+                alert('تم حفظ التغييرات بنجاح (محاكاة).');
+            });
+
+            // Initial render
+            renderTable(fakeSchedule);
+        });
+    </script>
+</body>
+</html>

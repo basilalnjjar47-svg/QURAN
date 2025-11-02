@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم المعلم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Bootstrap for Modal component -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-content">
+                <div class="logo">
+                    <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span>منصة إتقان</span>
+                </div>
+                <!-- Teacher Navigation -->
+                <div class="student-nav">
+                    <a href="#" class="nav-item active">لوحة التحكم</a>
+                    <a href="teacher-students.html" class="nav-item">الطلاب</a>
+                    <a href="index.html" class="nav-item logout">تسجيل الخروج</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <h1 class="hero-title">لوحة تحكم المعلم</h1>
+            <p class="hero-description">مرحباً بك يا شيخ محمد أحمد</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container" style="padding-top: 40px; padding-bottom: 40px;">
+        <div class="dashboard-grid teacher-grid">
+            <!-- Session Management Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="bi bi-broadcast-pin card-icon"></i>
+                    <h3>إدارة الحلقة القادمة</h3>
+                </div>
+                <div class="card-content">
+                    <form id="sessionLinkForm">
+                        <div class="mb-3">
+                            <label for="zoomLink" class="form-label">رابط Zoom للحلقة القادمة</label>
+                            <input type="url" class="form-control" id="zoomLink" placeholder="https://zoom.us/j/..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sessionGrade" class="form-label">الصف الدراسي لهذه الحلقة</label>
+                            <select class="form-select" id="sessionGrade" required>
+                                <option selected disabled value="">اختر الصف الدراسي...</option>
+                                <optgroup label="المرحلة الابتدائية">
+                                    <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
+                                    <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
+                                    <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
+                                    <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
+                                    <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
+                                    <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
+                                </optgroup>
+                                <optgroup label="المرحلة الإعدادية">
+                                    <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
+                                    <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
+                                    <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+                                </optgroup>
+                                <optgroup label="المرحلة الثانوية">
+                                    <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
+                                    <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
+                                    <option value="الصف الثالث الثانوي">الصف الثالث الثانوي</option>
+                                </optgroup>
+                                <option value="مستوى عام">مستوى عام (للبالغين)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">إرسال الرابط للطالب</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Student List Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="bi bi-people-fill card-icon"></i>
+                    <h3>قائمة الطلاب</h3>
+                </div>
+                <div class="card-content">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>اسم الطالب</th>
+                                    <th>آخر مقرر</th>
+                                    <th>آخر تقييم</th>
+                                    <th>إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- سيتم عرض الطلاب هنا عند وجود بيانات فعلية -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Homework Modal -->
+    <div class="modal fade" id="homeworkModal" tabindex="-1" aria-labelledby="homeworkModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="homeworkModalLabel">تعيين واجب للطالب: عبد الله خالد</h5>
+                    <button type="button" class="btn-close ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="homeworkForm">
+                        <div class="mb-3">
+                            <label for="homeworkText" class="form-label">نص الواجب</label>
+                            <textarea class="form-control" id="homeworkText" rows="4" placeholder="مثال: مراجعة سورة البقرة من آية 100 إلى 110"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">حفظ الواجب</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. استدعاء مكتبة Socket.IO Client -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        // 2. الاتصال بالخادم - هام: استبدل هذا الرابط بعنوان الخادم الخاص بك على Render
+        const socket = io("https://your-server-name.onrender.com");
+
+
+        // --- تسجيل المعلم لدى الخادم ---
+        const currentTeacher = JSON.parse(sessionStorage.getItem('currentUser'));
+        if (currentTeacher && currentTeacher.id) {
+            socket.emit('register_user', currentTeacher.id);
+        }
+        // --------------------------------
+
+        document.getElementById('sessionLinkForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const zoomLink = document.getElementById('zoomLink').value;
+            const sessionGrade = document.getElementById('sessionGrade').value;
+            
+            // 3. إرسال بيانات الجلسة إلى الخادم عبر Socket.IO
+            socket.emit('send_session_link', {
+                link: zoomLink,
+                grade: sessionGrade
+            });
+
+            alert('تم إرسال الرابط لجميع الطلاب المستهدفين بنجاح!');
+        });
+
+        document.getElementById('homeworkForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const homeworkText = document.getElementById('homeworkText').value;
+            
+            // 4. إرسال الواجب إلى الخادم (نفترض أننا نعرف studentId)
+            // في تطبيق حقيقي، ستحصل على studentId عند فتح هذه النافذة
+            const targetStudentId = '101'; // مثال: رقم عضوية الطالب المستهدف
+            socket.emit('assign_homework', { studentId: targetStudentId, homeworkText: homeworkText });
+
+            alert('تم حفظ الواجب بنجاح!');
+            bootstrap.Modal.getInstance(document.getElementById('homeworkModal')).hide();
+        });
+    </script>
+</body>
+</html>
