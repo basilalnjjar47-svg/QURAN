@@ -147,7 +147,7 @@ app.post('/api/login', async (req, res) => {
 app.put('/api/users/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
-        const { name, password, role, grade, group, teacherId } = req.body;
+        const { name, password, role, grade, group, teacherId } = req.body; // group will now be used for teachers too
 
         // البحث عن المستخدم بواسطة _id الخاص بـ MongoDB
         const userToUpdate = await User.findById(userId);
@@ -232,24 +232,33 @@ io.on('connection', (socket) => {
 
     // عندما يقوم مستخدم بتسجيل نفسه بعد الدخول
     socket.on('register_user', (userId) => {
-        console.log(`تسجيل المستخدم ${userId} مع الـ socket ${socket.id}`);
+        console.log(`تسجيل المستخدم  مع الـ socket ${socket.id}`);
         userSockets[userId] = socket.id;
     });
 
     // الاستماع لحدث "إرسال رابط الجلسة" من المعلم
     socket.on('send_session_link', async (data) => {
-        console.log(`المعلم يرسل رابطاً للصف: ${data.grade}, المجموعة: ${data.group}`);
-
+        // المعلم سيرسل فقط الرابط ومعرّفه (ID)
+        const { link, teacherId } = data;
+        console.log(`المعلم  يرسل رابطاً لمجموعته.`);
+        
         try {
-            // 1. ابحث عن كل الطلاب الذين يطابقون الصف والمجموعة
-            const targetStudents = await User.find({ role: 'student', grade: data.grade, group: data.group });
+            // 1. ابحث عن المعلم في قاعدة البيانات لمعرفة مجموعته
+            const teacher = await User.findOne({ id: teacherId, role: 'teacher' });
+            if (!teacher || !teacher.group) {
+                console.log(`المعلم  غير موجود أو ليس له مجموعة معينة.`);
+                return;
+            }
 
-            // 2. أرسل الرابط لكل طالب على حدة
+            // 2. ابحث عن كل الطلاب الذين ينتمون لنفس مجموعة المعلم
+            const targetStudents = await User.find({ role: 'student', group: teacher.group });
+
+            // 3. أرسل الرابط لكل طالب في هذه المجموعة
             for (const student of targetStudents) {
                 const studentSocketId = userSockets[student.id];
                 if (studentSocketId) {
-                    io.to(studentSocketId).emit('session_link_update', { link: data.link, grade: data.grade });
-                    console.log(`تم إرسال الرابط إلى الطالب: ${student.name}`);
+                    io.to(studentSocketId).emit('session_link_update', { link: link, grade: `المجموعة ${teacher.group}` });
+                    console.log(`تم إرسال الرابط إلى الطالب: ${student.name} في المجموعة ${teacher.group}`);
                 }
             }
         } catch (error) {
@@ -292,5 +301,5 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`الخادم يعمل على المنفذ ${PORT}`);
+    console.log(`الخادم يعمل على المنفذ `);
 });

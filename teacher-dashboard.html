@@ -38,7 +38,7 @@
     <header class="dashboard-header">
         <div class="container">
             <h1 class="hero-title">لوحة تحكم المعلم</h1>
-            <p class="hero-description">مرحباً بك يا شيخ محمد أحمد</p>
+            <p id="teacherWelcome" class="hero-description"></p>
         </div>
     </header>
 
@@ -57,41 +57,8 @@
                             <label for="zoomLink" class="form-label">رابط Zoom للحلقة القادمة</label>
                             <input type="url" class="form-control" id="zoomLink" placeholder="https://zoom.us/j/..." required>
                         </div>
-                        <div class="mb-3">
-                            <label for="sessionGrade" class="form-label">الصف الدراسي لهذه الحلقة</label>
-                            <select class="form-select" id="sessionGrade" required>
-                                <option selected disabled value="">اختر الصف الدراسي...</option>
-                                <optgroup label="المرحلة الابتدائية">
-                                    <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
-                                    <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
-                                    <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
-                                    <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
-                                    <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
-                                    <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
-                                </optgroup>
-                                <optgroup label="المرحلة الإعدادية">
-                                    <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
-                                    <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
-                                    <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
-                                </optgroup>
-                                <optgroup label="المرحلة الثانوية">
-                                    <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
-                                    <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
-                                    <option value="الصف الثالث الثانوي">الصف الثالث الثانوي</option>
-                                </optgroup>
-                                <option value="مستوى عام">مستوى عام (للبالغين)</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="sessionGroup" class="form-label">المجموعة المستهدفة</label>
-                            <select class="form-select" id="sessionGroup" required>
-                                <option selected disabled value="">اختر المجموعة...</option>
-                                <option value="أ">المجموعة أ</option>
-                                <option value="ب">المجموعة ب</option>
-                                <option value="ج">المجموعة ج</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-full">إرسال الرابط للطالب</button>
+                        <p id="teacherGroupInfo" class="text-muted"></p>
+                        <button type="submit" class="btn btn-primary btn-full">إرسال الرابط لمجموعتي</button>
                     </form>
                 </div>
             </div>
@@ -155,23 +122,25 @@
 
         // --- تسجيل المعلم لدى الخادم ---
         const currentTeacher = JSON.parse(sessionStorage.getItem('currentUser'));
-        if (currentTeacher && currentTeacher.id) {
+        if (!currentTeacher || currentTeacher.role !== 'teacher') {
+            window.location.href = 'index.html';
+        } else {
+            document.getElementById('teacherWelcome').textContent = `مرحباً بك يا ${currentTeacher.name}`;
             socket.emit('register_user', currentTeacher.id);
+            if (currentTeacher.group) {
+                document.getElementById('teacherGroupInfo').textContent = `سيتم إرسال هذا الرابط لطلاب المجموعة (${currentTeacher.group}) المسجلين لديك.`;
+            } else {
+                document.getElementById('teacherGroupInfo').textContent = 'لم يتم تعيين مجموعة لك بعد. يرجى مراجعة الإدارة.';
+                document.querySelector('#sessionLinkForm button').disabled = true;
+            }
         }
         // --------------------------------
 
         document.getElementById('sessionLinkForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const zoomLink = document.getElementById('zoomLink').value;
-            const sessionGrade = document.getElementById('sessionGrade').value;
-            const sessionGroup = document.getElementById('sessionGroup').value;
             
-            // 3. إرسال بيانات الجلسة إلى الخادم عبر Socket.IO
-            socket.emit('send_session_link', {
-                link: zoomLink,
-                grade: sessionGrade,
-                group: sessionGroup
-            });
+            socket.emit('send_session_link', { link: zoomLink, teacherId: currentTeacher.id });
 
             alert('تم إرسال الرابط لجميع الطلاب المستهدفين بنجاح!');
         });

@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const addUserForm = document.getElementById('addUserForm');
     const userRoleSelect = document.getElementById('newUserRole');
     const studentGradeRow = document.getElementById('studentGradeRow');
+    const teacherGroupRow = document.getElementById('teacherGroupRow');
     const addUserModal = new bootstrap.Modal(document.getElementById('addUserModal'));
     const formError = document.getElementById('formError');
     const modalTitle = document.getElementById('addUserModalLabel');
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // دالة لجلب وعرض المستخدمين
     async function fetchAndDisplayUsers() {
         try {
-            const response = await fetch(`${SERVER_URL}/api/users`);
+            const response = await fetch(`/api/users`);
             if (!response.ok) {
                 throw new Error('فشل جلب بيانات المستخدمين');
             }
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
             displayUsers(users);
         } catch (error) {
             console.error('Error:', error);
-            usersTableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">حدث خطأ أثناء تحميل البيانات.</td></tr>`;
+            usersTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">حدث خطأ أثناء تحميل البيانات.</td></tr>`;
         }
     }
 
@@ -48,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
             usersTableBody.innerHTML = ''; // تفريغ الجدول قبل ملئه
 
             if (users.length === 0) {
-                usersTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">لا يوجد مستخدمون لعرضهم.</td></tr>';
+                usersTableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">لا يوجد مستخدمون لعرضهم.</td></tr>';
                 return;
             }
 
@@ -73,7 +74,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // إظهار/إخفاء حقل الصف الدراسي بناءً على نوع الحساب
     userRoleSelect.addEventListener('change', function () {
         const isStudent = this.value === 'student';
+        const isTeacher = this.value === 'teacher';
         studentGradeRow.style.display = isStudent ? 'flex' : 'none';
+        teacherGroupRow.style.display = isTeacher ? 'flex' : 'none';
         // إظهار قائمة المعلمين فقط للطلاب
         teacherSelect.closest('.col-md-12').style.display = isStudent ? 'block' : 'none';
     });
@@ -88,10 +91,17 @@ document.addEventListener('DOMContentLoaded', function () {
         const userData = {
             name: document.getElementById('newUserName').value,
             role: document.getElementById('newUserRole').value,
-            grade: document.getElementById('newUserRole').value === 'student' ? document.getElementById('studentGrade').value : null,
-            group: document.getElementById('newUserGroup').value || null,
+            grade: null,
+            group: null,
             teacherId: document.getElementById('teacherSelect').value || null,
         };
+
+        if (userData.role === 'student') {
+            userData.grade = document.getElementById('studentGrade').value;
+            userData.group = document.getElementById('newUserGroup').value || null;
+        } else if (userData.role === 'teacher') {
+            userData.group = document.getElementById('teacherGroupSelect').value || null;
+        }
 
         const password = document.getElementById('newUserPassword').value;
         if (password || !isEditing) { // أضف كلمة المرور إذا كانت موجودة أو في حالة إنشاء مستخدم جديد
@@ -103,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // تحديد الرابط والطريقة (إضافة أو تعديل)
-        const url = isEditing ? `${SERVER_URL}/api/users/${editingUserId}` : `${SERVER_URL}/api/users`;
+        const url = isEditing ? `/api/users/` : `/api/users`;
         const method = isEditing ? 'PUT' : 'POST';
 
         try {
@@ -154,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // إظهار رسالة تأكيد
             if (confirm('هل أنت متأكد من رغبتك في حذف هذا المستخدم؟ لا يمكن التراجع عن هذا الإجراء.')) {
                 try {
-                    const response = await fetch(`${SERVER_URL}/api/users/${userId}`, { method: 'DELETE' });
+                    const response = await fetch(`/api/users/`, { method: 'DELETE' });
                     if (!response.ok) throw new Error('فشل الحذف');
                     await fetchAndDisplayUsers();
                 } catch (error) {
@@ -168,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // --- منطق التعديل ---
         if (target.classList.contains('edit-btn')) {
             try {
-                const response = await fetch(`${SERVER_URL}/api/users`);
+                const response = await fetch(`/api/users`);
                 const users = await response.json();
                 const userToEdit = users.find(u => u._id === userId);
 
@@ -182,11 +192,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('newUserPassword').value = '';
                     document.getElementById('newUserPassword').placeholder = 'اتركه فارغاً لعدم التغيير';
                     
-                    studentGradeRow.style.display = userToEdit.role === 'student' ? 'flex' : 'none';
-                    document.getElementById('newUserGroup').value = userToEdit.group || '';
+                    const isStudent = userToEdit.role === 'student';
+                    const isTeacher = userToEdit.role === 'teacher';
+
+                    studentGradeRow.style.display = isStudent ? 'flex' : 'none';
+                    teacherGroupRow.style.display = isTeacher ? 'flex' : 'none';
+                    teacherSelect.closest('.col-md-12').style.display = isStudent ? 'block' : 'none';
+
                     if (userToEdit.role === 'student') {
                         document.getElementById('studentGrade').value = userToEdit.grade;
+                        document.getElementById('newUserGroup').value = userToEdit.group || '';
                         document.getElementById('teacherSelect').value = userToEdit.teacherId || '';
+                    } else if (userToEdit.role === 'teacher') {
+                        document.getElementById('teacherGroupSelect').value = userToEdit.group || '';
                     }
                     addUserModal.show();
                 }
