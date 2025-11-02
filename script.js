@@ -38,8 +38,8 @@ if (loginForm) {
         loginError.style.display = 'none';
 
         try {
-            // هام: استبدل هذا الرابط بعنوان الخادم الخاص بك على Render
-            const SERVER_URL = 'https://your-server-name.onrender.com';
+            // تم تحديث الرابط بعنوان الخادم الحقيقي على Render
+            const SERVER_URL = 'https://quran-32vn.onrender.com';
             const response = await fetch(`${SERVER_URL}/api/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

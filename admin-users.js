@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const formError = document.getElementById('formError');
     const modalTitle = document.getElementById('addUserModalLabel');
 
-    // هام: استبدل هذا الرابط بعنوان الخادم الخاص بك على Render
-    const SERVER_URL = 'https://your-server-name.onrender.com';
+    // تم تحديث الرابط بعنوان الخادم الحقيقي على Render
+    const SERVER_URL = 'https://quran-32vn.onrender.com';
 
     // --- بيانات وهمية للمحاكاة المحلية ---
     let editingUserId = null; // لتحديد ما إذا كنا في وضع التعديل أم الإضافة
