@@ -42,7 +42,7 @@
             <div class="card-header bg-light d-flex flex-wrap justify-content-between align-items-center gap-3">
                 <div>
                     <i class="bi bi-check-circle-fill card-icon"></i>
-                    <h3 id="attendance-header" class="d-inline-block mb-0">كشف حضور المجموعة</h3>
+                    <h3 id="attendance-header" class="d-inline-block mb-0">تسجيل حضور طالب</h3>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <label for="attendanceDate" class="form-label mb-0">تاريخ اليوم:</label>
@@ -50,23 +50,19 @@
                 </div>
             </div>
             <div class="card-content">
-                <div id="attendance-list" class="list-group">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>اسم الطالب</th>
-                                <th class="text-center">الحالة</th>
-                            </tr>
-                        </thead>
-                        <tbody id="attendanceTableBody">
-                            <!-- سيتم ملء الطلاب هنا -->
-                        </tbody>
-                    </table> 
+                <div class="mb-4">
+                    <label for="studentSelect" class="form-label fs-5">1. اختر الطالب:</label>
+                    <select id="studentSelect" class="form-select form-select-lg">
+                        <option selected disabled>جاري تحميل الطلاب...</option>
+                    </select>
                 </div>
-                <div class="mt-4 text-center">
-                    <button id="saveAttendanceBtn" class="btn btn-primary btn-lg px-5">
-                        <i class="bi bi-save-fill"></i> حفظ سجل الحضور
-                    </button>
+
+                <div id="attendanceControls" class="text-center p-4 border rounded bg-light" style="display: none;">
+                    <h4 id="selectedStudentName" class="mb-3"></h4>
+                    <p class="fs-5">2. سجل حالة الطالب لهذا اليوم:</p>
+                    <div id="statusButtons" class="d-flex justify-content-center gap-3">
+                        <!-- سيتم إضافة الأزرار هنا -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -74,10 +70,12 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
-            const tableBody = document.getElementById('attendanceTableBody');
+            const studentSelect = document.getElementById('studentSelect');
             const attendanceDateInput = document.getElementById('attendanceDate');
-            const saveBtn = document.getElementById('saveAttendanceBtn');
             const attendanceHeader = document.getElementById('attendance-header');
+            const attendanceControls = document.getElementById('attendanceControls');
+            const selectedStudentName = document.getElementById('selectedStudentName');
+            const statusButtons = document.getElementById('statusButtons');
             const currentTeacher = JSON.parse(sessionStorage.getItem('currentUser'));
 
             if (!currentTeacher || currentTeacher.role !== 'teacher') {
@@ -87,70 +85,71 @@
 
             // Set date to today
             attendanceDateInput.valueAsDate = new Date();
-            attendanceHeader.textContent = `كشف حضور المجموعة (${currentTeacher.group || 'غير محددة'})`;
 
             const SERVER_URL = 'https://quran-32vn.onrender.com';
 
             try {
                 // Fetch students assigned directly to the teacher
                 const response = await fetch(`${SERVER_URL}/api/teacher/students?teacherId=${currentTeacher.id}`);
+                if (!response.ok) throw new Error('فشل تحميل الطلاب');
                 const students = await response.json();
 
-                tableBody.innerHTML = '';
+                studentSelect.innerHTML = '<option selected disabled value="">-- اختر طالباً --</option>';
                 if (students.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">لا يوجد طلاب في مجموعتك.</td></tr>';
-                    saveBtn.disabled = true; 
+                    studentSelect.innerHTML = '<option disabled>لا يوجد طلاب مسجلون لديك.</option>';
                 } else {
                     students.forEach(student => {
-                        const row = `
-                            <tr data-student-id="${student.id}">
-                                <td class="fw-bold">${student.name}</td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <input type="radio" class="btn-check" name="status-${student.id}" id="present-${student.id}" value="present" autocomplete="off" checked>
-                                        <label class="btn btn-outline-success px-4" for="present-${student.id}"><i class="bi bi-check-circle me-1"></i> حاضر</label>
-
-                                        <input type="radio" class="btn-check" name="status-${student.id}" id="absent-${student.id}" value="absent" autocomplete="off">
-                                        <label class="btn btn-outline-danger px-4" for="absent-${student.id}"><i class="bi bi-x-circle me-1"></i> غائب</label>
-
-                                        <input type="radio" class="btn-check" name="status-${student.id}" id="excused-${student.id}" value="excused" autocomplete="off">
-                                        <label class="btn btn-outline-warning px-4" for="excused-${student.id}"><i class="bi bi-exclamation-circle me-1"></i> بعذر</label>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                        tableBody.insertAdjacentHTML('beforeend', row);
+                        const option = new Option(student.name, student.id);
+                        studentSelect.add(option);
                     });
                 }
             } catch (error) {
-                tableBody.innerHTML = '<tr><td colspan="2" class="text-center text-danger">حدث خطأ أثناء تحميل الطلاب.</td></tr>';
+                studentSelect.innerHTML = `<option disabled>خطأ: ${error.message}</option>`;
             }
 
-            saveBtn.addEventListener('click', async function() {
+            // عند اختيار طالب
+            studentSelect.addEventListener('change', function() {
+                if (!this.value) {
+                    attendanceControls.style.display = 'none';
+                    return;
+                }
+                const studentId = this.value;
+                const studentName = this.options[this.selectedIndex].text;
+
+                selectedStudentName.textContent = studentName;
+                statusButtons.innerHTML = `
+                    <button class="btn btn-success btn-lg" onclick="saveAttendance('${studentId}', 'present')"><i class="bi bi-check-circle me-2"></i>تسجيل حضور</button>
+                    <button class="btn btn-danger btn-lg" onclick="saveAttendance('${studentId}', 'absent')"><i class="bi bi-x-circle me-2"></i>تسجيل غياب</button>
+                    <button class="btn btn-warning btn-lg" onclick="saveAttendance('${studentId}', 'excused')"><i class="bi bi-exclamation-circle me-2"></i>تسجيل بعذر</button>
+                `;
+                attendanceControls.style.display = 'block';
+            });
+
+            // دالة لحفظ الحضور
+            window.saveAttendance = async function(studentId, status) {
                 const date = attendanceDateInput.value;
-                const records = [];
-                const rows = tableBody.querySelectorAll('tr[data-student-id]');
-
-                rows.forEach(row => {
-                    const studentId = row.dataset.studentId;
-                    const status = row.querySelector(`input[name="status-${studentId}"]:checked`).value;
-                    records.push({ studentId, status });
-                });
-
+                if (!date) {
+                    alert('الرجاء تحديد التاريخ أولاً.');
+                    return;
+                }
+                
                 try {
                     const response = await fetch(`${SERVER_URL}/api/attendance`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ date, records })
+                        body: JSON.stringify({ date, records: [{ studentId, status }] })
                     });
 
                     if (!response.ok) throw new Error('فشل حفظ البيانات');
-                    alert('تم حفظ سجل الحضور بنجاح!');
-
+                    
+                    alert(`تم تسجيل حالة الطالب بنجاح.`);
+                    // إعادة الواجهة لوضعها الأولي
+                    studentSelect.value = '';
+                    attendanceControls.style.display = 'none';
                 } catch (error) {
-                    alert('حدث خطأ أثناء حفظ سجل الحضور.');
+                    alert(`حدث خطأ: ${error.message}`);
                 }
-            });
+            };
         });
     </script>
 </body>
