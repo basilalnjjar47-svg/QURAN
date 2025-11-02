@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // دالة لجلب وعرض المستخدمين
     async function fetchAndDisplayUsers() {
         try {
-            const response = await fetch(`/api/users`);
+            const response = await fetch(`${SERVER_URL}/api/users`);
             if (!response.ok) {
                 throw new Error('فشل جلب بيانات المستخدمين');
             }
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // تحديد الرابط والطريقة (إضافة أو تعديل)
-        const url = isEditing ? `/api/users/` : `/api/users`;
+        const url = isEditing ? `${SERVER_URL}/api/users/${editingUserId}` : `${SERVER_URL}/api/users`;
         const method = isEditing ? 'PUT' : 'POST';
 
         try {
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // إظهار رسالة تأكيد
             if (confirm('هل أنت متأكد من رغبتك في حذف هذا المستخدم؟ لا يمكن التراجع عن هذا الإجراء.')) {
                 try {
-                    const response = await fetch(`/api/users/`, { method: 'DELETE' });
+                    const response = await fetch(`${SERVER_URL}/api/users/${userId}`, { method: 'DELETE' });
                     if (!response.ok) throw new Error('فشل الحذف');
                     await fetchAndDisplayUsers();
                 } catch (error) {
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // --- منطق التعديل ---
         if (target.classList.contains('edit-btn')) {
             try {
-                const response = await fetch(`/api/users`);
+                const response = await fetch(`${SERVER_URL}/api/users`);
                 const users = await response.json();
                 const userToEdit = users.find(u => u._id === userId);
 
