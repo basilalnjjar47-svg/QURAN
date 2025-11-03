@@ -488,7 +488,7 @@ const axios = require('axios');
 if (process.env.RENDER_EXTERNAL_URL) {
   const PING_URL = process.env.RENDER_EXTERNAL_URL;
   setInterval(() => {
-    axios.get(PING_URL)
+    axios.get(PING_URL, { timeout: 10000 }) // إضافة مهلة زمنية 10 ثوانٍ
       .then(response => console.log(`Self-ping successful at ${new Date().toISOString()}. Status: ${response.status}`))
       .catch(err => console.error(`Self-ping error to ${PING_URL}:`, err.message));
   }, 14 * 60 * 1000); // كل 14 دقيقة (أقل من 15 دقيقة التي ينام بعدها الخادم)
