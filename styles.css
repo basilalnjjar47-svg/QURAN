@@ -843,6 +843,7 @@ body {
 /* 2. السلايدر الرئيسي */
 #main-slider {
     margin-top: 80px; /* لإعطاء مساحة للهيدر الثابت */
+    overflow: hidden; /* مهم جداً لإخفاء الشرائح الخارجة عن الإطار */
 }
 
 /* --- تصميم البانر الجديد --- */
@@ -851,6 +852,8 @@ body {
     min-height: 600px;
     background-color: #fff;
 }
+
+
 .hero-banner-text {
     color: var(--dark-text);
 }
