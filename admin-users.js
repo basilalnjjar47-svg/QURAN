@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // دالة لجلب وعرض المستخدمين
     async function fetchAndDisplayUsers() {
         try {
-            const response = await fetch(`${SERVER_URL}/api/users`);
+            const response = await fetch(`${SERVER_URL}/api/users/all`);
             if (!response.ok) {
                 throw new Error('فشل جلب بيانات المستخدمين');
             }
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         try {
-            const response = await fetch(`${SERVER_URL}/api/user-by-id/${teacherId}`);
+            const response = await fetch(`${SERVER_URL}/api/users/all`); // جلب كل المستخدمين للبحث بينهم
             const user = await response.json();
 
             if (!response.ok) throw new Error(user.message);
