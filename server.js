@@ -28,6 +28,14 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET 
 });
 
+// التحقق من وجود مفاتيح Cloudinary
+if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    console.error('****************************************************************');
+    console.error('!! خطأ فادح: مفاتيح خدمة Cloudinary غير موجودة في ملف .env');
+    console.error('!! الرجاء التأكد من إعداد ملف .env بشكل صحيح لتعمل ميزة رفع الصور.');
+    console.error('****************************************************************');
+}
+
 // --- إعداد Multer لمعالجة رفع الملفات ---
 const storage = multer.memoryStorage();
 const upload = multer({
