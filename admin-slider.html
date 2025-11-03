@@ -306,6 +306,7 @@
                         body: formData // لا نستخدم headers هنا، المتصفح سيحددها تلقائياً
                     });
                     if (!response.ok) { const err = await response.json(); throw new Error(err.message || 'فشل حفظ البيانات'); }
+                    saveSlideBtn.blur(); // إزالة التركيز من زر الحفظ قبل إغلاق النافذة
                     slideModal.hide();
                     await fetchAndDisplaySlides();
                 } catch (error) {
