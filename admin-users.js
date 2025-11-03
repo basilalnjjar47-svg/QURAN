@@ -78,11 +78,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             const response = await fetch(`${SERVER_URL}/api/users/all`); // جلب كل المستخدمين للبحث بينهم
-            const user = await response.json();
+            const users = await response.json(); // استلام القائمة كاملة
 
-            if (!response.ok) throw new Error(user.message);
+            if (!response.ok) throw new Error('فشل جلب بيانات المستخدمين للتحقق');
 
-            if (user.role === 'teacher') {
+            // البحث عن المعلم المطلوب داخل القائمة
+            const user = users.find(u => u.id === teacherId);
+
+            if (user && user.role === 'teacher') {
                 teacherNameDisplay.textContent = `تم العثور على المعلم: ${user.name}`;
                 teacherNameDisplay.className = 'form-text text-success fw-bold';
             } else {
