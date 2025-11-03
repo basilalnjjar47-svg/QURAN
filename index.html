@@ -3,238 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة تحفيظ القرآن الكريم</title>
+    <title>مركز النوران لتحفيظ القرآن والسنة</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar-main">
+    <!-- 🕌 1. الهيدر الجديد -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top main-navbar">
         <div class="container">
-            <div class="navbar-content">
-                <div class="logo">
-                    <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                    </svg>
-                    <span>منصة إتقان</span>
-                </div>
-                <ul class="nav-links">
-                    <li><a href="#roles">ابدأ الآن</a></li>
-                    <li><a href="#methodology">منهجيتنا</a></li>
-                    <li><a href="#features">المميزات</a></li>
-                    <li><a href="#stats">إحصائيات</a></li>
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-moon-stars-fill logo-icon-main"></i>
+                مركز النوران
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link active" href="#">الرئيسية</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#halaqat">حلقات القرآن</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#halaqat">حلقات الحديث</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#articles">المقالات</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">عن المركز</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#footer">تواصل معنا</a></li>
                 </ul>
-                <a href="#footer" class="btn btn-outline-light d-none d-lg-flex">تواصل معنا</a>
+                <div class="d-flex">
+                    <button class="btn btn-outline-primary me-2" onclick="openLoginDialog('student')">تسجيل الدخول</button>
+                    <button class="btn btn-primary" onclick="openLoginDialog('student')">إنشاء حساب</button>
+                </div>
             </div>
         </div>
     </nav>
 
-    <section id="hero" class="hero">
-        <div class="hero-overlay"></div>
-        <div class="islamic-pattern-overlay"></div>
-        <div class="container">
-            <div class="hero-content">
-                <h1 class="hero-title">منصة إتقان لتحفيظ القرآن الكريم</h1>
-                <p class="hero-subtitle">رحلتك نحو حفظ كتاب الله تبدأ هنا</p>
-                <a href="#roles" class="btn btn-hero">
-                    <span>ابدأ رحلتك الآن</span>
-                    <i class="bi bi-arrow-left"></i>
-                </a>
+    <!-- 📺 2. السلايدر الرئيسي -->
+    <header id="main-slider" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="https://via.placeholder.com/1920x600/0c4b33/FFFFFF?text=Slide+1" class="d-block w-100" alt="...">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>بدء التسجيل في دورة حفظ جزء عم للأطفال 🎉</h5>
+                    <p>انضموا معنا لرحلة ممتعة ومبسطة لأطفالكم في حفظ وتفسير جزء عم.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://via.placeholder.com/1920x600/c7a25e/FFFFFF?text=Slide+2" class="d-block w-100" alt="...">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>فتح التسجيل في حلقة سورة البقرة للكبار 📖</h5>
+                    <p>مع التفسير المبسط وفهم أسباب النزول وأحكام السورة.</p>
+                </div>
             </div>
         </div>
-    </section>
+        <button class="carousel-control-prev" type="button" data-bs-target="#main-slider" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#main-slider" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Next</span>
+        </button>
+    </header>
 
-    <section id="roles" class="roles-section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">اختر نوع حسابك</h2>
-                <p class="section-description">
-                    انضم إلينا كطالب شغوف، أو كمعلم ملهم، أو كإداري مشرف
-                </p>
-            </div>
-
-            <div class="roles-grid">
-                <div class="role-card">
-                    <div class="role-icon student-icon">
+    <!-- ⚪ 3. قسم المميزات -->
+    <section id="features" class="features-section-new py-5">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-lg col-md-4 col-6 feature-circle-item">
+                    <div class="feature-circle">
+                        <i class="bi bi-person-check-fill"></i>
+                    </div>
+                    <h6>معلمون متقنون</h6>
+                    <p>معلمون حفاظ مجازون في القرآن الكريم.</p>
+                </div>
+                <div class="col-lg col-md-4 col-6 feature-circle-item">
+                    <div class="feature-circle">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <h6>حلقات جماعية</h6>
+                    <p>تعلم في بيئة جماعية ممتعة ومحفزة.</p>
+                </div>
+                <div class="col-lg col-md-4 col-6 feature-circle-item">
+                    <div class="feature-circle">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <h6>تحفيظ فردي</h6>
+                    <p>متابعة شخصية ومعلم خاص عبر الإنترنت.</p>
+                </div>
+                <div class="col-lg col-md-6 col-6 feature-circle-item">
+                    <div class="feature-circle">
+                        <i class="bi bi-person-video3"></i>
+                    </div>
+                    <h6>للكبار والصغار</h6>
+                    <p>برامج مناسبة لكل الأعمار بحرفية.</p>
+                </div>
+                <div class="col-lg col-md-6 col-12 feature-circle-item">
+                    <div class="feature-circle">
                         <i class="bi bi-book-half"></i>
                     </div>
-                    <h3 class="role-title">الطالب</h3>
-                    <p class="role-description">للطلاب الراغبين في حفظ القرآن الكريم</p>
-                    <button class="btn btn-primary" onclick="openLoginDialog('student')">
-                        تسجيل دخول كطالب
-                    </button>
-                </div>
-
-                <div class="role-card">
-                    <div class="role-icon teacher-icon">
-                        <i class="bi bi-person-workspace"></i>
-                    </div>
-                    <h3 class="role-title">المعلم</h3>
-                    <p class="role-description">للمعلمين والمشرفين على حلقات التحفيظ</p>
-                    <button class="btn btn-primary" onclick="openLoginDialog('teacher')">
-                        تسجيل دخول كمعلم
-                    </button>
-                </div>
-
-                <div class="role-card">
-                    <div class="role-icon admin-icon">
-                        <i class="bi bi-shield-check"></i>
-                    </div>
-                    <h3 class="role-title">الإداري</h3>
-                    <p class="role-description">للإدارة والإشراف العام على المنصة</p>
-                    <button class="btn btn-primary" onclick="openLoginDialog('admin')">
-                        تسجيل دخول كإداري
-                    </button>
+                    <h6>تحفيظ الحديث</h6>
+                    <p>أحاديث نبوية صحيحة للكبار والصغار.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="methodology" class="methodology-section">
+    <!-- 🟩 4. قسم الحلقات -->
+    <section id="halaqat" class="halaqat-section py-5 bg-light">
         <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">منهجيتنا في التعليم</h2>
-                <p class="section-description">نؤمن بأن التعليم المتقن يبدأ من منهجية واضحة ومحفزة</p>
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title-new">انضم إلى حلقاتنا</h2>
+                <p class="lead text-muted">اختر الحلقة التي تناسبك وابدأ رحلتك في تعلم كتاب الله وسنة نبيه.</p>
             </div>
-            <div class="methodology-grid">
-                <div class="method-item">
-                    <div class="method-icon"><i class="bi bi-person-check-fill"></i></div>
-                    <h4 class="method-title">متابعة فردية</h4>
-                    <p class="method-text">اهتمام شخصي بكل طالب لضمان أفضل النتائج.</p>
+            <div class="row g-4">
+                <!-- حلقة 1: جزء عم -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="halaqa-card">
+                        <div class="halaqa-icon">🌙</div>
+                        <h4 class="halaqa-title">كورس حفظ جزء عم للأطفال</h4>
+                        <p class="halaqa-desc">مع التفسير المبسط والأنشطة الممتعة. مع المعلمة ...</p>
+                        <ul class="halaqa-details">
+                            <li><i class="bi bi-clock-fill"></i> ساعتان أسبوعيًا</li>
+                            <li><i class="bi bi-cash-coin"></i> 100 جنيه مصري</li>
+                        </ul>
+                        <a href="#" class="btn btn-primary w-100">التحق بهذه الحلقة</a>
+                    </div>
                 </div>
-                <div class="method-item">
-                    <div class="method-icon"><i class="bi bi-journals"></i></div>
-                    <h4 class="method-title">مقررات متدرجة</h4>
-                    <p class="method-text">خطط دراسية مرنة تناسب جميع المستويات والأعمار.</p>
+                <!-- حلقة 2: سورة البقرة -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="halaqa-card">
+                        <div class="halaqa-icon">📚</div>
+                        <h4 class="halaqa-title">كورس سورة البقرة للكبار</h4>
+                        <p class="halaqa-desc">حفظ متقن مع فهم أسباب النزول والتفسير. مع المعلمة ...</p>
+                        <ul class="halaqa-details">
+                            <li><i class="bi bi-clock-fill"></i> ساعتان أسبوعيًا</li>
+                            <li><i class="bi bi-cash-coin"></i> 100 جنيه مصري</li>
+                        </ul>
+                        <a href="#" class="btn btn-primary w-100">التحق بهذه الحلقة</a>
+                    </div>
                 </div>
-                <div class="method-item">
-                    <div class="method-icon"><i class="bi bi-lightbulb-fill"></i></div>
-                    <h4 class="method-title">بيئة محفزة</h4>
-                    <p class="method-text">نظام نقاط ومسابقات لزيادة الدافعية لدى الطلاب.</p>
-                </div>
-                <div class="method-item">
-                    <div class="method-icon"><i class="bi bi-graph-up-arrow"></i></div>
-                    <h4 class="method-title">تقارير دورية</h4>
-                    <p class="method-text">تقارير أداء مفصلة لمتابعة مستوى التقدم باستمرار.</p>
+                <!-- حلقة 3: الحديث -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="halaqa-card">
+                        <div class="halaqa-icon">📜</div>
+                        <h4 class="halaqa-title">كورس حفظ 50 حديثًا نبويًا</h4>
+                        <p class="halaqa-desc">حفظ وشرح لأحاديث صحيحة من جوامع الكلم. مع المعلم ...</p>
+                        <ul class="halaqa-details">
+                            <li><i class="bi bi-clock-fill"></i> ساعتان أسبوعيًا</li>
+                            <li><i class="bi bi-cash-coin"></i> 100 جنيه مصري</li>
+                        </ul>
+                        <a href="#" class="btn btn-primary w-100">التحق بهذه الحلقة</a>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="features" class="features-section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">مميزات المنصة</h2>
-                <p class="section-description">
-                    أدوات متكاملة مصممة لتجعل رحلة حفظ القرآن أكثر سهولة وفعالية
-                </p>
-            </div>
-
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="bi bi-calendar-event"></i>
-                    </div>
-                    <h3>متابعة يومية</h3>
-                    <p>نظام متابعة دقيق لتقدم الحفظ اليومي والأسبوعي</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="bi bi-people"></i>
-                    </div>
-                    <h3>إدارة المجموعات</h3>
-                    <p>تنظيم الطلاب في مجموعات حسب المستوى والعمر</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="bi bi-trophy"></i>
-                    </div>
-                    <h3>مسابقات قرآنية</h3>
-                    <p>مسابقات محفزة لتشجيع الطلاب على الحفظ والمراجعة</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="bi bi-file-earmark-text"></i>
-                    </div>
-                    <h3>تقارير شاملة</h3>
-                    <p>تقارير تفصيلية عن الأداء والتقدم في الحفظ</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="stats" class="stats-section">
-        <div class="islamic-pattern-overlay dark"></div>
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">أرقام تتحدث عن إنجازاتنا</h2>
-                <p class="section-description">نفخر بمسيرة طلابنا ومعلمينا، ونسعى للمزيد</p>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <i class="bi bi-people-fill stat-icon"></i>
-                    <h3 class="stat-number" data-target="0">0</h3>
-                    <p class="stat-title">طالب وطالبة</p>
-                </div>
-                <div class="stat-item">
-                    <i class="bi bi-person-video3 stat-icon"></i>
-                    <h3 class="stat-number" data-target="0">0</h3>
-                    <p class="stat-title">معلم ومعلمة</p>
-                </div>
-                <div class="stat-item">
-                    <i class="bi bi-journal-bookmark-fill stat-icon"></i>
-                    <h3 class="stat-number" data-target="0">0</h3>
-                    <p class="stat-title">ساعة تلاوة</p>
-                </div>
-                <div class="stat-item">
-                    <i class="bi bi-award-fill stat-icon"></i>
-                    <h3 class="stat-number" data-target="0">0</h3>
-                    <p class="stat-title">خاتم وخاتمة</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
+    <!-- 🕋 5. الفوتر الجديد -->
     <footer id="footer" class="footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <div class="logo">
-                        <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                        </svg>
-                        <span>منصة إتقان</span>
-                    </div>
-                    <p>منصة شاملة ومتكاملة لتحفيظ القرآن الكريم، توفر بيئة تعليمية متميزة للطلاب والمعلمين.</p>
+                    <h4 class="footer-brand">مركز النوران</h4>
+                    <p>فريق من المعلمين الحفاظ المجازين، خريجي جامعة الأزهر، نهدف لمساعدتك على استثمار عمرك في حفظ كتاب الله وأحاديث رسوله بطريقة سهلة وشيقة.</p>
                 </div>
                 <div class="footer-section">
                     <h4>روابط سريعة</h4>
                     <ul>
-                        <li><a href="#roles">ابدأ الآن</a></li>
-                        <li><a href="#methodology">منهجيتنا</a></li>
-                        <li><a href="#features">المميزات</a></li>
-                        <li><a href="#stats">إحصائيات</a></li>
+                        <li><a href="#about">عن المركز</a></li>
+                        <li><a href="#">سياسة الخصوصية</a></li>
+                        <li><a href="#">الدعم الفني</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>تواصل معنا</h4>
-                    <p>البريد الإلكتروني: <a href="mailto:info@itqan.com">info@itqan.com</a></p>
-                    <p>الهاتف: 920000000 (966+)</p>
+                    <p><i class="bi bi-telephone-fill"></i> <a href="tel:+20000000000">+20000000000</a></p>
+                    <p><i class="bi bi-whatsapp"></i> <a href="https://wa.me/20000000000">+20000000000</a></p>
+                    <p><i class="bi bi-envelope-fill"></i> <a href="mailto:info@nouran.com">info@nouran.com</a></p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 منصة إتقان. جميع الحقوق محفوظة.</p>
+                <p>&copy; 2025 النوران لتحفيظ السنة النبوية مع القرآن. جميع الحقوق محفوظة.</p>
             </div>
         </div>
     </footer>
 
+    <!-- نافذة تسجيل الدخول (موجودة بالفعل ولكن سيتم استدعاؤها من الأزرار الجديدة) -->
     <div id="loginDialog" class="dialog-overlay">
         <div class="dialog">
             <div class="dialog-image-section">
@@ -263,6 +217,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script> <!-- سنبقي على هذا الملف للوظائف الأساسية -->
 </body>
 </html>
