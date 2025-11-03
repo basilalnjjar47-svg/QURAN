@@ -10,6 +10,93 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        /* === تصميم خرافي جديد === */
+        body {
+            background-color: #f8f9fa;
+            background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23e9ecef" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+        }
+
+        .dashboard-card {
+            background: linear-gradient(145deg, #ffffff, #f7f7f7);
+            border: none;
+            border-radius: 20px;
+            box-shadow: 10px 10px 30px #d9d9d9, -10px -10px 30px #ffffff;
+            transition: all 0.3s ease-in-out;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-card .card-header {
+            background: linear-gradient(135deg, #012a4a, #035397);
+            color: #fff;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            border-bottom: 3px solid #c7a25e;
+        }
+
+        .dashboard-card .card-header .card-icon {
+            color: #c7a25e;
+            font-size: 1.8rem;
+        }
+
+        .form-select-lg {
+            border-radius: 10px;
+            border: 2px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+
+        .form-select-lg:focus {
+            border-color: #c7a25e;
+            box-shadow: 0 0 10px rgba(199, 162, 94, 0.3);
+        }
+
+        #attendanceControls {
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 1px dashed #c7a25e;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        #attendanceControls.visible {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 500px; /* ارتفاع كافٍ للمحتوى */
+            padding: 1.5rem !important;
+        }
+
+        .status-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .btn-present { background: linear-gradient(135deg, #28a745, #218838); }
+        .btn-absent { background: linear-gradient(135deg, #dc3545, #c82333); }
+        .btn-excused { background: linear-gradient(135deg, #ffc107, #e0a800); color: #333; }
+
+    </style>
 </head>
 <body>
     <!-- Navbar -->
@@ -37,12 +124,12 @@
         </div>
     </header>
 
-    <main class="container" style="padding-top: 40px; padding-bottom: 40px;">
-        <div class="dashboard-card shadow-sm">
-            <div class="card-header bg-light d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <main class="container" style="padding-top: 40px; padding-bottom: 40px;" id="main-content">
+        <div class="dashboard-card">
+            <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-3">
                 <div>
                     <i class="bi bi-check-circle-fill card-icon"></i>
-                    <h3 id="attendance-header" class="d-inline-block mb-0">تسجيل حضور طالب</h3>
+                    <h3 class="d-inline-block mb-0 align-middle ms-2">تسجيل حضور طالب</h3>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <label for="attendanceDate" class="form-label mb-0">تاريخ اليوم:</label>
@@ -57,7 +144,7 @@
                     </select>
                 </div>
 
-                <div id="attendanceControls" class="text-center p-4 border rounded bg-light" style="display: none;">
+                <div id="attendanceControls" class="text-center">
                     <h4 id="selectedStudentName" class="mb-3"></h4>
                     <p class="fs-5">2. سجل حالة الطالب لهذا اليوم:</p>
                     <div id="statusButtons" class="d-flex justify-content-center gap-3">
@@ -72,7 +159,6 @@
         document.addEventListener('DOMContentLoaded', async function() {
             const studentSelect = document.getElementById('studentSelect');
             const attendanceDateInput = document.getElementById('attendanceDate');
-            const attendanceHeader = document.getElementById('attendance-header');
             const attendanceControls = document.getElementById('attendanceControls');
             const selectedStudentName = document.getElementById('selectedStudentName');
             const statusButtons = document.getElementById('statusButtons');
@@ -110,7 +196,7 @@
             // عند اختيار طالب
             studentSelect.addEventListener('change', function() {
                 if (!this.value) {
-                    attendanceControls.style.display = 'none';
+                    attendanceControls.classList.remove('visible');
                     return;
                 }
                 const studentId = this.value;
@@ -118,11 +204,11 @@
 
                 selectedStudentName.textContent = studentName;
                 statusButtons.innerHTML = `
-                    <button class="btn btn-success btn-lg" onclick="saveAttendance('${studentId}', 'present')"><i class="bi bi-check-circle me-2"></i>تسجيل حضور</button>
-                    <button class="btn btn-danger btn-lg" onclick="saveAttendance('${studentId}', 'absent')"><i class="bi bi-x-circle me-2"></i>تسجيل غياب</button>
-                    <button class="btn btn-warning btn-lg" onclick="saveAttendance('${studentId}', 'excused')"><i class="bi bi-exclamation-circle me-2"></i>تسجيل بعذر</button>
+                    <button class="status-btn btn-present" onclick="saveAttendance('${studentId}', 'present')"><i class="bi bi-check-circle"></i>حاضر</button>
+                    <button class="status-btn btn-absent" onclick="saveAttendance('${studentId}', 'absent')"><i class="bi bi-x-circle"></i>غائب</button>
+                    <button class="status-btn btn-excused" onclick="saveAttendance('${studentId}', 'excused')"><i class="bi bi-exclamation-circle"></i>بعذر</button>
                 `;
-                attendanceControls.style.display = 'block';
+                attendanceControls.classList.add('visible');
             });
 
             // دالة لحفظ الحضور
@@ -145,7 +231,7 @@
                     alert(`تم تسجيل حالة الطالب بنجاح.`);
                     // إعادة الواجهة لوضعها الأولي
                     studentSelect.value = '';
-                    attendanceControls.style.display = 'none';
+                    attendanceControls.classList.remove('visible');
                 } catch (error) {
                     alert(`حدث خطأ: ${error.message}`);
                 }
