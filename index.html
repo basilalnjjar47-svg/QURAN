@@ -158,19 +158,14 @@
     <!-- قسم "عن المركز" الجديد -->
     <section id="about" class="about-section py-5">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
                     <div class="about-content">
                         <h2 class="section-title-new">رسالتنا في مركز النوران</h2>
-                        <p class="lead text-muted">
+                        <p class="lead text-white-50">
                             فريق من المعلمين الحفاظ المجازين في القرآن الكريم، خريجو جامعة الأزهر، ومشروعنا يهدف إلى مساعدتك على استثمار عمرك وأعمار أبنائك في حفظ كتاب الله، وأحاديث رسول الله مع الفهم بطريقة سهلة وشيقة للصغار والكبار أون لاين.
                         </p>
-                        <a href="#halaqat" class="btn btn-primary mt-3">اكتشف حلقاتنا</a>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="about-image-wrapper">
-                        <img src="kab.png" alt="مركز النوران" class="img-fluid">
+                        <a href="#halaqat" class="btn btn-lg btn-outline-light mt-3">اكتشف حلقاتنا</a>
                     </div>
                 </div>
             </div>
@@ -247,10 +242,9 @@
             </div>
             <div class="dialog-form-section">
                 <button class="dialog-close" onclick="closeLoginDialog()">×</button>
-                <h3 id="dialogTitle" class="mb-3">تسجيل الدخول</h3>
-                <p id="dialogDescription" class="mb-4"></p>
+                <h3 id="dialogTitle" class="mb-4">تسجيل الدخول إلى حسابك</h3>
                 <form id="loginFormInDialog">
-                    <input type="text" class="form-control mb-3" id="dialogUserId" name="userId" required placeholder="رقم العضوية">
+                    <input type="text" class="form-control mb-3" id="dialogUserId" name="userId" required placeholder="رقم العضوية أو اسم المستخدم">
                     <input type="password" class="form-control mb-3" id="dialogPassword" name="password" required placeholder="كلمة المرور">
                     <div id="dialogLoginError" class="text-danger mb-3" style="display: none;">رقم العضوية أو كلمة المرور غير صحيحة.</div>
                     <button type="submit" class="btn btn-primary btn-full">تسجيل الدخول</button>

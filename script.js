@@ -1,25 +1,5 @@
-let currentRole = 'student';
-
 function openLoginDialog(role) {
     const dialog = document.getElementById('loginDialog');
-    const title = document.getElementById('dialogTitle');
-    const description = document.getElementById('dialogDescription');
-    
-    const roleTitles = {
-        student: 'تسجيل دخول كطالب',
-        teacher: 'تسجيل دخول كمعلم',
-        admin: 'تسجيل دخول كإداري'
-    };
-    
-    const roleDescriptions = {
-        student: 'سجل دخولك للبدء في رحلة حفظ القرآن الكريم',
-        teacher: 'سجل دخولك لإدارة حلقات التحفيظ',
-        admin: 'سجل دخولك للإشراف على المنصة'
-    };
-    
-    title.textContent = roleTitles[role];
-    description.textContent = roleDescriptions[role];
-    currentRole = role; // تحديث الدور بعد إعداد النصوص
     dialog.classList.add('visible');
 }
 
@@ -43,7 +23,7 @@ if (loginForm) {
             const response = await fetch(`${SERVER_URL}/api/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: userId, password: password, role: currentRole })
+                body: JSON.stringify({ id: userId, password: password }) // تم حذف الدور، الخادم سيحدده
             });
 
             const result = await response.json();

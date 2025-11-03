@@ -154,7 +154,7 @@ app.get('/api/user-by-id/:id', async (req, res) => {
 
 // --- واجهة جديدة لتسجيل الدخول ---
 app.post('/api/login', async (req, res) => {
-    const { id, password, role } = req.body;
+    const { id, password } = req.body; // لم نعد بحاجة لاستقبال الدور
 
     const user = await User.findOne({ id: id });
 
@@ -167,16 +167,14 @@ app.post('/api/login', async (req, res) => {
         return res.status(401).json({ message: 'كلمة المرور غير صحيحة.' });
     }
 
-    if (user.role !== role) {
-        return res.status(403).json({ message: `هذا الحساب ليس من نوع '${role}'.` });
-    }
+    // بما أننا لم نعد نستقبل الدور، لم نعد بحاجة للتحقق منه هنا
 
     const pages = {
         student: 'student-dashboard.html',
         teacher: 'teacher-dashboard.html',
         admin: 'admin-dashboard.html'
     };
-    res.json({ message: 'تم تسجيل الدخول بنجاح', user: user, redirectTo: pages[role] });
+    res.json({ message: 'تم تسجيل الدخول بنجاح', user: user, redirectTo: pages[user.role] });
 });
 
 // --- واجهات جديدة للتعديل والحذف ---
