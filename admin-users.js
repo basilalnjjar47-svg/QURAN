@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // تحديد الرابط والطريقة (إضافة أو تعديل)
-        const url = isEditing ? `${SERVER_URL}/api/users/${editingUserId}` : `${SERVER_URL}/api/users`;
+        const url = isEditing ? `${SERVER_URL}/api/users/${userData.id}` : `${SERVER_URL}/api/users`;
         const method = isEditing ? 'PUT' : 'POST';
 
         try {
