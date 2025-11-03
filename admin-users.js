@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td>${user.teacherId || 'N/A'}</td>
                         <td>
                             <button class="btn btn-sm btn-outline-primary edit-btn" data-user-id="${user._id}">تعديل</button>
-                            <button class="btn btn-sm btn-outline-danger delete-btn" data-user-id="${user._id}">حذف</button>
+                            <button class="btn btn-sm btn-outline-danger delete-btn" data-user-id="${user.id}">حذف</button>
                         </td>
                     </tr>
                 `;
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // إظهار رسالة تأكيد
             if (confirm('هل أنت متأكد من رغبتك في حذف هذا المستخدم؟ لا يمكن التراجع عن هذا الإجراء.')) {
                 try {
-                    const response = await fetch(`${SERVER_URL}/api/users/${userId}`, { method: 'DELETE' });
+                    const response = await fetch(`${SERVER_URL}/api/users/${userId}`, { method: 'DELETE' }); // userId هنا هو رقم العضوية
                     if (!response.ok) throw new Error('فشل الحذف');
                     await fetchAndDisplayUsers();
                 } catch (error) {
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // --- منطق التعديل ---
         if (target.classList.contains('edit-btn')) {
             try {
-                const response = await fetch(`${SERVER_URL}/api/users`);
+                const response = await fetch(`${SERVER_URL}/api/users/all`);
                 const users = await response.json();
                 const userToEdit = users.find(u => u._id === userId);
 
