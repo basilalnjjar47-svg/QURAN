@@ -162,8 +162,12 @@
                             <input type="text" class="form-control" id="slideText" required>
                         </div>
                         <div class="mb-3">
-                            <label for="slideImageUrl" class="form-label">رابط الصورة</label>
-                            <input type="url" class="form-control" id="slideImageUrl" placeholder="https://example.com/image.jpg" required>
+                            <label for="imageFile" class="form-label">ملف الصورة</label>
+                            <input class="form-control" type="file" id="imageFile" accept="image/*">
+                            <small class="form-text text-muted">اتركه فارغاً إذا كنت لا ترغب في تغيير الصورة الحالية عند التعديل.</small>
+                        </div>
+                        <div class="mb-3 text-center" id="imagePreviewContainer" style="display: none;">
+                            <img id="imagePreview" src="#" alt="معاينة الصورة" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -198,6 +202,8 @@
             const slideModalLabel = document.getElementById('slideModalLabel');
             const saveSlideBtn = document.getElementById('saveSlideBtn');
             const slideFormError = document.getElementById('slideFormError');
+            const imageFileInput = document.getElementById('imageFile');
+            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
 
             async function fetchAndDisplaySlides() {
                 try {
@@ -239,6 +245,8 @@
                 slideForm.reset();
                 document.getElementById('slideId').value = '';
                 document.getElementById('slideIsActive').checked = true;
+                imagePreviewContainer.style.display = 'none';
+                imageFileInput.required = true; // جعل الصورة إلزامية عند الإضافة
             }
 
             window.prepareEditModal = async function(id) {
@@ -252,26 +260,42 @@
                         document.getElementById('slideId').value = slideToEdit._id;
                         document.getElementById('slideTitle').value = slideToEdit.title;
                         document.getElementById('slideText').value = slideToEdit.text;
-                        document.getElementById('slideImageUrl').value = slideToEdit.imageUrl;
                         document.getElementById('slideOrder').value = slideToEdit.order;
                         document.getElementById('slideIsActive').checked = slideToEdit.isActive;
+                        document.getElementById('imagePreview').src = slideToEdit.imageUrl;
+                        imagePreviewContainer.style.display = 'block';
+                        imageFileInput.required = false; // الصورة ليست إلزامية عند التعديل
                         slideModal.show();
                     }
                 } catch (error) {
                     alert('فشل تحميل بيانات الشريحة.');
                 }
             }
+            
+            // معاينة الصورة عند اختيارها
+            imageFileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('imagePreview').src = e.target.result;
+                        imagePreviewContainer.style.display = 'block';
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
 
             saveSlideBtn.addEventListener('click', async () => {
                 const id = document.getElementById('slideId').value;
                 const isEditing = !!id;
-                const slideData = {
-                    title: document.getElementById('slideTitle').value,
-                    text: document.getElementById('slideText').value,
-                    imageUrl: document.getElementById('slideImageUrl').value.trim(),
-                    order: document.getElementById('slideOrder').value,
-                    isActive: document.getElementById('slideIsActive').checked,
-                };
+                
+                const formData = new FormData();
+                formData.append('title', document.getElementById('slideTitle').value);
+                formData.append('text', document.getElementById('slideText').value);
+                formData.append('order', document.getElementById('slideOrder').value);
+                formData.append('isActive', document.getElementById('slideIsActive').checked);
+                if (imageFileInput.files[0]) {
+                    formData.append('imageFile', imageFileInput.files[0]);
+                }
 
                 const url = isEditing ? `${SERVER_URL}/api/slides/${id}` : `${SERVER_URL}/api/slides`;
                 const method = isEditing ? 'PUT' : 'POST';
@@ -279,10 +303,9 @@
                 try {
                     const response = await fetch(url, {
                         method: method,
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(slideData)
+                        body: formData // لا نستخدم headers هنا، المتصفح سيحددها تلقائياً
                     });
-                    if (!response.ok) throw new Error('فشل حفظ البيانات');
+                    if (!response.ok) { const err = await response.json(); throw new Error(err.message || 'فشل حفظ البيانات'); }
                     slideModal.hide();
                     await fetchAndDisplaySlides();
                 } catch (error) {

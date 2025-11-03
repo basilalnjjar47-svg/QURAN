@@ -3,6 +3,10 @@ const http = require('http');
 const { Server } = require("socket.io");
 const mongoose = require('mongoose');
 const path = require('path');
+const multer = require('multer');
+const { v2: cloudinary } = require('cloudinary');
+require('dotenv').config(); // لتحميل متغيرات البيئة من ملف .env
+
 const cors = require('cors'); // 1. استدعاء المكتبة الجديدة
 
 // --- 1. إعداد الخادم ---
@@ -15,6 +19,19 @@ const io = new Server(server, {
     cors: {
         origin: "*", // للسماح بالاتصالات من أي مكان (للتطوير)
     }
+});
+
+// --- إعداد Cloudinary للتخزين السحابي ---
+cloudinary.config({ 
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+  api_key: process.env.CLOUDINARY_API_KEY, 
+  api_secret: process.env.CLOUDINARY_API_SECRET 
+});
+
+// --- إعداد Multer لمعالجة رفع الملفات ---
+const storage = multer.memoryStorage();
+const upload = multer({
+    storage: storage
 });
 
 // --- 2. الاتصال بقاعدة البيانات ---
@@ -328,20 +345,65 @@ app.get('/api/slides/all', async (req, res) => {
 });
 
 // إضافة شريحة جديدة
-app.post('/api/slides', async (req, res) => {
+app.post('/api/slides', upload.single('imageFile'), async (req, res) => {
     try {
-        const newSlide = new Slide(req.body);
+        let imageUrl = '';
+        // إذا تم رفع ملف صورة
+        if (req.file) {
+            // تحويل الملف إلى صيغة يمكن لـ Cloudinary فهمها
+            const b64 = Buffer.from(req.file.buffer).toString("base64");
+            let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+            
+            // رفع الصورة إلى Cloudinary
+            const result = await cloudinary.uploader.upload(dataURI, {
+                folder: "quran_slides" // اسم المجلد في Cloudinary
+            });
+            imageUrl = result.secure_url;
+        } else {
+            return res.status(400).json({ message: 'الرجاء رفع ملف صورة.' });
+        }
+
+        const newSlide = new Slide({
+            ...req.body,
+            imageUrl: imageUrl
+        });
+
         await newSlide.save();
         res.status(201).json(newSlide);
     } catch (error) {
-        res.status(400).json({ message: 'فشلت إضافة الشريحة' });
+        console.error(error);
+        res.status(500).json({ message: 'فشلت إضافة الشريحة بسبب خطأ في الخادم' });
     }
 });
 
 // تعديل شريحة
-app.put('/api/slides/:id', async (req, res) => {
-    const updatedSlide = await Slide.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updatedSlide);
+app.put('/api/slides/:id', upload.single('imageFile'), async (req, res) => {
+    try {
+        const slideToUpdate = await Slide.findById(req.params.id);
+        if (!slideToUpdate) {
+            return res.status(404).json({ message: 'الشريحة غير موجودة' });
+        }
+
+        let imageUrl = slideToUpdate.imageUrl; // استخدام الصورة القديمة كافتراضي
+
+        // إذا تم رفع صورة جديدة
+        if (req.file) {
+            const b64 = Buffer.from(req.file.buffer).toString("base64");
+            let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+            const result = await cloudinary.uploader.upload(dataURI, { folder: "quran_slides" });
+            imageUrl = result.secure_url;
+        }
+
+        const updatedData = {
+            ...req.body,
+            imageUrl: imageUrl
+        };
+
+        const updatedSlide = await Slide.findByIdAndUpdate(req.params.id, updatedData, { new: true });
+        res.json(updatedSlide);
+    } catch (error) {
+        res.status(500).json({ message: 'فشل تعديل الشريحة' });
+    }
 });
 
 // حذف شريحة
