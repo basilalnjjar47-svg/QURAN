@@ -317,11 +317,25 @@
 
                     slides.forEach((slide, index) => {
                         const isActive = index === 0 ? 'active' : '';
-                        // --- تصميم جديد: صورة فقط تملأ الشاشة ---
+                        // --- التصميم الكلاسيكي المُحسّن ---
                         const slideItem = `
-                            <div class="carousel-item ${isActive}" style="height: 90vh; min-height: 600px;">
-                                <div class="hero-banner-img" style="background-image: url('${slide.imageUrl}');"></div>
-                            </div>`;
+                            <div class="carousel-item ${isActive}">
+                                <div class="row g-0 h-100">
+                                    <div class="col-lg-6 d-flex align-items-center justify-content-center">
+                                        <div class="hero-banner-text p-5">
+                                            <h2 class="display-4 fw-bold animated-caption">${slide.title || 'أهلاً بكم'}</h2>
+                                            <p class="lead my-4 animated-caption">${slide.text || 'منصة متكاملة لتعلم القرآن والسنة'}</p>
+                                            <a href="#halaqat" class="btn btn-lg btn-primary animated-caption">اكتشف حلقاتنا <i class="bi bi-arrow-left"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="hero-banner-img-container">
+                                            <div class="hero-banner-img" style="background-image: url('${slide.imageUrl}');"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                         const indicatorItem = `<button type="button" data-bs-target="#main-slider" data-bs-slide-to="${index}" class="${isActive}" aria-current="${isActive ? 'true' : 'false'}" aria-label="Slide ${index + 1}"></button>`;
                         carouselInner.insertAdjacentHTML('beforeend', slideItem);
                         carouselIndicators.insertAdjacentHTML('beforeend', indicatorItem);

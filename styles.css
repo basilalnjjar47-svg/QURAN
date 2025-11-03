@@ -924,6 +924,10 @@ body {
     height: 50px;
     background-size: 50% 50%;
 }
+/* إخفاء أسهم التحكم في السلايدر */
+.carousel-control-prev, .carousel-control-next {
+    display: none;
+}
 
 /* 3. قسم المميزات (الدوائر) */
 .features-section-new {
