@@ -273,24 +273,35 @@
 
                 try {
                     const response = await fetch(`${SERVER_URL}/api/slides`);
-                    const slides = await response.json();
+                    let slides = await response.json();
 
                     carouselInner.innerHTML = '';
                     carouselIndicators.innerHTML = '';
 
                     if (slides.length === 0) {
-                        carouselInner.innerHTML = `<div class="carousel-item active"><div class="carousel-img-wrapper" style="background-image: url('kab.png');"></div><div class="carousel-caption d-none d-md-block"><h5 class="animated-caption">أهلاً بكم في مركز النوران</h5><p class="animated-caption">منصة متكاملة لتعلم القرآن الكريم والسنة النبوية.</p></div></div>`;
-                        return;
+                        // في حالة عدم وجود شرائح، سيتم عرض شريحة افتراضية بالتصميم الجديد
+                        slides.push({ title: 'أهلاً بكم في مركز النوران', text: 'منصة متكاملة لتعلم القرآن الكريم والسنة النبوية.', imageUrl: 'https://images.unsplash.com/photo-1615091299399-93e99a79b4a4?q=80&w=1887&auto=format&fit=crop' });
                     }
 
                     slides.forEach((slide, index) => {
                         const isActive = index === 0 ? 'active' : '';
                         const slideItem = `
                             <div class="carousel-item ${isActive}">
-                                <div class="carousel-img-wrapper" style="background-image: url('${slide.imageUrl}');"></div>
-                                <div class="carousel-caption d-none d-md-block">
-                                    <h5 class="animated-caption">${slide.title}</h5>
-                                    <p class="animated-caption">${slide.text}</p>
+                                <div class="row g-0 h-100">
+                                    <div class="col-lg-6 d-flex align-items-center justify-content-center order-lg-2">
+                                        <div class="hero-banner-text p-5">
+                                            <h2 class="display-4 fw-bold animated-caption">${slide.title}</h2>
+                                            <p class="lead my-4 animated-caption">${slide.text}</p>
+                                            <a href="#halaqat" class="btn btn-lg btn-primary animated-caption">اكتشف الآن <i class="bi bi-arrow-left"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 order-lg-1">
+                                        <div class="hero-banner-img-container">
+                                            <div class="hero-banner-img" style="background-image: url('${slide.imageUrl}');">
+                                                <div class="hero-banner-img-overlay"></div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>`;
                         const indicatorItem = `<button type="button" data-bs-target="#main-slider" data-bs-slide-to="${index}" class="${isActive}" aria-current="${isActive ? 'true' : 'false'}" aria-label="Slide ${index + 1}"></button>`;
