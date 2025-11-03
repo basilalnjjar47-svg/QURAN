@@ -930,8 +930,19 @@ body {
     transform: translateY(-10px);
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
-.halaqa-icon {
-    font-size: 3rem;
+.halaqa-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background-color: var(--light-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.halaqa-icon-wrapper i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
     margin-bottom: 15px;
 }
 .halaqa-title { font-weight: 700; color: var(--primary-color); }
