@@ -863,17 +863,18 @@ body {
     padding: 12px 30px;
 }
 .hero-banner-img-container {
-    height: 100%;
-    width: 100%;
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%);
-    position: relative;
+    /* تم تعطيل هذا الجزء الخاص بالشكل المائل */
 }
-.hero-banner-img {
-    height: 100%;
-    width: 100%;
-    background-size: cover;
-    background-position: center center;
-    position: relative;
+/* --- التصميم الجديد للصورة المربعة --- */
+.hero-banner-img-square {
+    width: 80%;
+    height: auto;
+    aspect-ratio: 1 / 1; /* يجعل العنصر مربعاً دائماً */
+    object-fit: cover; /* يضمن ملء الصورة للمربع دون تشويه */
+    border-radius: 30px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    margin: 0 auto; /* لتوسيط الصورة داخل العمود */
+    display: block;
 }
 .hero-banner-img-overlay {
     position: absolute;
