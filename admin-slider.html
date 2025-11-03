@@ -10,6 +10,89 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .dashboard-card {
+            background: linear-gradient(145deg, #ffffff, #f7f7f7);
+            border-radius: 20px;
+            box-shadow: 10px 10px 30px #d9d9d9, -10px -10px 30px #ffffff;
+        }
+        .dashboard-card .card-header {
+            background: linear-gradient(135deg, #012a4a, #035397);
+            color: #fff;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            border-bottom: 3px solid #c7a25e;
+        }
+        .dashboard-card .card-header .card-icon {
+            color: #c7a25e;
+        }
+
+        /* === تصميم احترافي لبطاقات السلايدر === */
+        .slide-card-admin {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            height: 250px;
+        }
+        .slide-card-admin:hover {
+            transform: translateY(-5px);
+        }
+        .slide-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .slide-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 60%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+            color: #fff;
+            transition: background-color 0.3s ease;
+        }
+        .slide-card-admin:hover .slide-card-overlay {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.1) 70%);
+        }
+        .slide-card-title {
+            font-family: 'Amiri', serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+        .slide-card-text {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        .slide-card-actions {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            display: flex;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .slide-card-admin:hover .slide-card-actions {
+            opacity: 1;
+        }
+        .slide-card-actions .btn {
+            width: 40px; height: 40px; border-radius: 50%;
+        }
+        .slide-status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 0.8rem;
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
@@ -38,10 +121,10 @@
     </header>
 
     <main class="container" style="padding-top: 40px; padding-bottom: 40px;">
-        <div class="dashboard-card">
+        <div class="dashboard-card shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
-                    <i class="bi bi-images card-icon"></i>
+                    <i class="bi bi-images card-icon fs-2"></i>
                     <h3>الشرائح الإعلانية الحالية</h3>
                 </div>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#slideModal" onclick="prepareAddModal()">
@@ -125,17 +208,19 @@
                     }
                     slides.forEach(slide => {
                         const slideCard = `
-                            <div class="col-md-6">
-                                <div class="card h-100">
-                                    <img src="${slide.imageUrl}" class="card-img-top" alt="${slide.title}" style="height: 200px; object-fit: cover;">
-                                    <div class="card-body">
-                                        <h5 class="card-title">${slide.title}</h5>
-                                        <p class="card-text">${slide.text}</p>
-                                        <p class="card-text"><small class="text-muted">الترتيب: ${slide.order} | الحالة: ${slide.isActive ? 'مفعل' : 'معطل'}</small></p>
-                                    </div>
-                                    <div class="card-footer bg-transparent border-0 p-3">
-                                        <button class="btn btn-sm btn-outline-primary" onclick="prepareEditModal('${slide._id}')">تعديل</button>
-                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteSlide('${slide._id}')">حذف</button>
+                            <div class="col-lg-6">
+                                <div class="slide-card-admin">
+                                    <img src="${slide.imageUrl}" class="slide-card-img" alt="${slide.title}">
+                                    <div class="slide-card-overlay">
+                                        <div>
+                                            <h5 class="slide-card-title">${slide.title}</h5>
+                                            <p class="slide-card-text">${slide.text}</p>
+                                        </div>
+                                        <div class="slide-card-actions">
+                                            <button class="btn btn-light" onclick="prepareEditModal('${slide._id}')"><i class="bi bi-pencil-fill text-primary"></i></button>
+                                            <button class="btn btn-light" onclick="deleteSlide('${slide._id}')"><i class="bi bi-trash-fill text-danger"></i></button>
+                                        </div>
+                                        <span class="badge slide-status-badge ${slide.isActive ? 'bg-success' : 'bg-secondary'}">${slide.isActive ? 'مفعل' : 'معطل'}</span>
                                     </div>
                                 </div>
                             </div>
