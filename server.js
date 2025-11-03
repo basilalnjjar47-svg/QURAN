@@ -179,6 +179,14 @@ app.post('/api/attendance', async (req, res) => {
     }
 });
 
+// --- مسار جديد: جلب سجل حضور طالب معين ---
+app.get('/api/attendance/:studentId', async (req, res) => {
+    const user = await User.findOne({ id: req.params.studentId });
+    if (!user) return res.status(404).json({ message: 'الطالب غير موجود' });
+    // نرسل اسم الطالب وسجل الحضور الخاص به فقط
+    res.json({ name: user.name, attendance: user.attendance });
+});
+
 // --- مسارات السلايدر الإعلاني ---
 app.get('/api/slides', async (req, res) => {
     try {
