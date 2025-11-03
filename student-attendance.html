@@ -39,6 +39,27 @@
     </header>
 
     <main class="container" style="padding-top: 40px; padding-bottom: 40px;">
+        <!-- بطاقات الإحصائيات -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="d-flex align-items-center p-3 bg-light border-start border-success border-5 rounded-3 shadow-sm">
+                    <i class="bi bi-check-circle-fill fs-1 text-success me-3"></i>
+                    <div>
+                        <h6 class="text-muted mb-1">إجمالي الحضور</h6>
+                        <h4 id="presentCount" class="fw-bold mb-0">0</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-center p-3 bg-light border-start border-danger border-5 rounded-3 shadow-sm">
+                    <i class="bi bi-x-circle-fill fs-1 text-danger me-3"></i>
+                    <div>
+                        <h6 class="text-muted mb-1">إجمالي الغياب</h6>
+                        <h4 id="absentCount" class="fw-bold mb-0">0</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="dashboard-card">
             <div class="card-header">
                 <i class="bi bi-calendar-check-fill card-icon"></i>
@@ -66,6 +87,9 @@
         document.addEventListener('DOMContentLoaded', async function() {
             const tableBody = document.getElementById('attendanceTableBody');
             const studentNameHeader = document.getElementById('studentName');
+            const presentCountEl = document.getElementById('presentCount');
+            const absentCountEl = document.getElementById('absentCount');
+
             const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
 
             if (!currentUser || !currentUser.id) {
@@ -85,7 +109,11 @@
 
                 if (!data.attendance || data.attendance.length === 0) {
                     tableBody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">لا يوجد سجل حضور لعرضه.</td></tr>';
+                    presentCountEl.textContent = '0';
+                    absentCountEl.textContent = '0';
                 } else {
+                    presentCountEl.textContent = data.attendance.filter(r => r.status === 'present').length;
+                    absentCountEl.textContent = data.attendance.filter(r => r.status === 'absent').length;
                     // Sort by date descending
                     data.attendance.sort((a, b) => new Date(b.date) - new Date(a.date));
 

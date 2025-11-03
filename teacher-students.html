@@ -57,6 +57,7 @@
                                 <th>اسم الطالب</th>
                                 <th>الصف الدراسي</th>
                                 <th>المجموعة</th>
+                                <th>سجل الغياب</th>
                                 <th>إجراءات</th>
                             </tr>
                         </thead>
@@ -125,11 +126,15 @@
                     tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">لا يوجد طلاب مسجلون لديك حالياً.</td></tr>';
                 } else {
                     students.forEach(student => {
+                        // حساب عدد مرات الغياب
+                        const absenceCount = student.attendance ? student.attendance.filter(record => record.status === 'absent').length : 0;
+
                         const row = `
                             <tr>
                                 <td>${student.name}</td>
                                 <td>${student.grade || 'N/A'}</td>
                                 <td>${student.group || 'N/A'}</td>
+                                <td><span class="badge rounded-pill ${absenceCount > 0 ? 'text-bg-danger' : 'text-bg-secondary'}">غاب ${absenceCount} مرات</span></td>
                                 <td>
                                     <button class="btn btn-sm btn-success start-session-btn" data-student-id="${student.id}" data-student-name="${student.name}">بدء جلسة</button>
                                     <a href="admin-edit-schedule.html?studentId=${student.id}" class="btn btn-sm btn-outline-primary">تعديل الجدول</a>
