@@ -57,6 +57,16 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model('User', userSchema);
 
+// --- نموذج جديد للشرائح الإعلانية (السلايدر) ---
+const slideSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    text: { type: String, required: true },
+    imageUrl: { type: String, required: true },
+    isActive: { type: Boolean, default: true },
+    order: { type: Number, default: 0 }
+});
+const Slide = mongoose.model('Slide', slideSchema);
+
 // --- دالة لإنشاء حساب المدير الافتراضي ---
 async function createDefaultAdminIfNeeded() {
     try {
@@ -295,6 +305,51 @@ app.get('/api/teacher/students', async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'حدث خطأ في الخادم' });
     }
+});
+
+// --- واجهات API جديدة خاصة بالسلايدر الإعلاني ---
+
+// جلب كل الشرائح النشطة (لصفحة الموقع الرئيسية)
+app.get('/api/slides', async (req, res) => {
+    try {
+        const slides = await Slide.find({ isActive: true }).sort({ order: 'asc' });
+        res.json(slides);
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ في الخادم' });
+    }
+});
+
+// جلب كل الشرائح (للأدمن)
+app.get('/api/slides/all', async (req, res) => {
+    try {
+        const slides = await Slide.find().sort({ order: 'asc' });
+        res.json(slides);
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ في الخادم' });
+    }
+});
+
+// إضافة شريحة جديدة
+app.post('/api/slides', async (req, res) => {
+    try {
+        const newSlide = new Slide(req.body);
+        await newSlide.save();
+        res.status(201).json(newSlide);
+    } catch (error) {
+        res.status(400).json({ message: 'فشلت إضافة الشريحة' });
+    }
+});
+
+// تعديل شريحة
+app.put('/api/slides/:id', async (req, res) => {
+    const updatedSlide = await Slide.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updatedSlide);
+});
+
+// حذف شريحة
+app.delete('/api/slides/:id', async (req, res) => {
+    await Slide.findByIdAndDelete(req.params.id);
+    res.json({ message: 'تم حذف الشريحة بنجاح' });
 });
 
 // --- 6. منطق Socket.IO للتحديثات اللحظية ---

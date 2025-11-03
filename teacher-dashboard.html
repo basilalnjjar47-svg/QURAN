@@ -48,22 +48,17 @@
         <div class="dashboard-grid teacher-grid">
             <!-- Session Management Card -->
             <div class="dashboard-card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <i class="bi bi-broadcast-pin card-icon"></i>
-                    <h3>إدارة الحلقة القادمة</h3>
+                    <h3>إرسال رابط جلسة</h3>
                 </div>
-                <div class="card-content">
-                    <form id="sessionLinkForm">
-                        <div class="mb-3">
-                            <label for="zoomLink" class="form-label">رابط Zoom للحلقة القادمة</label>
-                            <input type="url" class="form-control" id="zoomLink" placeholder="https://zoom.us/j/..." required>
-                        </div>
-                        <p id="teacherGroupInfo" class="text-muted"></p>
-                        <button type="submit" class="btn btn-primary btn-full">إرسال الرابط لمجموعتي</button>
-                    </form>
+                <div class="card-content text-center">
+                    <p>اضغط هنا لإرسال رابط جلسة جديدة لطالب أو مجموعة من طلابك.</p>
+                    <button id="openSendLinkModalBtn" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#sendLinkModal">
+                        <i class="bi bi-send-fill"></i> إرسال رابط جديد
+                    </button>
                 </div>
             </div>
-
             <!-- Student List Card -->
             <div class="dashboard-card">
                 <div class="card-header">
@@ -112,6 +107,39 @@
         </div>
     </div>
 
+    <!-- Send Link Modal -->
+    <div class="modal fade" id="sendLinkModal" tabindex="-1" aria-labelledby="sendLinkModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sendLinkModalLabel">إرسال رابط جلسة</h5>
+                    <button type="button" class="btn-close ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="sendLinkForm">
+                        <div class="mb-3">
+                            <label for="zoomLink" class="form-label">رابط Zoom</label>
+                            <input type="url" class="form-control" id="zoomLink" placeholder="https://zoom.us/j/..." required>
+                        </div>
+                        <hr>
+                        <p class="fw-bold">اختر الطلاب المراد إرسال الرابط إليهم:</p>
+                        <div id="studentsListForModal">
+                            <!-- سيتم ملء قائمة الطلاب هنا -->
+                            <p class="text-muted text-center">جاري تحميل قائمة الطلاب...</p>
+                        </div>
+                        <div id="modalError" class="alert alert-danger mt-3" style="display: none;"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="button" id="sendLinkBtn" class="btn btn-primary">
+                        <i class="bi bi-send-check-fill"></i> إرسال الآن
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 1. استدعاء مكتبة Socket.IO Client -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
@@ -128,17 +156,59 @@
         } else {
             document.getElementById('teacherWelcome').textContent = `مرحباً بك يا ${currentTeacher.name}`;
             socket.emit('register_user', currentTeacher.id);
-            document.getElementById('teacherGroupInfo').textContent = `سيتم إرسال هذا الرابط لجميع الطلاب المسجلين لديك.`;
         }
         // --------------------------------
 
-        document.getElementById('sessionLinkForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const zoomLink = document.getElementById('zoomLink').value;
-            
-            socket.emit('send_session_link', { link: zoomLink, teacherId: currentTeacher.id });
+        const sendLinkModal = new bootstrap.Modal(document.getElementById('sendLinkModal'));
+        const studentsListDiv = document.getElementById('studentsListForModal');
+        const sendLinkBtn = document.getElementById('sendLinkBtn');
+        const modalError = document.getElementById('modalError');
+        const SERVER_URL = 'https://quran-32vn.onrender.com';
 
-            alert('تم إرسال الرابط لجميع الطلاب المستهدفين بنجاح!');
+        // عند فتح النافذة، قم بجلب قائمة الطلاب
+        document.getElementById('sendLinkModal').addEventListener('show.bs.modal', async () => {
+            try {
+                const response = await fetch(`${SERVER_URL}/api/teacher/students?teacherId=${currentTeacher.id}`);
+                const students = await response.json();
+                studentsListDiv.innerHTML = '';
+
+                if (students.length === 0) {
+                    studentsListDiv.innerHTML = '<p class="text-muted text-center">لا يوجد طلاب مسجلون لديك حالياً.</p>';
+                } else {
+                    students.forEach(student => {
+                        studentsListDiv.innerHTML += `
+                            <div class="form-check form-switch fs-5 mb-2">
+                                <input class="form-check-input" type="checkbox" role="switch" id="student-${student.id}" value="${student.id}">
+                                <label class="form-check-label" for="student-${student.id}">${student.name}</label>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (error) {
+                studentsListDiv.innerHTML = '<p class="text-danger text-center">فشل تحميل قائمة الطلاب.</p>';
+            }
+        });
+
+        // عند الضغط على زر "إرسال الآن" داخل النافذة
+        sendLinkBtn.addEventListener('click', () => {
+            modalError.style.display = 'none';
+            const zoomLink = document.getElementById('zoomLink').value;
+            const selectedStudents = Array.from(studentsListDiv.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+
+            if (!zoomLink) {
+                modalError.textContent = 'الرجاء إدخال رابط الجلسة.';
+                modalError.style.display = 'block';
+                return;
+            }
+            if (selectedStudents.length === 0) {
+                modalError.textContent = 'الرجاء اختيار طالب واحد على الأقل.';
+                modalError.style.display = 'block';
+                return;
+            }
+
+            socket.emit('send_link_to_students', { studentIds: selectedStudents, link: zoomLink });
+            alert('تم إرسال الرابط للطلاب المحددين بنجاح!');
+            sendLinkModal.hide();
         });
 
         document.getElementById('homeworkForm').addEventListener('submit', function(event) {
