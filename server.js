@@ -76,8 +76,8 @@ const User = mongoose.model('User', userSchema);
 
 // --- نموذج الشرائح الإعلانية ---
 const slideSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    text: { type: String, required: true },
+    title: { type: String, required: false }, // جعل العنوان اختيارياً
+    text: { type: String, required: false },  // جعل النص اختيارياً
     imageUrl: { type: String, required: true },
     isActive: { type: Boolean, default: true },
     order: { type: Number, default: 0 }
