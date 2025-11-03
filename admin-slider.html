@@ -107,6 +107,8 @@
                     <a href="admin-dashboard.html" class="nav-item">لوحة التحكم</a>
                     <a href="admin-users.html" class="nav-item">إدارة المستخدمين</a>
                     <a href="admin-slider.html" class="nav-item active">إدارة السلايدر</a>
+                    <a href="admin-operations.html" class="nav-item">العمليات</a>
+                    <a href="admin-reports.html" class="nav-item">التقارير</a>
                     <a href="index.html" class="nav-item logout">تسجيل الخروج</a>
                 </div>
             </div>
@@ -266,7 +268,7 @@
                 const slideData = {
                     title: document.getElementById('slideTitle').value,
                     text: document.getElementById('slideText').value,
-                    imageUrl: document.getElementById('slideImageUrl').value,
+                    imageUrl: document.getElementById('slideImageUrl').value.trim(),
                     order: document.getElementById('slideOrder').value,
                     isActive: document.getElementById('slideIsActive').checked,
                 };
