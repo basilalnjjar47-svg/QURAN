@@ -77,7 +77,24 @@
             <!-- سيتم ملء المؤشرات هنا بشكل ديناميكي -->
         </div>
         <div class="carousel-inner" id="slider-inner">
-            <!-- سيتم ملء الشرائح هنا بشكل ديناميكي -->
+            <!-- شريحة افتراضية (Placeholder) لتجنب ظهور البانر فارغاً -->
+            <div class="carousel-item active">
+                <div class="row g-0 h-100">
+                    <div class="col-lg-6 d-flex align-items-center justify-content-center">
+                        <div class="hero-banner-text p-5">
+                            <h2 class="display-4 fw-bold animated-caption">أهلاً بكم في مركز النوران</h2>
+                            <p class="lead my-4 animated-caption">منصة متكاملة لتعلم القرآن الكريم والسنة النبوية.</p>
+                            <a href="#halaqat" class="btn btn-lg btn-primary animated-caption">اكتشف حلقاتنا <i class="bi bi-arrow-left"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 d-flex align-items-center justify-content-center">
+                        <!-- استخدام صورة افتراضية أنيقة -->
+                        <div class="hero-banner-img-square" style="background-image: url('https://images.unsplash.com/photo-1585036402233-5361aa3856f2?q=80&w=1887&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- سيتم استبدال هذه الشريحة بالشرائح الحقيقية من الخادم -->
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#main-slider" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Previous</span>
@@ -329,7 +346,7 @@
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
-                                        <img src="${slide.imageUrl}" class="hero-banner-img-square" alt="${slide.title}">
+                                        <img src="${slide.imageUrl}" class="hero-banner-img-square" alt="${slide.title || 'شريحة إعلانية'}">
                                     </div>
                                 </div>
                             </div>
