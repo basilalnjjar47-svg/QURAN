@@ -229,12 +229,6 @@ app.put('/api/slides/:id', upload.single('imageFile'), async (req, res) => {
             const result = await cloudinary.uploader.upload(dataURI, { folder: "quran_slides" });
             imageUrl = result.secure_url;
         }
-        // إذا كان المستخدم يقوم بالتعديل ولم يرفع صورة جديدة، فإننا نستخدم الصورة القديمة
-        // ولا داعي لفعل أي شيء، لأن imageUrl تحتوي بالفعل على الرابط القديم
-        // أما إذا كان يضيف شريحة جديدة ولم يرفع صورة، فهذا خطأ
-        else if (!slideToUpdate) { // هذا الشرط يعني أننا في وضع الإضافة وليس التعديل
-             return res.status(400).json({ message: 'الرجاء رفع ملف صورة.' });
-        }
         const updatedData = { ...req.body, imageUrl: imageUrl };
         const updatedSlide = await Slide.findByIdAndUpdate(req.params.id, updatedData, { new: true });
         res.json(updatedSlide);
