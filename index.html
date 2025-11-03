@@ -41,21 +41,11 @@
 
     <!-- 📺 2. السلايدر الرئيسي -->
     <header id="main-slider" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="https://via.placeholder.com/1920x600/0c4b33/FFFFFF?text=Slide+1" class="d-block w-100" alt="...">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>بدء التسجيل في دورة حفظ جزء عم للأطفال 🎉</h5>
-                    <p>انضموا معنا لرحلة ممتعة ومبسطة لأطفالكم في حفظ وتفسير جزء عم.</p>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <img src="https://via.placeholder.com/1920x600/c7a25e/FFFFFF?text=Slide+2" class="d-block w-100" alt="...">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>فتح التسجيل في حلقة سورة البقرة للكبار 📖</h5>
-                    <p>مع التفسير المبسط وفهم أسباب النزول وأحكام السورة.</p>
-                </div>
-            </div>
+        <div class="carousel-indicators" id="slider-indicators">
+            <!-- سيتم ملء المؤشرات هنا بشكل ديناميكي -->
+        </div>
+        <div class="carousel-inner" id="slider-inner">
+            <!-- سيتم ملء الشرائح هنا بشكل ديناميكي -->
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#main-slider" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Previous</span>
@@ -165,6 +155,58 @@
         </div>
     </section>
 
+    <!-- قسم "عن المركز" الجديد -->
+    <section id="about" class="about-section py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="about-content">
+                        <h2 class="section-title-new">رسالتنا في مركز النوران</h2>
+                        <p class="lead text-muted">
+                            فريق من المعلمين الحفاظ المجازين في القرآن الكريم، خريجو جامعة الأزهر، ومشروعنا يهدف إلى مساعدتك على استثمار عمرك وأعمار أبنائك في حفظ كتاب الله، وأحاديث رسول الله مع الفهم بطريقة سهلة وشيقة للصغار والكبار أون لاين.
+                        </p>
+                        <a href="#halaqat" class="btn btn-primary mt-3">اكتشف حلقاتنا</a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="about-image-wrapper">
+                        <img src="kab.png" alt="مركز النوران" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم "أحدث المقالات" الجديد -->
+    <section id="articles" class="articles-section py-5 bg-light">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title-new">أحدث المقالات</h2>
+                <p class="lead text-muted">مقالات إيمانية وتربوية مختارة بعناية.</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="article-card">
+                        <div class="article-card-body">
+                            <h5 class="article-title">فضل عشر ذي الحجة</h5>
+                            <p class="article-excerpt">أيام مباركة أقسم الله بها في كتابه، وفرصة عظيمة للتوبة والعمل الصالح...</p>
+                            <a href="#" class="stretched-link">اقرأ المزيد</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="article-card">
+                        <div class="article-card-body">
+                            <h5 class="article-title">كيف نربي أبناءنا على حب القرآن؟</h5>
+                            <p class="article-excerpt">خطوات عملية لغرس محبة كلام الله في قلوب أطفالنا منذ الصغر...</p>
+                            <a href="#" class="stretched-link">اقرأ المزيد</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- 🕋 5. الفوتر الجديد -->
     <footer id="footer" class="footer">
         <div class="container">
@@ -224,6 +266,49 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script> <!-- سنبقي على هذا الملف للوظائف الأساسية -->
+    <script src="script.js"></script>
+    <script>
+        // --- الكود الجديد لجعل السلايدر ديناميكياً ---
+        document.addEventListener('DOMContentLoaded', function() {
+            async function loadDynamicSlider() {
+                const SERVER_URL = 'https://quran-32vn.onrender.com';
+                const carouselInner = document.getElementById('slider-inner');
+                const carouselIndicators = document.getElementById('slider-indicators');
+
+                if (!carouselInner || !carouselIndicators) return;
+
+                try {
+                    const response = await fetch(`${SERVER_URL}/api/slides`);
+                    const slides = await response.json();
+
+                    carouselInner.innerHTML = '';
+                    carouselIndicators.innerHTML = '';
+
+                    if (slides.length === 0) {
+                        carouselInner.innerHTML = `<div class="carousel-item active"><div class="carousel-img-wrapper" style="background-image: url('kab.png');"></div><div class="carousel-caption d-none d-md-block"><h5 class="animated-caption">أهلاً بكم في مركز النوران</h5><p class="animated-caption">منصة متكاملة لتعلم القرآن الكريم والسنة النبوية.</p></div></div>`;
+                        return;
+                    }
+
+                    slides.forEach((slide, index) => {
+                        const isActive = index === 0 ? 'active' : '';
+                        const slideItem = `
+                            <div class="carousel-item ${isActive}">
+                                <div class="carousel-img-wrapper" style="background-image: url('${slide.imageUrl}');"></div>
+                                <div class="carousel-caption d-none d-md-block">
+                                    <h5 class="animated-caption">${slide.title}</h5>
+                                    <p class="animated-caption">${slide.text}</p>
+                                </div>
+                            </div>`;
+                        const indicatorItem = `<button type="button" data-bs-target="#main-slider" data-bs-slide-to="${index}" class="${isActive}" aria-current="${isActive ? 'true' : 'false'}" aria-label="Slide ${index + 1}"></button>`;
+                        carouselInner.insertAdjacentHTML('beforeend', slideItem);
+                        carouselIndicators.insertAdjacentHTML('beforeend', indicatorItem);
+                    });
+                } catch (error) {
+                    console.error('Failed to load slider:', error);
+                }
+            }
+            loadDynamicSlider();
+        });
+    </script>
 </body>
 </html>

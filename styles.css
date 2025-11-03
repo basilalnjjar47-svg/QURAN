@@ -1043,3 +1043,65 @@ body {
     background-color: #083a27;
     border-color: #083a27;
 }
+
+/* قسم "عن المركز" */
+.about-section {
+    background-color: #fff;
+}
+.about-content {
+    padding: 2rem;
+}
+.about-image-wrapper {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    transform: perspective(1000px) rotateY(-10deg);
+    transition: transform 0.5s ease;
+}
+.about-image-wrapper:hover {
+    transform: perspective(1000px) rotateY(0deg);
+}
+.about-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* قسم "المقالات" */
+.article-card {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 100%;
+    position: relative;
+    border-right: 5px solid var(--primary-color);
+}
+.article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.article-card-body {
+    padding: 25px;
+}
+.article-title {
+    font-family: 'Amiri', serif;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+.article-excerpt {
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+.article-card .stretched-link {
+    color: var(--secondary-color);
+    font-weight: 600;
+    text-decoration: none;
+}
+.article-card .stretched-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 15px;
+}
