@@ -2,7 +2,6 @@
   "name": "itqan-platform",
   "version": "1.0.0",
   "description": "Real-time Quran memorization platform",
-  "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
