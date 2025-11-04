@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const response = await fetch(`${SERVER_URL}/api/users/all`);
                 const users = await response.json();
-                const userToEdit = users.find(u => u.id === userId); // البحث برقم العضوية
+                const userToEdit = users.find(u => u._id === userId); // التصحيح: البحث بالمعرف الفريد
 
                 if (userToEdit) {
                     editingUserId = userId;
