@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المقالات - لوحة تحكم الأدمن</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-content">
+                <div class="logo">
+                    <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    <span>منصة النوران</span>
+                </div>
+                <div class="student-nav">
+                    <a href="admin-dashboard.html" class="nav-item">لوحة التحكم</a>
+                    <a href="admin-users.html" class="nav-item">إدارة المستخدمين</a>
+                    <a href="admin-slider.html" class="nav-item">إدارة السلايدر</a>
+                    <a href="admin-articles.html" class="nav-item active">إدارة المقالات</a>
+                    <a href="admin-operations.html" class="nav-item">العمليات</a>
+                    <a href="admin-reports.html" class="nav-item">التقارير</a>
+                    <a href="index.html" class="nav-item logout">تسجيل الخروج</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="dashboard-header">
+        <div class="container">
+            <h1 class="hero-title">إدارة المقالات</h1>
+            <p class="hero-description">أضف، عدّل، واحذف المقالات التي تظهر في الصفحة الرئيسية.</p>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 40px; padding-bottom: 40px;">
+        <div class="dashboard-card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="bi bi-journal-text card-icon fs-2"></i>
+                    <h3>قائمة المقالات</h3>
+                </div>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#articleModal" onclick="prepareAddModal()">
+                    <i class="bi bi-plus-circle-fill"></i> إضافة مقال جديد
+                </button>
+            </div>
+            <div class="card-content">
+                <div id="articles-container" class="row g-4">
+                    <!-- سيتم عرض المقالات هنا -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Article Modal -->
+    <div class="modal fade" id="articleModal" tabindex="-1" aria-labelledby="articleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="articleModalLabel">إضافة مقال جديد</h5>
+                    <button type="button" class="btn-close ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="articleForm">
+                        <input type="hidden" id="articleId">
+                        <div class="mb-3">
+                            <label for="articleTitle" class="form-label">عنوان المقال</label>
+                            <input type="text" class="form-control" id="articleTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="articleContent" class="form-label">محتوى المقال</label>
+                            <textarea class="form-control" id="articleContent" rows="8" required></textarea>
+                        </div>
+                        <div id="articleFormError" class="alert alert-danger" style="display: none;"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="button" class="btn btn-primary" id="saveArticleBtn">حفظ المقال</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const SERVER_URL = 'https://quran-32vn.onrender.com';
+            const articlesContainer = document.getElementById('articles-container');
+            const articleModal = new bootstrap.Modal(document.getElementById('articleModal'));
+            const articleForm = document.getElementById('articleForm');
+            const articleModalLabel = document.getElementById('articleModalLabel');
+            const saveArticleBtn = document.getElementById('saveArticleBtn');
+            const articleFormError = document.getElementById('articleFormError');
+
+            async function fetchAndDisplayArticles() {
+                try {
+                    const response = await fetch(`${SERVER_URL}/api/articles`);
+                    const articles = await response.json();
+                    articlesContainer.innerHTML = '';
+                    if (articles.length === 0) {
+                        articlesContainer.innerHTML = '<p class="text-center text-muted">لا توجد مقالات لعرضها. قم بإضافة مقال جديد.</p>';
+                        return;
+                    }
+                    articles.forEach(article => {
+                        const articleCard = `
+                            <div class="col-lg-4 col-md-6">
+                                <div class="article-card h-100">
+                                    <div class="article-card-body d-flex flex-column">
+                                        <h5 class="article-title">${article.title}</h5>
+                                        <p class="article-excerpt flex-grow-1">${article.excerpt}</p>
+                                        <div class="mt-3">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="prepareEditModal('${article._id}')">تعديل</button>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteArticle('${article._id}')">حذف</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        articlesContainer.insertAdjacentHTML('beforeend', articleCard);
+                    });
+                } catch (error) {
+                    articlesContainer.innerHTML = '<p class="text-center text-danger">فشل تحميل المقالات.</p>';
+                }
+            }
+
+            window.prepareAddModal = function() {
+                articleModalLabel.textContent = 'إضافة مقال جديد';
+                articleForm.reset();
+                document.getElementById('articleId').value = '';
+            }
+
+            window.prepareEditModal = async function(id) {
+                articleModalLabel.textContent = 'تعديل المقال';
+                articleForm.reset();
+                try {
+                    const response = await fetch(`${SERVER_URL}/api/articles/${id}`);
+                    const article = await response.json();
+                    if (article) {
+                        document.getElementById('articleId').value = article._id;
+                        document.getElementById('articleTitle').value = article.title;
+                        document.getElementById('articleContent').value = article.content;
+                        articleModal.show();
+                    }
+                } catch (error) {
+                    alert('فشل تحميل بيانات المقال.');
+                }
+            }
+
+            saveArticleBtn.addEventListener('click', async () => {
+                const id = document.getElementById('articleId').value;
+                const isEditing = !!id;
+                
+                const articleData = {
+                    title: document.getElementById('articleTitle').value,
+                    content: document.getElementById('articleContent').value,
+                };
+
+                const url = isEditing ? `${SERVER_URL}/api/articles/${id}` : `${SERVER_URL}/api/articles`;
+                const method = isEditing ? 'PUT' : 'POST';
+
+                try {
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(articleData)
+                    });
+                    if (!response.ok) { const err = await response.json(); throw new Error(err.message || 'فشل حفظ البيانات'); }
+                    articleModal.hide();
+                    await fetchAndDisplayArticles();
+                } catch (error) {
+                    articleFormError.textContent = error.message;
+                    articleFormError.style.display = 'block';
+                }
+            });
+
+            window.deleteArticle = async function(id) {
+                if (confirm('هل أنت متأكد من رغبتك في حذف هذا المقال؟')) {
+                    try {
+                        const response = await fetch(`${SERVER_URL}/api/articles/${id}`, { method: 'DELETE' });
+                        if (!response.ok) throw new Error('فشل الحذف');
+                        await fetchAndDisplayArticles();
+                    } catch (error) {
+                        alert('حدث خطأ أثناء الحذف.');
+                    }
+                }
+            }
+
+            fetchAndDisplayArticles();
+        });
+    </script>
+</body>
+</html>

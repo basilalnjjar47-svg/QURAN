@@ -94,6 +94,16 @@ const slideSchema = new mongoose.Schema({
 });
 const Slide = mongoose.model('Slide', slideSchema);
 
+// --- نموذج المقالات ---
+const articleSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    content: { type: String, required: true },
+    excerpt: { type: String },
+    createdAt: { type: Date, default: Date.now }
+});
+const Article = mongoose.model('Article', articleSchema);
+
+
 // =======================
 // دالة لإنشاء حساب المدير الافتراضي
 // =======================
@@ -280,6 +290,53 @@ app.get('/api/slides/all', async (req, res) => {
     }
 });
 
+// --- مسارات المقالات ---
+app.get('/api/articles', async (req, res) => {
+    try {
+        const articles = await Article.find().sort({ createdAt: -1 });
+        res.json(articles);
+    } catch (error) {
+        res.status(500).json({ message: 'فشل جلب المقالات' });
+    }
+});
+
+app.get('/api/articles/:id', async (req, res) => {
+    try {
+        const article = await Article.findById(req.params.id);
+        if (!article) return res.status(404).json({ message: 'المقال غير موجود' });
+        res.json(article);
+    } catch (error) {
+        res.status(500).json({ message: 'خطأ في الخادم' });
+    }
+});
+
+app.post('/api/articles', async (req, res) => {
+    try {
+        const { title, content } = req.body;
+        const excerpt = content.split(' ').slice(0, 25).join(' ') + '...';
+        const newArticle = new Article({ title, content, excerpt });
+        await newArticle.save();
+        res.status(201).json(newArticle);
+    } catch (error) {
+        res.status(400).json({ message: 'فشلت إضافة المقال' });
+    }
+});
+
+app.put('/api/articles/:id', async (req, res) => {
+    try {
+        const { title, content } = req.body;
+        const excerpt = content.split(' ').slice(0, 25).join(' ') + '...';
+        const updatedArticle = await Article.findByIdAndUpdate(req.params.id, { title, content, excerpt }, { new: true });
+        res.json(updatedArticle);
+    } catch (error) {
+        res.status(400).json({ message: 'فشل تحديث المقال' });
+    }
+});
+
+app.delete('/api/articles/:id', async (req, res) => {
+    await Article.findByIdAndDelete(req.params.id);
+    res.json({ message: 'تم حذف المقال بنجاح' });
+});
 // =======================
 // نموذج التعليقات: إرسال بريد للإدارة
 // =======================

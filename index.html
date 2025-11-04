@@ -222,31 +222,8 @@
                 <h2 class="section-title-new">أحدث المقالات</h2>
                 <p class="lead text-muted">مقالات إيمانية وتربوية مختارة بعناية.</p>
             </div>
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="article-card">
-                        <div class="article-card-body">
-                            <h5 class="article-title">آداب تلاوة القرآن</h5>
-                            <p class="article-excerpt">الطهارة، وحسن الإصغاء، واستحضار القلب، وتجويد اللفظ... هكذا نجعل التلاوة عبادةً تُنير القلب وتُهذّب النفس.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="article-card">
-                        <div class="article-card-body">
-                            <h5 class="article-title">خطة يسيرة لحفظ متقن</h5>
-                            <p class="article-excerpt">عشرُ آياتٍ يوميًا مع مراجعة تراكمية، وتسميع أسبوعي، وتثبيت شهري. الاستمرارية القليلة تُثمر الكثير بإذن الله.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="article-card">
-                        <div class="article-card-body">
-                            <h5 class="article-title">حبّ القرآن في بيوتنا</h5>
-                            <p class="article-excerpt">بيئة دافئة، قدوةٌ مُحِبّة، مكافآتٌ صغيرة، وحديثٌ جميل حول الآيات. هكذا نغرس محبة القرآن في قلوب أبنائنا.</p>
-                        </div>
-                    </div>
-                </div>
+            <div id="articles-container" class="row g-4">
+                <!-- سيتم عرض المقالات هنا بشكل ديناميكي -->
             </div>
         </div>
     </section>
@@ -391,6 +368,34 @@
                 }
             }
             loadDynamicSlider();
+
+            // --- الكود الجديد لجلب المقالات ---
+            async function loadArticles() {
+                const SERVER_URL = 'https://quran-32vn.onrender.com';
+                const articlesContainer = document.getElementById('articles-container');
+                if (!articlesContainer) return;
+
+                try {
+                    const response = await fetch(`${SERVER_URL}/api/articles`);
+                    const articles = await response.json();
+                    articlesContainer.innerHTML = '';
+
+                    // عرض أحدث 3 مقالات فقط
+                    articles.slice(0, 3).forEach(article => {
+                        const articleItem = `
+                            <div class="col-lg-4 col-md-6">
+                                <div class="article-card h-100">
+                                    <div class="article-card-body">
+                                        <h5 class="article-title">${article.title}</h5>
+                                        <p class="article-excerpt">${article.excerpt}</p>
+                                    </div>
+                                </div>
+                            </div>`;
+                        articlesContainer.insertAdjacentHTML('beforeend', articleItem);
+                    });
+                } catch (error) { console.error('Failed to load articles:', error); }
+            }
+            loadArticles();
         });
     </script>
 </body>
