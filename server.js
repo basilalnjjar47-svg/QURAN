@@ -102,9 +102,9 @@ async function createDefaultAdminIfNeeded() {
         const adminExists = await User.findOne({ role: 'admin' });
         if (!adminExists) {
             const defaultAdmin = new User({
-                id: 'admin',
+                id: '11111',
                 name: 'المدير العام',
-                password: 'admin', // كلمة مرور بسيطة، يجب تغييرها
+                password: '11111', // كلمة مرور بسيطة، يجب تغييرها
                 role: 'admin'
             });
             await defaultAdmin.save();
