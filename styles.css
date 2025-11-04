@@ -11,6 +11,12 @@ body {
     background-color: #fdfdfd;
     color: #343a40;
     line-height: 1.8;
+    transition: opacity 0.25s ease, filter 0.25s ease;
+}
+
+body.is-transitioning {
+    opacity: 0;
+    filter: blur(2px);
 }
 
 .container {
@@ -35,8 +41,8 @@ body {
 }
 
 .navbar-main .logo span { color: #fff; transition: color 0.3s; }
-.navbar-main.scrolled .logo span { color: #012a4a; }
-.navbar-main.scrolled .logo-icon { stroke: #012a4a; }
+.navbar-main.scrolled .logo span { color: var(--primary-color); }
+.navbar-main.scrolled .logo-icon { stroke: var(--primary-color); }
 
 .navbar-main .navbar-content {
     display: flex;
@@ -56,7 +62,7 @@ body {
     transition: color 0.3s;
 }
 .navbar-main.scrolled .nav-links a { color: #343a40; }
-.navbar-main.scrolled .nav-links a:hover { color: #012a4a; }
+.navbar-main.scrolled .nav-links a:hover { color: var(--primary-color); }
 
 .btn-outline-light {
     border-color: rgba(255, 255, 255, 0.7);
@@ -64,7 +70,7 @@ body {
 }
 .btn-outline-light:hover {
     background-color: #fff;
-    color: #012a4a;
+    color: var(--primary-color);
 }
 
 .navbar .navbar-content {
@@ -96,7 +102,7 @@ body {
 }
 .student-nav .logout {
     background-color: #c7a25e;
-    color: #012a4a;
+    color: var(--primary-color);
     font-weight: 600;
 }
 
@@ -115,7 +121,7 @@ body {
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(1, 42, 74, 0.8), rgba(1, 42, 74, 0.4));
+    background: linear-gradient(to top, rgba(12, 75, 51, 0.8), rgba(12, 75, 51, 0.4));
 }
 
 .islamic-pattern-overlay {
@@ -149,7 +155,7 @@ body {
     text-align: center;
 }
 .dashboard-header .hero-title {
-    color: #012a4a;
+    color: var(--primary-color);
 }
 .dashboard-header .hero-description {
     color: #333;
@@ -182,7 +188,7 @@ body {
 }
 .dashboard-card .card-icon {
     font-size: 1.6rem;
-    color: #012a4a;
+    color: var(--primary-color);
 }
 .dashboard-card .card-content {
     padding: 20px;
@@ -197,7 +203,7 @@ body {
 .roles-section {
     padding: 80px 20px;
     text-align: center;
-    background: #012a4a;
+    background: var(--primary-color);
 }
 
 .section-header {
@@ -207,7 +213,7 @@ body {
 .section-title {
     font-family: "Amiri", serif;
     font-size: 2.5rem;
-    color: #012a4a;
+    color: var(--primary-color);
     margin-bottom: 10px;
 }
 
@@ -273,12 +279,11 @@ body {
     transition: 0.3s;
 }
 
-.btn-primary {
-}
+/* primary button styles defined later; this empty rule removed */
 
 .btn-hero {
     background: #c7a25e;
-    color: #012a4a;
+    color: var(--primary-color);
     padding: 14px 35px;
     font-size: 1.1rem;
     margin-top: 20px;
@@ -290,7 +295,7 @@ body {
     transform: translateY(-2px);
 }
 .btn-hero i {
-    transition: transform 0.3s ease-in-out;
+    transition:  0.3s ease-in-out;
 }
 .btn-hero:hover i {
     transform: translateX(-5px);
@@ -464,7 +469,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #012a4a;
+    background-color: var(--primary-color);
     z-index: 9999;
     display: flex;
     justify-content: center;
@@ -482,11 +487,11 @@ body {
 .page-transition-overlay .spinner-border {
     width: 3rem;
     height: 3rem;
-    color: white;
+    color: var(--primary-color);
 }
 
 .stats-section {
-    background: #012a4a;
+    background: var(--primary-color);
     color: #fff;
     padding: 60px 20px;
     text-align: center;
@@ -549,14 +554,14 @@ body {
 .method-title {
     font-size: 1.2rem;
     margin-bottom: 10px;
-    color: #012a4a;
+    color: var(--primary-color);
 }
 .method-text {
     color: #555;
 }
 
 .footer {
-    background: #012a4a;
+    background: var(--primary-color);
     color: rgba(255, 255, 255, 0.7);
     padding: 60px 20px 20px;
 }
@@ -756,7 +761,7 @@ body {
 
 .message.received .message-bubble { background-color: #e9ecef; border-top-right-radius: 5px; }
 .message.sent { text-align: left; }
-.message.sent .message-bubble { background-color: #c7a25e; color: #012a4a; border-top-left-radius: 5px; }
+.message.sent .message-bubble { background-color: #c7a25e; color: var(--primary-color); border-top-left-radius: 5px; }
 .message.sent .message-time { text-align: left; }
 
 .chat-footer {
@@ -865,9 +870,7 @@ body {
     border-radius: 50px;
     padding: 12px 30px;
 }
-.hero-banner-img-container {
-    /* تم تعطيل هذا الجزء الخاص بالشكل المائل */
-}
+.hero-banner-img-container { display: block; }
 /* --- التصميم الجديد للصورة المربعة --- */
 .hero-banner-img-square {
     width: 80%;

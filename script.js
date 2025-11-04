@@ -37,12 +37,11 @@ if (loginForm) {
             // حفظ بيانات المستخدم الحقيقية
             sessionStorage.setItem('currentUser', JSON.stringify(result.user));
 
-            // التوجيه للصفحة المناسبة
-            const transitionOverlay = document.querySelector('.page-transition-overlay');
-            transitionOverlay.classList.add('active');
+            // تأثير خروجي سريع ثم التوجيه
+            document.body.classList.add('is-transitioning');
             setTimeout(() => {
                 window.location.href = result.redirectTo;
-            }, 500);
+            }, 200);
 
         } catch (error) {
             loginError.textContent = 'لا يمكن الاتصال بالخادم. الرجاء المحاولة لاحقاً.';

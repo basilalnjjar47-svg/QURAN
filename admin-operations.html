@@ -66,12 +66,7 @@
         </div>
     </main>
 
-    <!-- Page Transition Overlay -->
-    <div class="page-transition-overlay">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    </div>
+    
 
     <script>
         // Handle find schedule form
@@ -82,17 +77,16 @@
             window.location.href = `admin-edit-schedule.html?studentId=${studentId}`;
         });
 
-        // Smooth transition script (same as other pages)
+        // انتقالات خفيفة عند التنقل بين الروابط
         document.addEventListener('DOMContentLoaded', function() {
             const navLinks = document.querySelectorAll('.student-nav .nav-item');
-            const transitionOverlay = document.querySelector('.page-transition-overlay');
             navLinks.forEach(link => {
                 if (link.classList.contains('logout') || link.classList.contains('active') || link.getAttribute('href') === '#') return;
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const destination = this.href;
-                    transitionOverlay.classList.add('active');
-                    setTimeout(() => { window.location.href = destination; }, 400);
+                    document.body.classList.add('is-transitioning');
+                    setTimeout(() => { window.location.href = destination; }, 200);
                 });
             });
         });

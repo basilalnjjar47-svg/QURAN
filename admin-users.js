@@ -41,6 +41,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             users.forEach(user => {
+                const isAdmin = user.role === 'admin';
+                const deleteBtn = isAdmin
+                    ? '<button class="btn btn-sm btn-outline-secondary" disabled title="لا يمكن حذف الأدمن">حذف</button>'
+                    : `<button class="btn btn-sm btn-outline-danger delete-btn" data-user-id="${user.id}">حذف</button>`;
+
                 const row = `
                     <tr>
                         <td>${user.name || 'غير محدد'}</td>
@@ -51,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td>${user.teacherId || 'N/A'}</td>
                         <td>
                             <button class="btn btn-sm btn-outline-primary edit-btn" data-user-id="${user._id}">تعديل</button>
-                            <button class="btn btn-sm btn-outline-danger delete-btn" data-user-id="${user.id}">حذف</button>
+                            ${deleteBtn}
                         </td>
                     </tr>
                 `;

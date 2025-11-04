@@ -142,8 +142,24 @@ app.get('/api/teacher/students', async (req, res) => {
 });
 
 app.delete('/api/users/:id', async (req, res) => {
-    await User.findOneAndDelete({ id: req.params.id });
-    res.json({ message: 'تم حذف المستخدم بنجاح' });
+    try {
+        const user = await User.findOne({ id: req.params.id });
+        if (!user) return res.status(404).json({ message: 'المستخدم غير موجود.' });
+        if (user.role === 'admin') {
+            return res.status(400).json({ message: 'لا يمكن حذف حسابات الأدمن.' });
+        }
+        await User.deleteOne({ id: req.params.id });
+
+        // تأكيد وجود أدمن واحد على الأقل دائماً
+        const anyAdmin = await User.findOne({ role: 'admin' });
+        if (!anyAdmin) {
+            await createDefaultAdminIfNeeded();
+        }
+
+        res.json({ message: 'تم حذف المستخدم بنجاح' });
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ أثناء الحذف.' });
+    }
 });
 
 // --- مسارات الجداول الدراسية ---
