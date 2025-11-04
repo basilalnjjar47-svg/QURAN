@@ -128,12 +128,11 @@ document.addEventListener('DOMContentLoaded', function () {
             userData.password = password;
         }
 
-        if (!isEditing) {
-            userData.id = document.getElementById('newUserId').value;
-        }
+        // --- التصحيح: يجب دائماً إرسال رقم العضوية ---
+        userData.id = document.getElementById('newUserId').value;
 
         // تحديد الرابط والطريقة (إضافة أو تعديل)
-        const url = isEditing ? `${SERVER_URL}/api/users/${userData.id}` : `${SERVER_URL}/api/users`;
+        const url = isEditing ? `${SERVER_URL}/api/users/${editingUserId}` : `${SERVER_URL}/api/users`;
         const method = isEditing ? 'PUT' : 'POST';
 
         try {
