@@ -55,7 +55,7 @@
                     <h3>إجمالي الطلاب</h3>
                 </div>
                 <div class="card-content text-center">
-                    <h2 id="studentCount" class="display-4 fw-bold">...</h2>
+                    <h2 id="studentTotalCount" class="display-4 fw-bold">0</h2>
                 </div>
             </div>
             <div class="dashboard-card">
@@ -64,7 +64,25 @@
                     <h3>إجمالي المعلمين</h3>
                 </div>
                 <div class="card-content text-center">
-                    <h2 id="teacherCount" class="display-4 fw-bold">...</h2>
+                    <h2 id="teacherTotalCount" class="display-4 fw-bold">0</h2>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="bi bi-wifi card-icon"></i>
+                    <h3>الطلاب المتصلون الآن</h3>
+                </div>
+                <div class="card-content text-center">
+                    <h2 id="onlineCount" class="display-4 fw-bold">0</h2>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="bi bi-wifi-off card-icon"></i>
+                    <h3>الطلاب غير المتصلين</h3>
+                </div>
+                <div class="card-content text-center">
+                    <h2 id="offlineCount" class="display-4 fw-bold">0</h2>
                 </div>
             </div>
             <div class="dashboard-card">
@@ -73,183 +91,53 @@
                     <h3>الحلقات النشطة</h3>
                 </div>
                 <div class="card-content text-center">
-                    <h2 id="halaqatCount" class="display-4 fw-bold">...</h2>
+                    <h2 id="halaqatCount" class="display-4 fw-bold">0</h2>
                 </div>
             </div>
         </div>
-
-        <div class="dashboard-grid mt-4" style="grid-template-columns: 1fr;">
-            <!-- User Management Card -->
-            <div class="dashboard-card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <div>
-                        <i class="bi bi-people-fill card-icon"></i>
-                        <h3>إدارة المستخدمين</h3>
-                    </div>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                        <i class="bi bi-person-plus-fill"></i> إضافة مستخدم جديد
-                    </button>
-                </div>
-                <div class="card-content">
-                    <p class="text-center text-muted">يمكنك إضافة مستخدمين جدد من هنا أو إدارة المستخدمين الحاليين من صفحة <a href="admin-users.html">إدارة المستخدمين</a>.</p>
-                    <!-- سيتم عرض جدول المستخدمين هنا في نظام حقيقي -->
-                </div>
-            </div>
-        </div>
+        
     </main>
 
     
 
-    <!-- Add User Modal -->
-    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content" style="border-radius: 15px;">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addUserModalLabel">إضافة مستخدم جديد</h5>
-                    <button type="button" class="btn-close ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <form id="addUserForm">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="newUserName" class="form-label">الاسم الكامل</label>
-                                <input type="text" class="form-control" id="newUserName" required placeholder="مثال: أحمد علي">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="newUserRole" class="form-label">نوع الحساب</label>
-                                <select class="form-select" id="newUserRole" required>
-                                    <option selected disabled value="">اختر...</option>
-                                    <option value="student">طالب</option>
-                                    <option value="teacher">معلم</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="newUserId" class="form-label">رقم العضوية (ID)</label>
-                                <input type="text" class="form-control" id="newUserId" required placeholder="رقم فريد للمستخدم">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="newUserPassword" class="form-label">كلمة المرور</label>
-                                <input type="password" class="form-control" id="newUserPassword" required placeholder="كلمة مرور مؤقتة">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="newUserGroup" class="form-label">المجموعة</label>
-                                <select class="form-select" id="newUserGroup">
-                                    <option selected value="">بدون مجموعة</option>
-                                    <option value="أ">المجموعة أ</option>
-                                    <option value="ب">المجموعة ب</option>
-                                    <option value="ج">المجموعة ج</option>
-                                </select>
-                            </div>
-                        </div>
-                        <!-- Grade selection, hidden by default -->
-                        <div class="row" id="studentGradeRow" style="display: none;">
-                            <div class="col-md-12 mb-3">
-                                <label for="studentGrade" class="form-label">الصف الدراسي للطالب</label>
-                                <select class="form-select" id="studentGrade" required>
-                                    <option selected disabled value="">اختر الصف الدراسي...</option>
-                                    <optgroup label="المرحلة الابتدائية">
-                                        <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
-                                        <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
-                                        <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
-                                        <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
-                                        <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
-                                        <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
-                                    </optgroup>
-                                    <optgroup label="المرحلة الإعدادية">
-                                        <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
-                                        <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
-                                        <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
-                                    </optgroup>
-                                    <optgroup label="المرحلة الثانوية">
-                                        <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
-                                        <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
-                                        <option value="الصف الثالث الثانوي">الصف الثالث الثانوي</option>
-                                    </optgroup>
-                                    <option value="مستوى عام">مستوى عام (للبالغين)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div id="formErrorModal" class="alert alert-danger" style="display: none;"></div>
-                        <button type="submit" class="btn btn-primary btn-full mt-3">إضافة المستخدم</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const addUserModal = new bootstrap.Modal(document.getElementById('addUserModal'));
-            const addUserForm = document.getElementById('addUserForm');
-            const formErrorModal = document.getElementById('formErrorModal');
-
-            // --- محاكاة عرض الإحصائيات (للتصميم فقط) ---
-            function displayFakeStats() { // تم تعديل الأرقام لتكون أكثر واقعية مع قسم الإحصائيات الجديد
-                document.getElementById('studentCount').textContent = '0';
-                document.getElementById('teacherCount').textContent = '0';
-                document.getElementById('halaqatCount').textContent = '0';
-            }
-
-            // إظهار/إخفاء حقل الصف الدراسي
-            document.getElementById('newUserRole').addEventListener('change', function() {
-                document.getElementById('studentGradeRow').style.display = this.value === 'student' ? 'flex' : 'none';
-            });
-
-            // --- تفعيل إضافة مستخدم جديد ليتصل بالخادم ---
-            addUserForm.addEventListener('submit', async function(event) {
-                event.preventDefault();
-                formErrorModal.style.display = 'none';
-
-                const userData = {
-                    name: document.getElementById('newUserName').value,
-                    id: document.getElementById('newUserId').value,
-                    password: document.getElementById('newUserPassword').value,
-                    role: document.getElementById('newUserRole').value,
-                    grade: document.getElementById('newUserRole').value === 'student' ? document.getElementById('studentGrade').value : null,
-                    group: document.getElementById('newUserGroup').value || null,
-                };
-
-                // التحقق من الحقول الأساسية
-                if (!userData.name || !userData.id || !userData.password || !userData.role) {
-                    formErrorModal.textContent = 'الرجاء ملء جميع الحقول الإلزامية.';
-                    formErrorModal.style.display = 'block';
-                    return;
-                }
-
+            async function fetchStats() {
                 try {
-                    // تم تصحيح الرابط هنا ليشير إلى خادم Render
-                    const response = await fetch('https://quran-32vn.onrender.com/api/users', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(userData),
-                    });
-
-                    const result = await response.json();
-
-                    if (!response.ok) {
-                        formErrorModal.textContent = result.message || 'حدث خطأ غير متوقع.';
-                        formErrorModal.style.display = 'block';
-                        return;
-                    }
-
-                    alert('تمت إضافة المستخدم بنجاح!');
-                    addUserModal.hide(); // إخفاء النافذة
-
-                } catch (error) {
-                    formErrorModal.textContent = 'فشل الاتصال بالخادم.';
-                    formErrorModal.style.display = 'block';
+                    const res = await fetch('https://quran-32vn.onrender.com/api/stats/overview');
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.message || 'خطأ');
+                    document.getElementById('studentTotalCount').textContent = data.totalStudents ?? 0;
+                    document.getElementById('teacherTotalCount').textContent = data.totalTeachers ?? 0;
+                    document.getElementById('onlineCount').textContent = data.onlineStudents ?? 0;
+                    document.getElementById('offlineCount').textContent = data.offlineStudents ?? 0;
+                    document.getElementById('halaqatCount').textContent = data.activeHalaqat ?? 0;
+                } catch (e) {
+                    console.error('Failed to load stats', e);
                 }
-            });
+            }
+            fetchStats();
+            setInterval(fetchStats, 15000);
 
-            // جلب الإحصائيات عند تحميل الصفحة
-            displayFakeStats();
+            // Real-time updates
+            try {
+                const socket = io('https://quran-32vn.onrender.com');
+                socket.on('connect', () => {
+                    // لا تحتاج لتسجيل خاص؛ نتلقى التحديثات العمومية
+                });
+                socket.on('stats_update', (data) => {
+                    if (!data) return;
+                    if (data.totalStudents !== undefined) document.getElementById('studentTotalCount').textContent = data.totalStudents;
+                    if (data.totalTeachers !== undefined) document.getElementById('teacherTotalCount').textContent = data.totalTeachers;
+                    if (data.onlineStudents !== undefined) document.getElementById('onlineCount').textContent = data.onlineStudents;
+                    if (data.offlineStudents !== undefined) document.getElementById('offlineCount').textContent = data.offlineStudents;
+                    if (data.activeHalaqat !== undefined) document.getElementById('halaqatCount').textContent = data.activeHalaqat;
+                });
+            } catch (err) {
+                console.error('Socket connection error', err);
+            }
         });
 
         // انتقالات خفيفة عند التنقل بين الروابط

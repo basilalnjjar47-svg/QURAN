@@ -294,11 +294,32 @@ app.delete('/api/slides/:id', async (req, res) => {
 // منطق Socket.IO
 // =======================
 const userSockets = {};
+
+async function computeStats() {
+    const totalStudents = await User.countDocuments({ role: 'student' });
+    const totalTeachers = await User.countDocuments({ role: 'teacher' });
+    const onlineIds = Object.keys(userSockets || {});
+    const onlineStudents = await User.countDocuments({ role: 'student', id: { $in: onlineIds } });
+    const offlineStudents = Math.max(0, totalStudents - onlineStudents);
+    const distinctTeachers = await User.distinct('teacherId', { role: 'student', teacherId: { $ne: null } });
+    const activeHalaqat = distinctTeachers.filter(Boolean).length;
+    return { totalStudents, totalTeachers, onlineStudents, offlineStudents, activeHalaqat };
+}
+
+async function broadcastStats() {
+    try {
+        const stats = await computeStats();
+        io.emit('stats_update', stats);
+    } catch (e) {
+        console.error('Failed to broadcast stats', e);
+    }
+}
 io.on('connection', (socket) => {
     console.log('a user connected:', socket.id);
-    socket.on('register_user', (userId) => {
+    socket.on('register_user', async (userId) => {
         userSockets[userId] = socket.id;
         console.log(`User ${userId} registered with socket ${socket.id}`);
+        await broadcastStats();
     });
     socket.on('send_link_to_students', (data) => {
         data.studentIds.forEach(studentId => {
@@ -316,7 +337,20 @@ io.on('connection', (socket) => {
             }
         }
         console.log('user disconnected');
+        broadcastStats();
     });
+});
+
+// =======================
+// إحصائيات عامة للوحة الأدمن
+// =======================
+app.get('/api/stats/overview', async (req, res) => {
+    try {
+        const stats = await computeStats();
+        res.json(stats);
+    } catch (error) {
+        res.status(500).json({ message: 'فشل جلب الإحصائيات.' });
+    }
 });
 
 // =======================
