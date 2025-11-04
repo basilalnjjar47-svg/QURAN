@@ -185,8 +185,10 @@ app.put('/api/session/:studentId', async (req, res) => {
         // نستخدم findOneAndUpdate للعثور على الطالب وتحديث بياناته
         const updatedUser = await User.findOneAndUpdate(
             { id: req.params.studentId },
-            { $set: { "schedule.$[].sessionLink": sessionLink, "schedule.$[].sessionActive": sessionActive } },
-            { new: true } // هذا الخيار يعيد المستند بعد التحديث
+            // --- التصحيح: استخدام $set لتحديث الحقول مباشرة ---
+            // هذا الكود يفترض أن الطالب لديه حلقة واحدة فقط، وهو ما يتناسب مع تصميمنا الحالي
+            { $set: { "schedule.0.sessionLink": sessionLink, "schedule.0.sessionActive": sessionActive } },
+            { new: true } // هذا الخيار يعيد المستند المحدّث
         );
 
         if (!updatedUser) return res.status(404).json({ message: 'الطالب غير موجود' });
