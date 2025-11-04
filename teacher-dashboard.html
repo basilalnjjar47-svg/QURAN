@@ -142,11 +142,11 @@
 
     <!-- 1. استدعاء مكتبة Socket.IO Client -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <!-- <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script> --> <!-- لم نعد بحاجة لـ Socket هنا -->
 
     <script>
         // 2. الاتصال بالخادم - تم تحديث الرابط بعنوان الخادم الحقيقي على Render
-        const socket = io("https://quran-32vn.onrender.com");
+        // const socket = io("https://quran-32vn.onrender.com"); // لم نعد بحاجة لـ Socket هنا
 
 
         // --- تسجيل المعلم لدى الخادم ---
@@ -155,7 +155,7 @@
             window.location.href = 'index.html';
         } else {
             document.getElementById('teacherWelcome').textContent = `مرحباً بك يا ${currentTeacher.name}`;
-            socket.emit('register_user', currentTeacher.id);
+            // socket.emit('register_user', currentTeacher.id); // لم نعد بحاجة لها
         }
         // --------------------------------
 
@@ -190,7 +190,7 @@
         });
 
         // عند الضغط على زر "إرسال الآن" داخل النافذة
-        sendLinkBtn.addEventListener('click', () => {
+        sendLinkBtn.addEventListener('click', async () => {
             modalError.style.display = 'none';
             const zoomLink = document.getElementById('zoomLink').value;
             const selectedStudents = Array.from(studentsListDiv.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
@@ -206,9 +206,29 @@
                 return;
             }
 
-            socket.emit('send_link_to_students', { studentIds: selectedStudents, link: zoomLink });
-            alert('تم إرسال الرابط للطلاب المحددين بنجاح!');
-            sendLinkModal.hide();
+            try {
+                // سنقوم بتكرار الطلب لكل طالب محدد
+                for (const studentId of selectedStudents) {
+                    const response = await fetch(`${SERVER_URL}/api/session/${studentId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ sessionLink: zoomLink, sessionActive: true })
+                    });
+                    if (!response.ok) {
+                        // إذا فشل تحديث طالب واحد، نعرض خطأ ونكمل للباقي
+                        console.error(`فشل تحديث رابط الطالب ${studentId}`);
+                    }
+                }
+                alert('تم تحديث رابط الجلسة للطلاب المحددين بنجاح!');
+                sendLinkModal.hide();
+
+            } catch (error) {
+                modalError.textContent = 'فشل الاتصال بالخادم لتحديث الرابط.';
+                modalError.style.display = 'block';
+            }
+
+            // socket.emit('send_link_to_students', { studentIds: selectedStudents, link: zoomLink }); // الكود القديم
+            
         });
 
         document.getElementById('homeworkForm').addEventListener('submit', function(event) {

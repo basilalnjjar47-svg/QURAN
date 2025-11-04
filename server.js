@@ -65,7 +65,10 @@ const userSchema = new mongoose.Schema({
         day: String,
         time: String,
         teacher: String,
-        plan: String
+        plan: String,
+        // --- الحقول الجديدة للجلسات ---
+        sessionLink: { type: String, default: null },
+        sessionActive: { type: Boolean, default: false }
     }],
     attendance: [{
         date: String,
@@ -173,6 +176,25 @@ app.put('/api/schedule/:studentId', async (req, res) => {
     const { schedule } = req.body;
     await User.updateOne({ id: req.params.studentId }, { $set: { schedule: schedule } });
     res.json({ message: 'تم تحديث الجدول بنجاح' });
+});
+
+// --- مسار جديد: تحديث رابط جلسة لطالب ---
+app.put('/api/session/:studentId', async (req, res) => {
+    const { sessionLink, sessionActive } = req.body;
+    try {
+        // نستخدم findOneAndUpdate للعثور على الطالب وتحديث بياناته
+        const updatedUser = await User.findOneAndUpdate(
+            { id: req.params.studentId },
+            { $set: { "schedule.$[].sessionLink": sessionLink, "schedule.$[].sessionActive": sessionActive } },
+            { new: true } // هذا الخيار يعيد المستند بعد التحديث
+        );
+
+        if (!updatedUser) return res.status(404).json({ message: 'الطالب غير موجود' });
+
+        res.json({ message: 'تم تحديث رابط الجلسة بنجاح', user: updatedUser });
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ في الخادم' });
+    }
 });
 
 // --- مسارات الحضور والغياب ---

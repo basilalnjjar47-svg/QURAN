@@ -54,12 +54,12 @@
                 </div>
                 <div class="card-content">
                     <p><strong>المعلم:</strong> الشيخ محمد أحمد</p>
-                    <p><strong>الموعد:</strong> غداً، الساعة 5:00 مساءً</p>
-                    <p><strong>الصف لهذه الحلقة:</strong> <span id="sessionGradeDisplay">غير محدد</span></p>
+                    <p><strong>الموعد:</strong> <span id="sessionTime">--</span></p>
+                    <p><strong>المقرر لهذه الحلقة:</strong> <span id="sessionPlan">--</span></p>
                     <a href="#" id="joinSessionBtn" class="btn btn-primary disabled" target="_blank">
                         <i class="bi bi-camera-video-fill"></i> دخول الحلقة الآن
                     </a>
-                    <small id="sessionLinkStatus" class="status-text">لم يقم المعلم بتحديد رابط الجلسة بعد.</small>
+                    <small id="sessionLinkStatus" class="status-text">في انتظار رابط الجلسة من المعلم...</small>
                 </div>
             </div>
 
@@ -95,54 +95,56 @@
 
     <!-- 1. استدعاء مكتبة lit-html -->
     <!-- استدعاء مكتبة Socket.IO Client -->
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <!-- <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script> --> <!-- لم نعد بحاجة لـ Socket هنا -->
     <script type="module" src="https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const joinButton = document.getElementById('joinSessionBtn'); // هذا هو الزر الصحيح
             const statusText = document.getElementById('sessionLinkStatus'); // هذا هو النص الصحيح
-            const sessionGradeDisplay = document.getElementById('sessionGradeDisplay');
+            const sessionTime = document.getElementById('sessionTime');
+            const sessionPlan = document.getElementById('sessionPlan');
             const homeworkContent = document.getElementById('homeworkContent');
+            const SERVER_URL = 'https://quran-32vn.onrender.com';
 
             // --- جلب بيانات المستخدم وتخصيص الصفحة ---
             const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
 
             if (currentUser) {
                 document.getElementById('welcomeMessage').textContent = `أهلاً بك يا ${currentUser.name}`;
-                document.getElementById('welcomeDescription').textContent = 'هنا تجد ملخصاً لنشاطك وحلقتك القادمة';
+                document.getElementById('welcomeDescription').textContent = 'هنا تجد ملخصاً لنشاطك وحلقتك القادمة.';
+                // --- جلب بيانات الجلسة عند تحميل الصفحة ---
+                fetchSessionData();
             } else {
                 window.location.href = 'INDEX.HTML';
                 return;
             }
-            // -----------------------------------------
 
-            // --- الجزء الجديد: التعامل مع التحديثات اللحظية ---
-            // تم تحديث الرابط بعنوان الخادم الحقيقي على Render
-            const socket = io("https://quran-32vn.onrender.com");
+            // --- دالة جديدة لجلب بيانات الجلسة من قاعدة البيانات ---
+            async function fetchSessionData() {
+                try {
+                    const response = await fetch(`${SERVER_URL}/api/schedule/${currentUser.id}`);
+                    if (!response.ok) return;
+                    const data = await response.json();
+                    
+                    // نفترض أن الطالب لديه حلقة واحدة فقط في الوقت الحالي
+                    const session = data.schedule && data.schedule.length > 0 ? data.schedule[0] : null;
 
-            // تسجيل الطالب لدى الخادم
-            if (currentUser && currentUser.id) {
-                socket.emit('register_user', currentUser.id);
+                    if (session) {
+                        sessionTime.textContent = `${session.day || 'غير محدد'}، الساعة ${session.time || '--'}`;
+                        sessionPlan.textContent = session.plan || 'غير محدد';
+
+                        if (session.sessionActive && session.sessionLink) {
+                            joinButton.href = session.sessionLink;
+                            joinButton.classList.remove('disabled');
+                            statusText.textContent = 'الجلسة جاهزة! اضغط للدخول.';
+                            statusText.style.color = '#2e7d32';
+                        }
+                    }
+                } catch (error) {
+                    console.error("فشل جلب بيانات الجلسة:", error);
+                }
             }
-
-            // 1. الاستماع لتحديث رابط الجلسة
-            socket.on('session_link_update', (data) => {
-                // بما أن الخادم يرسل الرابط للطالب المحدد فقط، يمكننا التحديث مباشرة
-                console.log('تم استلام رابط جلسة جديد:', data);
-                joinButton.href = data.link;
-                joinButton.classList.remove('disabled');
-                statusText.textContent = 'الجلسة جاهزة! اضغط للدخول.';
-                statusText.style.color = '#2e7d32';
-                sessionGradeDisplay.textContent = data.grade || 'جلسة خاصة';
-            });
-
-            // 2. الاستماع للواجبات الجديدة
-            socket.on('new_homework', (data) => {
-                console.log('تم استلام واجب جديد:', data);
-                homeworkContent.textContent = data.text;
-            });
-            // ----------------------------------------------------
 
             // الكود القديم للتحقق من الواجبات يمكن إزالته أو تعديله
             const assignedHomework = localStorage.getItem('assignedHomework');
