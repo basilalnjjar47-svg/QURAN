@@ -57,10 +57,15 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             users.forEach(user => {
-                const isAdmin = user.role === 'admin';
-                const deleteBtn = isAdmin
-                    ? '<button class="btn btn-sm btn-outline-secondary" disabled title="لا يمكن حذف الأدمن">حذف</button>'
-                    : `<button class="btn btn-sm btn-outline-danger delete-btn" data-user-id="${user.id}">حذف</button>`;
+                let deleteBtn = `<button class="btn btn-sm btn-outline-danger delete-btn" data-user-id="${user.id}">حذف</button>`;
+                
+                // منطق جديد: لا تسمح بحذف الأدمن إذا كان هو الوحيد
+                if (user.role === 'admin') {
+                    const adminCount = users.filter(u => u.role === 'admin').length;
+                    if (adminCount <= 1) {
+                        deleteBtn = '<button class="btn btn-sm btn-outline-secondary" disabled title="لا يمكن حذف آخر مدير في النظام">حذف</button>';
+                    }
+                }
 
                 const row = `
                     <tr>

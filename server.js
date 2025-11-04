@@ -165,17 +165,16 @@ app.delete('/api/users/:id', async (req, res) => {
     try {
         const user = await User.findOne({ id: req.params.id });
         if (!user) return res.status(404).json({ message: 'المستخدم غير موجود.' });
+
+        // منطق جديد: السماح بحذف الأدمن بشرط وجود أدمن آخر على الأقل
         if (user.role === 'admin') {
-            return res.status(400).json({ message: 'لا يمكن حذف حسابات الأدمن.' });
+            const adminCount = await User.countDocuments({ role: 'admin' });
+            if (adminCount <= 1) {
+                return res.status(400).json({ message: 'لا يمكن حذف آخر مدير في النظام.' });
+            }
         }
+
         await User.deleteOne({ id: req.params.id });
-
-        // تأكيد وجود أدمن واحد على الأقل دائماً
-        const anyAdmin = await User.findOne({ role: 'admin' });
-        if (!anyAdmin) {
-            await createDefaultAdminIfNeeded();
-        }
-
         res.json({ message: 'تم حذف المستخدم بنجاح' });
     } catch (error) {
         res.status(500).json({ message: 'حدث خطأ أثناء الحذف.' });
