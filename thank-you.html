@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شكراً لك - مركز النوران</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0c4b33;
+            --secondary-color: #c7a25e;
+            --light-bg: #f8f9fa;
+            --dark-text: #343a40;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--light-bg);
+            font-family: "Cairo", sans-serif;
+        }
+        .thank-you-card {
+            background-color: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+            border-top: 5px solid var(--primary-color);
+        }
+        .thank-you-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        .thank-you-card h2 {
+            font-family: 'Amiri', serif;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="thank-you-card">
+        <div class="thank-you-icon"><i class="bi bi-check-circle-fill"></i></div>
+        <h2>تم الإرسال بنجاح</h2>
+        <p>شكراً لكِ على تواصلك معنا. سيتم الرد عليكِ في أقرب وقت ممكن.</p>
+        <a href="index.html" class="btn btn-primary">العودة إلى الرئيسية</a>
+    </div>
+</body>
+</html>
