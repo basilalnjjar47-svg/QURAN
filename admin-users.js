@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
     const usersTableBody = document.getElementById('usersTableBody');
     const addUserForm = document.getElementById('addUserForm');
-    const userRoleSelect = document.getElementById('newUserRole');
     const studentGradeRow = document.getElementById('studentGradeRow');
     const teacherGroupRow = document.getElementById('teacherGroupRow');
     const addUserModal = new bootstrap.Modal(document.getElementById('addUserModal'));
     const formError = document.getElementById('formError');
     const modalTitle = document.getElementById('addUserModalLabel');
     const teacherIdInput = document.getElementById('teacherIdInput');
+    const userRoleSelect = document.getElementById('newUserRole');
     const verifyTeacherBtn = document.getElementById('verifyTeacherBtn');
     const teacherNameDisplay = document.getElementById('teacherNameDisplay');
 
@@ -15,6 +15,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const SERVER_URL = 'https://quran-32vn.onrender.com';
 
     // --- بيانات وهمية للمحاكاة المحلية ---
+    // دالة لترجمة الأدوار إلى العربية
+    function translateRole(role) {
+        switch (role) {
+            case 'admin': return 'إداري';
+            case 'teacher': return 'معلم';
+            case 'student': return 'طالب';
+            default: return role;
+        }
+    }
+
+    // دالة لملء قائمة الأدوار
+    function populateRoles() {
+        userRoleSelect.innerHTML = ['admin', 'teacher', 'student']
+            .map(role => `<option value="${role}">${translateRole(role)}</option>`)
+            .join('');
+    }
     let editingUserId = null; // لتحديد ما إذا كنا في وضع التعديل أم الإضافة
 
     // دالة لجلب وعرض المستخدمين
@@ -49,8 +65,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 const row = `
                     <tr>
                         <td>${user.name || 'غير محدد'}</td>
-                        <td>${user.id}</td>
-                        <td>${user.role === 'student' ? 'طالب' : (user.role === 'teacher' ? 'معلم' : 'إداري')}</td>
+                        <td>${user.id || 'N/A'}</td>
+                        <td>${translateRole(user.role)}</td>
                         <td>${user.grade || 'N/A'}</td>
                         <td>${user.group || 'N/A'}</td>
                         <td>${user.teacherId || 'N/A'}</td>
@@ -68,38 +84,14 @@ document.addEventListener('DOMContentLoaded', function () {
     userRoleSelect.addEventListener('change', function () {
         const isStudent = this.value === 'student';
         const isTeacher = this.value === 'teacher';
-        studentGradeRow.style.display = isStudent ? 'flex' : 'none';
-        teacherGroupRow.style.display = isTeacher ? 'flex' : 'none'; 
-    });
+        studentGradeRow.style.display = isStudent ? '' : 'none';
+        teacherGroupRow.style.display = isTeacher ? '' : 'none';
 
-    // التحقق من هوية المعلم عند الضغط على زر "تحقق"
-    verifyTeacherBtn.addEventListener('click', async () => {
-        const teacherId = teacherIdInput.value.trim();
-        if (!teacherId) {
-            teacherNameDisplay.textContent = 'الرجاء إدخال رقم عضوية المعلم.';
-            teacherNameDisplay.className = 'form-text text-danger';
-            return;
-        }
-
-        try {
-            const response = await fetch(`${SERVER_URL}/api/users/all`); // جلب كل المستخدمين للبحث بينهم
-            const users = await response.json(); // استلام القائمة كاملة
-
-            if (!response.ok) throw new Error('فشل جلب بيانات المستخدمين للتحقق');
-
-            // البحث عن المعلم المطلوب داخل القائمة
-            const user = users.find(u => u.id === teacherId);
-
-            if (user && user.role === 'teacher') {
-                teacherNameDisplay.textContent = `تم العثور على المعلم: ${user.name}`;
-                teacherNameDisplay.className = 'form-text text-success fw-bold';
-            } else {
-                teacherNameDisplay.textContent = 'رقم العضوية هذا لا يخص معلماً.';
-                teacherNameDisplay.className = 'form-text text-danger';
-            }
-        } catch (error) {
-            teacherNameDisplay.textContent = error.message || 'فشل التحقق من المعلم.';
-            teacherNameDisplay.className = 'form-text text-danger';
+        // إظهار حقل المعلم فقط للطالب
+        if (isStudent) {
+            document.getElementById('teacherIdRow').style.display = '';
+        } else {
+            document.getElementById('teacherIdRow').style.display = 'none';
         }
     });
 
@@ -112,6 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const userData = {
             name: document.getElementById('newUserName').value,
+            id: document.getElementById('newUserId').value,
             role: document.getElementById('newUserRole').value
         };
 
@@ -119,20 +112,17 @@ document.addEventListener('DOMContentLoaded', function () {
             userData.grade = document.getElementById('studentGrade').value;
             userData.group = document.getElementById('newUserGroup').value || null;
             userData.teacherId = document.getElementById('teacherIdInput').value.trim() || null; // الربط المباشر
-        } else if (userData.role === 'teacher') {
+        } else if (userData.role === 'teacher' || userData.role === 'admin') {
             userData.group = document.getElementById('teacherGroupSelect').value || null;
         }
 
         const password = document.getElementById('newUserPassword').value;
-        if (password || !isEditing) { // أضف كلمة المرور إذا كانت موجودة أو في حالة إنشاء مستخدم جديد
+        if (password) { // أضف كلمة المرور فقط إذا تم إدخالها
             userData.password = password;
         }
 
-        // --- التصحيح: يجب دائماً إرسال رقم العضوية ---
-        userData.id = document.getElementById('newUserId').value;
-
         // تحديد الرابط والطريقة (إضافة أو تعديل)
-        const url = isEditing ? `${SERVER_URL}/api/users/${editingUserId}` : `${SERVER_URL}/api/users`;
+        const url = isEditing ? `${SERVER_URL}/api/users/${userData.id}` : `${SERVER_URL}/api/users`;
         const method = isEditing ? 'PUT' : 'POST';
 
         try {
@@ -170,6 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('newUserPassword').placeholder = 'كلمة مرور مؤقتة';
         formError.style.display = 'none';
         teacherNameDisplay.textContent = ''; // مسح رسالة التحقق
+        populateRoles(); // إعادة ملء الأدوار
         teacherIdInput.value = '';
     });
 
@@ -201,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const response = await fetch(`${SERVER_URL}/api/users/all`);
                 const users = await response.json();
-                const userToEdit = users.find(u => u._id === userId);
+                const userToEdit = users.find(u => u.id === userId); // البحث برقم العضوية
 
                 if (userToEdit) {
                     editingUserId = userId;
@@ -216,17 +207,20 @@ document.addEventListener('DOMContentLoaded', function () {
                     const isStudent = userToEdit.role === 'student';
                     const isTeacher = userToEdit.role === 'teacher';
 
-                    studentGradeRow.style.display = isStudent ? 'flex' : 'none';
-                    teacherGroupRow.style.display = isTeacher ? 'flex' : 'none';
+                    studentGradeRow.style.display = isStudent ? '' : 'none';
+                    teacherGroupRow.style.display = isTeacher ? '' : 'none';
+                    document.getElementById('teacherIdRow').style.display = isStudent ? '' : 'none';
 
-                    if (userToEdit.role === 'student') {
+                    if (isStudent) {
                         document.getElementById('studentGrade').value = userToEdit.grade;
                         document.getElementById('newUserGroup').value = userToEdit.group || '';
                         // التأكد من عرض المعلم المسؤول المحدد مسبقاً
                         document.getElementById('teacherIdInput').value = userToEdit.teacherId || '';
                         teacherNameDisplay.textContent = ''; // مسح رسالة التحقق عند فتح النافذة
-                    } else if (userToEdit.role === 'teacher') {
+                    } else if (isTeacher) {
                         document.getElementById('teacherGroupSelect').value = userToEdit.group || '';
+                    } else if (userToEdit.role === 'admin') {
+                        // لا توجد حقول إضافية للأدمن حالياً
                     }
                     addUserModal.show();
                 }
@@ -237,5 +231,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // جلب المستخدمين عند تحميل الصفحة
+    populateRoles();
     fetchAndDisplayUsers();
 });
