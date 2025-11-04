@@ -172,6 +172,33 @@ app.delete('/api/users/:id', async (req, res) => {
     }
 });
 
+app.put('/api/users/:id', async (req, res) => {
+    try {
+        const { id } = req.params; // رقم العضوية من الرابط
+        const { name, role, password, grade, group, teacherId, responsibleForGroup } = req.body;
+
+        const user = await User.findOne({ id: id });
+        if (!user) return res.status(404).json({ message: 'المستخدم غير موجود.' });
+
+        user.name = name || user.name;
+        user.role = role || user.role;
+        if (password) {
+            user.password = password; // في تطبيق حقيقي، يجب تشفير كلمة المرور هنا
+        }
+        user.grade = grade || null;
+        user.group = group || null;
+        user.teacherId = teacherId || null;
+        user.responsibleForGroup = responsibleForGroup || null;
+
+        await user.save();
+        res.json({ message: 'تم تحديث بيانات المستخدم بنجاح', user: user });
+
+    } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({ message: 'حدث خطأ أثناء تحديث المستخدم.' });
+    }
+});
+
 // --- مسارات الجداول الدراسية ---
 app.get('/api/schedule/:studentId', async (req, res) => {
     const user = await User.findOne({ id: req.params.studentId });
