@@ -57,14 +57,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             users.forEach(user => {
-                let deleteBtn = `<button class="btn btn-sm btn-outline-danger delete-btn" data-user-id="${user.id}">حذف</button>`;
-                
-                // منطق جديد: لا تسمح بحذف الأدمن إذا كان هو الوحيد
-                if (user.role === 'admin') {
-                    const adminCount = users.filter(u => u.role === 'admin').length;
-                    if (adminCount <= 1) {
-                        deleteBtn = '<button class="btn btn-sm btn-outline-secondary" disabled title="لا يمكن حذف آخر مدير في النظام">حذف</button>';
-                    }
+                let deleteBtn;
+                // --- منطق جديد: منع حذف المدير الأصلي نهائياً ---
+                if (user.id === '11111') {
+                    deleteBtn = '<button class="btn btn-sm btn-outline-secondary" disabled title="لا يمكن حذف المدير الأصلي">حذف</button>';
+                } else {
+                    deleteBtn = `<button class="btn btn-sm btn-outline-danger delete-btn" data-user-id="${user.id}">حذف</button>`;
                 }
 
                 const row = `

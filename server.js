@@ -166,6 +166,11 @@ app.delete('/api/users/:id', async (req, res) => {
         const user = await User.findOne({ id: req.params.id });
         if (!user) return res.status(404).json({ message: 'المستخدم غير موجود.' });
 
+        // --- منطق جديد: منع حذف المدير الأصلي ---
+        if (user.id === '11111') {
+            return res.status(400).json({ message: 'لا يمكن حذف المدير الأصلي للنظام.' });
+        }
+
         // منطق جديد: السماح بحذف الأدمن بشرط وجود أدمن آخر على الأقل
         if (user.role === 'admin') {
             const adminCount = await User.countDocuments({ role: 'admin' });
