@@ -252,6 +252,40 @@
         </div>
     </section>
 
+    <!-- قسم التعليقات (Netlify Forms) -->
+    <section id="comments" class="py-5">
+        <div class="container">
+            <div class="section-header text-center mb-4">
+                <h2 class="section-title-new">شاركنا تعليقك</h2>
+                <p class="lead text-muted">نرحّب بملاحظاتك واقتراحاتك.</p>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <!-- تم تعديل النموذج ليرسل البيانات عبر جافاسكريبت إلى الخادم الخاص بنا -->
+                    <form name="comments" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="p-4 bg-white rounded-3 shadow-sm">
+                        <input type="hidden" name="form-name" value="comments">
+                        <p style="display:none;">
+                            <label>لا تملأ هذا الحقل: <input name="bot-field"></label>
+                        </p>
+                        <div class="mb-3">
+                            <label for="commentName" class="form-label">الاسم</label>
+                            <input type="text" id="commentName" name="name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="commentEmail" class="form-label">البريد الإلكتروني</label>
+                            <input type="email" id="commentEmail" name="email" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="commentMessage" class="form-label">التعليق</label>
+                            <textarea id="commentMessage" name="message" class="form-control" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">إرسال التعليق</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- 🕋 5. الفوتر الجديد -->
     <footer id="footer" class="footer">
         <div class="container">
@@ -310,6 +344,7 @@
     <script>
         // --- الكود الجديد لجعل السلايدر ديناميكياً ---
         document.addEventListener('DOMContentLoaded', function() {
+            // نموذج Netlify Forms يعمل عند الاستضافة على Netlify تلقائياً
             async function loadDynamicSlider() {
                 const SERVER_URL = 'https://quran-32vn.onrender.com';
                 const carouselInner = document.getElementById('slider-inner');

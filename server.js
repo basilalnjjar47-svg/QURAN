@@ -5,6 +5,7 @@ const express = require('express');
 const { Server } = require("socket.io");
 const mongoose = require('mongoose');
 const path = require('path');
+const nodemailer = require('nodemailer');
 const multer = require('multer');
 const { v2: cloudinary } = require('cloudinary');
 const cors = require('cors');
@@ -23,6 +24,12 @@ const io = new Server(server, {
 });
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname)));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 app.use(cors());
 
 // =======================
@@ -243,6 +250,44 @@ app.get('/api/slides/all', async (req, res) => {
         res.json(slides);
     } catch (error) {
         res.status(500).json({ message: 'حدث خطأ في الخادم' });
+    }
+});
+
+// =======================
+// نموذج التعليقات: إرسال بريد للإدارة
+// =======================
+app.post('/api/comments', async (req, res) => {
+    const { name, email, message } = req.body || {};
+    if (!name || !email || !message) {
+        return res.status(400).json({ message: 'الرجاء إدخال الاسم والبريد والتعليق.' });
+    }
+    try {
+        const transporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST,
+            port: parseInt(process.env.SMTP_PORT || '587', 10),
+            secure: process.env.SMTP_SECURE === 'true',
+            auth: {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS,
+            },
+        });
+
+        const toAddress = process.env.EMAIL_TO || process.env.SMTP_USER;
+        await transporter.sendMail({
+            from: `QURAN Platform <${process.env.SMTP_USER}>`,
+            to: toAddress,
+            replyTo: email,
+            subject: 'تعليق جديد من الموقع',
+            text: `الاسم: ${name}\nالبريد: ${email}\n\nالتعليق:\n${message}`,
+            html: `<p><strong>الاسم:</strong> ${name}</p>
+                   <p><strong>البريد:</strong> ${email}</p>
+                   <p><strong>التعليق:</strong></p>
+                   <p style="white-space: pre-wrap;">${message}</p>`
+        });
+        res.json({ message: 'تم إرسال التعليق بنجاح.' });
+    } catch (error) {
+        console.error('Mail error:', error);
+        res.status(500).json({ message: 'فشل إرسال البريد. تأكد من إعدادات البريد.' });
     }
 });
 
