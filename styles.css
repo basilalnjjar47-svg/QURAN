@@ -14,6 +14,12 @@ body {
     transition: opacity 0.25s ease, filter 0.25s ease;
 }
 
+/* --- كود جديد: للحفاظ على شكل الروابط بعد إزالة href --- */
+a:not([href]) {
+    cursor: pointer;
+    color: inherit; /* يرث اللون من العنصر الأب */
+}
+
 body.is-transitioning {
     opacity: 0;
     filter: blur(2px);
