@@ -26,12 +26,12 @@
                 </div>
                 <!-- Admin Navigation -->
                 <div class="student-nav">
-                    <a class="nav-item active">لوحة التحكم</a>
-                    <a onclick="window.location.href='admin-users.html'" class="nav-item">إدارة المستخدمين</a>
-                    <a onclick="window.location.href='admin-slider.html'" class="nav-item">إدارة السلايدر</a>
-                    <a onclick="window.location.href='admin-articles.html'" class="nav-item">إدارة المقالات</a>
-                    <a onclick="window.location.href='admin-operations.html'" class="nav-item">العمليات</a>
-                    <a onclick="window.location.href='index.html'" class="nav-item logout">تسجيل الخروج</a>
+                    <a class="nav-item active" data-page="admin-dashboard.html">لوحة التحكم</a>
+                    <a class="nav-item" data-page="admin-users.html">إدارة المستخدمين</a>
+                    <a class="nav-item" data-page="admin-slider.html">إدارة السلايدر</a>
+                    <a class="nav-item" data-page="admin-articles.html">إدارة المقالات</a>
+                    <a class="nav-item" data-page="admin-operations.html">العمليات</a>
+                    <a class="nav-item logout" data-page="index.html">تسجيل الخروج</a>
                 </div>
             </div>
         </div>
@@ -97,12 +97,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             const navLinks = document.querySelectorAll('.student-nav .nav-item');
             navLinks.forEach(link => {
-                if (link.classList.contains('logout') || link.classList.contains('active') || link.getAttribute('href') === '#') return;
+                if (link.classList.contains('active')) return;
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const destination = this.href;
+                    const destination = this.getAttribute('data-page');
                     document.body.classList.add('is-transitioning');
-                    setTimeout(() => { window.location.href = destination; }, 200);
+                    setTimeout(() => { if (destination) window.location.href = destination; }, 200);
                 });
             });
         });
