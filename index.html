@@ -302,12 +302,19 @@
             </div>
             <div class="dialog-form-section">
                 <button class="dialog-close" onclick="closeLoginDialog()">×</button>
-                <h3 id="dialogTitle" class="mb-4">تسجيل الدخول إلى حسابك</h3>
-                <form id="loginFormInDialog">
-                    <input type="text" class="form-control mb-3" id="dialogUserId" name="userId" required placeholder="رقم العضوية أو اسم المستخدم">
+                <h3 id="dialogTitle" class="mb-4">تسجيل الدخول</h3>
+                <form id="authForm">
+                    <!-- حقل الاسم (يظهر فقط عند إنشاء حساب) -->
+                    <div id="dialogNameField" class="mb-3" style="display: none;">
+                        <input type="text" class="form-control" id="dialogName" name="name" placeholder="الاسم الكامل">
+                    </div>
+                    <input type="text" class="form-control mb-3" id="dialogUserId" name="userId" required placeholder="رقم العضوية">
                     <input type="password" class="form-control mb-3" id="dialogPassword" name="password" required placeholder="كلمة المرور">
-                    <div id="dialogLoginError" class="text-danger mb-3" style="display: none;">رقم العضوية أو كلمة المرور غير صحيحة.</div>
-                    <button type="submit" class="btn btn-primary btn-full">تسجيل الدخول</button>
+                    <div id="dialogAuthError" class="text-danger mb-3" style="display: none;"></div>
+                    <button type="submit" id="authSubmitBtn" class="btn btn-primary btn-full">تسجيل الدخول</button>
+                </form>
+                <p id="authToggleText" class="text-center mt-3" style="font-size: 0.9rem;">
+                    ليس لديك حساب؟ <a href="#" id="switchToRegister">أنشئ حساباً جديداً</a>
                 </form>
             </div>
         </div>

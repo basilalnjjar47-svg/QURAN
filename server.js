@@ -68,6 +68,7 @@ const userSchema = new mongoose.Schema({
     group: { type: String },
     teacherId: { type: String },
     responsibleForGroup: { type: String },
+    createdAt: { type: Date, default: Date.now }, // حقل لتاريخ إنشاء الحساب
     schedule: [{
         day: String,
         time: String,
@@ -459,3 +460,23 @@ if (process.env.RENDER_EXTERNAL_URL) {
             .catch(err => console.error(`Self-ping error to ${PING_URL}:`, err.message));
     }, 14 * 60 * 1000);
 }
+
+// =======================
+// مهمة مجدولة لحذف الحسابات غير النشطة
+// =======================
+async function deleteInactiveUsers() {
+    try {
+        const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
+        
+        // البحث عن الطلاب الذين تم إنشاؤهم منذ أكثر من يومين
+        // وليس لديهم معلم أو مجموعة (أي غير مشتركين)
+        const result = await User.deleteMany({
+            role: 'student',
+            createdAt: { $lt: twoDaysAgo },
+            teacherId: null,
+            group: null
+        });
+        if (result.deletedCount > 0) console.log(`✅ تم حذف ${result.deletedCount} من الطلاب غير النشطين.`);
+    } catch (error) { console.error('❌ فشلت مهمة حذف المستخدمين غير النشطين:', error); }
+}
+setInterval(deleteInactiveUsers, 24 * 60 * 60 * 1000); // تشغيل المهمة مرة كل 24 ساعة

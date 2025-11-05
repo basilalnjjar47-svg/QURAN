@@ -1,6 +1,10 @@
-function openLoginDialog(role) {
+let isRegisterMode = false;
+
+function openLoginDialog() {
     const dialog = document.getElementById('loginDialog');
     dialog.classList.add('visible');
+    // التأكد من العودة لوضع تسجيل الدخول الافتراضي عند فتح النافذة
+    switchToLoginView(false); 
 }
 
 function closeLoginDialog() {
@@ -8,53 +12,97 @@ function closeLoginDialog() {
     dialog.classList.remove('visible');
 }
 
-const loginForm = document.getElementById('loginFormInDialog');
-if (loginForm) {
-    loginForm.addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const userId = document.getElementById('dialogUserId').value;
-        const password = document.getElementById('dialogPassword').value;
-        const loginError = document.getElementById('dialogLoginError');
-        loginError.style.display = 'none';
-
-        try {
-            // تم تحديث الرابط بعنوان الخادم الحقيقي على Render
-            const SERVER_URL = 'https://quran-32vn.onrender.com';
-            const response = await fetch(`${SERVER_URL}/api/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: userId, password: password }) // تم حذف الدور، الخادم سيحدده
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                loginError.textContent = result.message || 'فشل تسجيل الدخول.';
-                loginError.style.display = 'block';
-                return;
-            }
-
-            // حفظ بيانات المستخدم الحقيقية
-            sessionStorage.setItem('currentUser', JSON.stringify(result.user));
-
-            // تأثير خروجي سريع ثم التوجيه
-            document.body.classList.add('is-transitioning');
-            setTimeout(() => {
-                window.location.href = result.redirectTo;
-            }, 200);
-
-        } catch (error) {
-            loginError.textContent = 'لا يمكن الاتصال بالخادم. الرجاء المحاولة لاحقاً.';
-            loginError.style.display = 'block';
-        }
-    });
-}
-
 document.getElementById('loginDialog')?.addEventListener('click', function(e) {
     if (e.target === this) {
         closeLoginDialog();
     }
 });
+
+const authForm = document.getElementById('authForm');
+const dialogTitle = document.getElementById('dialogTitle');
+const nameField = document.getElementById('dialogNameField');
+const authSubmitBtn = document.getElementById('authSubmitBtn');
+const authToggleText = document.getElementById('authToggleText');
+const authError = document.getElementById('dialogAuthError');
+
+function switchToRegisterView() {
+    isRegisterMode = true;
+    dialogTitle.textContent = 'إنشاء حساب جديد';
+    nameField.style.display = 'block';
+    document.getElementById('dialogName').required = true;
+    authSubmitBtn.textContent = 'إنشاء الحساب';
+    authToggleText.innerHTML = 'لديك حساب بالفعل؟ <a href="#" id="switchToLogin">سجّل الدخول</a>';
+    document.getElementById('switchToLogin').addEventListener('click', (e) => { e.preventDefault(); switchToLoginView(true); });
+    authError.style.display = 'none';
+}
+
+function switchToLoginView(isToggle) {
+    isRegisterMode = false;
+    dialogTitle.textContent = 'تسجيل الدخول';
+    nameField.style.display = 'none';
+    document.getElementById('dialogName').required = false;
+    authSubmitBtn.textContent = 'تسجيل الدخول';
+    authToggleText.innerHTML = 'ليس لديك حساب؟ <a href="#" id="switchToRegister">أنشئ حساباً جديداً</a>';
+    if (isToggle) { // فقط أضف المستمع إذا كان التبديل من داخل النافذة
+        document.getElementById('switchToRegister').addEventListener('click', (e) => { e.preventDefault(); switchToRegisterView(); });
+    }
+    authError.style.display = 'none';
+}
+
+// المستمع الأولي عند تحميل الصفحة
+document.getElementById('switchToRegister').addEventListener('click', (e) => { e.preventDefault(); switchToRegisterView(); });
+
+
+authForm.addEventListener('submit', async function(event) {
+    event.preventDefault();
+    authError.style.display = 'none';
+    const SERVER_URL = 'https://quran-32vn.onrender.com';
+
+    const userData = {
+        id: document.getElementById('dialogUserId').value,
+        password: document.getElementById('dialogPassword').value,
+    };
+
+    let url, method;
+
+    if (isRegisterMode) {
+        url = `${SERVER_URL}/api/users`;
+        method = 'POST';
+        userData.name = document.getElementById('dialogName').value;
+        userData.role = 'student'; // الحسابات الجديدة دائماً طلاب
+    } else {
+        url = `${SERVER_URL}/api/login`;
+        method = 'POST';
+    }
+
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData)
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+            authError.textContent = result.message || 'حدث خطأ ما.';
+            authError.style.display = 'block';
+            return;
+        }
+
+        if (isRegisterMode) {
+            alert('تم إنشاء حسابك بنجاح! سيقوم المشرف بمراجعة طلبك وتفعيل اشتراكك. يمكنك الآن تسجيل الدخول.');
+            switchToLoginView(true);
+        } else {
+            sessionStorage.setItem('currentUser', JSON.stringify(result.user));
+            document.body.classList.add('is-transitioning');
+            setTimeout(() => { window.location.href = result.redirectTo; }, 200);
+        }
+    } catch (error) {
+        authError.textContent = 'لا يمكن الاتصال بالخادم. الرجاء المحاولة لاحقاً.';
+        authError.style.display = 'block';
+    }
+});
+
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
