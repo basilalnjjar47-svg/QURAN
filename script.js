@@ -1,12 +1,11 @@
 let isRegisterMode = false;
 
-function openLoginDialog() {
+function openLoginDialog(role) { // أعدنا role مؤقتاً للتوافق مع الاستدعاء القديم
     const dialog = document.getElementById('loginDialog');
     dialog.classList.add('visible');
     // التأكد من العودة لوضع تسجيل الدخول الافتراضي عند فتح النافذة
     switchToLoginView(false); 
 }
-
 function closeLoginDialog() {
     const dialog = document.getElementById('loginDialog');
     dialog.classList.remove('visible');
