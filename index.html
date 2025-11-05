@@ -314,7 +314,7 @@
                     <button type="submit" id="authSubmitBtn" class="btn btn-primary btn-full">تسجيل الدخول</button>
                 </form>
                 <p id="authToggleText" class="text-center mt-3" style="font-size: 0.9rem;">
-                    ليس لديك حساب؟ <a href="#" id="switchToRegister">أنشئ حساباً جديداً</a>
+                    ليس لديك حساب؟ <a href="register.html">أنشئ حساباً جديداً</a>
                 </p>
             </div>
         </div>
@@ -327,6 +327,12 @@
     <script>
         // --- الكود الجديد لجعل السلايدر ديناميكياً ---
         document.addEventListener('DOMContentLoaded', function() {
+            // التحقق مما إذا كان يجب فتح نافذة تسجيل الدخول عند العودة من صفحة التسجيل
+            if (sessionStorage.getItem('openLoginDialog') === 'true') {
+                openLoginDialog();
+                sessionStorage.removeItem('openLoginDialog'); // إزالة العلامة بعد الاستخدام
+            }
+
             // نموذج Netlify Forms يعمل عند الاستضافة على Netlify تلقائياً
             async function loadDynamicSlider() {
                 const SERVER_URL = 'https://quran-32vn.onrender.com';

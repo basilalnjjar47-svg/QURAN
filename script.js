@@ -1,10 +1,6 @@
-let isRegisterMode = false;
-
 function openLoginDialog(role) { // أعدنا role مؤقتاً للتوافق مع الاستدعاء القديم
     const dialog = document.getElementById('loginDialog');
     dialog.classList.add('visible');
-    // التأكد من العودة لوضع تسجيل الدخول الافتراضي عند فتح النافذة
-    switchToLoginView(false); 
 }
 function closeLoginDialog() {
     const dialog = document.getElementById('loginDialog');
@@ -24,61 +20,21 @@ const authSubmitBtn = document.getElementById('authSubmitBtn');
 const authToggleText = document.getElementById('authToggleText');
 const authError = document.getElementById('dialogAuthError');
 
-function switchToRegisterView() {
-    isRegisterMode = true;
-    dialogTitle.textContent = 'إنشاء حساب جديد';
-    nameField.style.display = 'block';
-    document.getElementById('dialogName').required = true;
-    authSubmitBtn.textContent = 'إنشاء الحساب';
-    authToggleText.innerHTML = 'لديك حساب بالفعل؟ <a href="#" id="switchToLogin">سجّل الدخول</a>';
-    document.getElementById('switchToLogin').addEventListener('click', (e) => { e.preventDefault(); switchToLoginView(true); });
-    authError.style.display = 'none';
-}
-
-function switchToLoginView(isToggle) {
-    isRegisterMode = false;
-    dialogTitle.textContent = 'تسجيل الدخول';
-    nameField.style.display = 'none';
-    document.getElementById('dialogName').required = false;
-    authSubmitBtn.textContent = 'تسجيل الدخول';
-    authToggleText.innerHTML = 'ليس لديك حساب؟ <a href="#" id="switchToRegister">أنشئ حساباً جديداً</a>';
-    if (isToggle) { // فقط أضف المستمع إذا كان التبديل من داخل النافذة
-        document.getElementById('switchToRegister').addEventListener('click', (e) => { e.preventDefault(); switchToRegisterView(); });
-    }
-    authError.style.display = 'none';
-}
-
-// المستمع الأولي عند تحميل الصفحة
-document.getElementById('switchToRegister').addEventListener('click', (e) => { e.preventDefault(); switchToRegisterView(); });
-
-
 authForm.addEventListener('submit', async function(event) {
     event.preventDefault();
     authError.style.display = 'none';
     const SERVER_URL = 'https://quran-32vn.onrender.com';
 
-    const userData = {
+    const loginData = {
         id: document.getElementById('dialogUserId').value,
         password: document.getElementById('dialogPassword').value,
     };
 
-    let url, method;
-
-    if (isRegisterMode) {
-        url = `${SERVER_URL}/api/users`;
-        method = 'POST';
-        userData.name = document.getElementById('dialogName').value;
-        userData.role = 'student'; // الحسابات الجديدة دائماً طلاب
-    } else {
-        url = `${SERVER_URL}/api/login`;
-        method = 'POST';
-    }
-
     try {
-        const response = await fetch(url, {
-            method: method,
+        const response = await fetch(`${SERVER_URL}/api/login`, {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(userData)
+            body: JSON.stringify(loginData)
         });
         const result = await response.json();
 
@@ -88,14 +44,9 @@ authForm.addEventListener('submit', async function(event) {
             return;
         }
 
-        if (isRegisterMode) {
-            alert('تم إنشاء حسابك بنجاح! سيقوم المشرف بمراجعة طلبك وتفعيل اشتراكك. يمكنك الآن تسجيل الدخول.');
-            switchToLoginView(true);
-        } else {
-            sessionStorage.setItem('currentUser', JSON.stringify(result.user));
-            document.body.classList.add('is-transitioning');
-            setTimeout(() => { window.location.href = result.redirectTo; }, 200);
-        }
+        sessionStorage.setItem('currentUser', JSON.stringify(result.user));
+        document.body.classList.add('is-transitioning');
+        setTimeout(() => { window.location.href = result.redirectTo; }, 200);
     } catch (error) {
         authError.textContent = 'لا يمكن الاتصال بالخادم. الرجاء المحاولة لاحقاً.';
         authError.style.display = 'block';
