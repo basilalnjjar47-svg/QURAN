@@ -53,10 +53,10 @@ authForm.addEventListener('submit', async function(event) {
     }
 });
 
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+document.querySelectorAll('a[data-scroll-to]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
+        const target = document.querySelector(this.dataset.scrollTo);
         if (target) {
             target.scrollIntoView({
                 behavior: 'smooth',

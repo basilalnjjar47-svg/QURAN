@@ -54,6 +54,11 @@
                 <label for="registerPassword">كلمة المرور</label>
             </div>
             <div id="registerError" class="alert alert-danger" style="display: none;"></div>
+            <!-- رسالة النجاح الجديدة -->
+            <div id="registerSuccess" class="alert alert-success" style="display: none;">
+                <h5 class="alert-heading"><i class="bi bi-check-circle-fill"></i> تم بنجاح!</h5>
+                <p class="mb-0">تم إنشاء حسابك. سيتم الآن توجيهك لتسجيل الدخول.</p>
+            </div>
             <button type="submit" class="btn btn-primary btn-lg w-100">إنشاء الحساب</button>
         </form>
         <p class="mt-3">
@@ -72,6 +77,7 @@
         document.getElementById('registerForm').addEventListener('submit', async function(event) {
             event.preventDefault();
             const registerError = document.getElementById('registerError');
+            const registerSuccess = document.getElementById('registerSuccess');
             registerError.style.display = 'none';
 
             const userData = {
@@ -98,8 +104,12 @@
                     return;
                 }
 
-                alert('تم إنشاء حسابك بنجاح! سيقوم المشرف بمراجعة طلبك وتفعيل اشتراكك. سيتم الآن توجيهك لتسجيل الدخول.');
-                openLoginFromRegister(event);
+                // إظهار رسالة النجاح بدلاً من التنبيه
+                registerSuccess.style.display = 'block';
+                // الانتظار ثانيتين ثم التوجيه
+                setTimeout(() => {
+                    openLoginFromRegister(event);
+                }, 2000);
 
             } catch (error) {
                 registerError.textContent = 'لا يمكن الاتصال بالخادم. الرجاء المحاولة لاحقاً.';

@@ -57,11 +57,11 @@
             </button>
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" href="#">الرئيسية</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#halaqat">حلقاتنا</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#articles">المقالات</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#about">عن المركز</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#footer">تواصل معنا</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="javascript:void(0);" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">الرئيسية</a></li>
+                    <li class="nav-item"><a class="nav-link" href="javascript:void(0);" data-scroll-to="#halaqat">حلقاتنا</a></li>
+                    <li class="nav-item"><a class="nav-link" href="javascript:void(0);" data-scroll-to="#articles">المقالات</a></li>
+                    <li class="nav-item"><a class="nav-link" href="javascript:void(0);" data-scroll-to="#about">عن المركز</a></li>
+                    <li class="nav-item"><a class="nav-link" href="javascript:void(0);" data-scroll-to="#footer">تواصل معنا</a></li>
                 </ul>
                 <div class="d-flex">
                     <button class="btn btn-primary" onclick="openLoginDialog('student')">تسجيل الدخول</button>
@@ -314,7 +314,7 @@
                     <button type="submit" id="authSubmitBtn" class="btn btn-primary btn-full">تسجيل الدخول</button>
                 </form>
                 <p id="authToggleText" class="text-center mt-3" style="font-size: 0.9rem;">
-                    ليس لديك حساب؟ <a href="register.html">أنشئ حساباً جديداً</a>
+                    ليس لديك حساب؟ <a href="javascript:void(0);" onclick="window.location.href='register.html'">أنشئ حساباً جديداً</a>
                 </p>
             </div>
         </div>
