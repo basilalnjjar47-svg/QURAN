@@ -236,4 +236,22 @@ document.addEventListener('DOMContentLoaded', function () {
     // جلب المستخدمين عند تحميل الصفحة
     populateRoles();
     fetchAndDisplayUsers();
+
+    // --- تفعيل أزرار التنقل ---
+    const navLinks = document.querySelectorAll('.student-nav .nav-item');
+    navLinks.forEach(link => {
+        // التعامل مع زر تسجيل الخروج بشكل خاص
+        if (link.classList.contains('logout')) {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                sessionStorage.removeItem('currentUser');
+                window.location.href = link.dataset.page || 'index.html';
+            });
+        } else if (link.dataset.page && !link.classList.contains('active')) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = this.getAttribute('data-page');
+            });
+        }
+    });
 });
