@@ -22,6 +22,12 @@
                 border-radius: 0.5rem;
                 margin-bottom: 1rem;
                 padding: 0.5rem 1rem;
+            } 
+            .responsive-table tbody tr td {
+                display: block;
+                text-align: right;
+                padding-left: 50%;
+                position: relative;
             }
             .responsive-table tbody td {
                 display: flex; /* استخدام Flexbox للمحاذاة */
@@ -204,6 +210,21 @@
             });
 
             fetchSchedule();
+
+            // انتقالات خفيفة عند التنقل بين الروابط
+            const navLinks = document.querySelectorAll('.student-nav .nav-item');
+            navLinks.forEach(link => {
+                if (link.classList.contains('logout')) {
+                     link.addEventListener('click', (e) => { e.preventDefault(); sessionStorage.removeItem('currentUser'); window.location.href = 'index.html'; });
+                } else if (link.href && !link.classList.contains('active')) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const destination = this.href;
+                        document.body.classList.add('is-transitioning');
+                        setTimeout(() => { if (destination) window.location.href = destination; }, 200);
+                    });
+                }
+            });
         });
     </script>
 </body>

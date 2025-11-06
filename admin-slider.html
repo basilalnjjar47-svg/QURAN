@@ -328,6 +328,22 @@
             }
 
             fetchAndDisplaySlides();
+
+            // انتقالات خفيفة عند التنقل بين الروابط
+            const navLinks = document.querySelectorAll('.student-nav .nav-item');
+            navLinks.forEach(link => {
+                // تجاهل الروابط التي لا تحتوي على data-page أو التي هي لتسجيل الخروج أو الرابط النشط
+                if (!link.dataset.page || link.classList.contains('logout') || link.classList.contains('active')) {
+                    if(link.classList.contains('logout')) {
+                        link.addEventListener('click', (e) => { e.preventDefault(); window.location.href = link.dataset.page; });
+                    }
+                    return;
+                };
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = this.getAttribute('data-page');
+                });
+            });
         });
     </script>
 </body>
