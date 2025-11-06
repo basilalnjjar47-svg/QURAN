@@ -76,36 +76,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            async function fetchStats() {
-                try {
-                    const res = await fetch('https://quran-32vn.onrender.com/api/stats/overview');
-                    const data = await res.json();
-                    if (!res.ok) throw new Error(data.message || 'خطأ');
-                    document.getElementById('studentTotalCount').textContent = data.totalStudents ?? 0;
-                    document.getElementById('teacherTotalCount').textContent = data.totalTeachers ?? 0;
-                } catch (e) {
-                    console.error('Failed to load stats', e);
-                }
-            }
-            fetchStats();
-            setInterval(fetchStats, 30000);
-        });
-
-        // انتقالات خفيفة عند التنقل بين الروابط
-        document.addEventListener('DOMContentLoaded', function() {
-            const navLinks = document.querySelectorAll('.student-nav .nav-item');
-            navLinks.forEach(link => {
-                if (link.classList.contains('active')) return;
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const destination = this.getAttribute('data-page');
-                    document.body.classList.add('is-transitioning');
-                    setTimeout(() => { if (destination) window.location.href = destination; }, 200);
-                });
-            });
-        });
-    </script>
+    <script src="admin-nav.js"></script>
+    <script src="admin-dashboard.js"></script>
 </body>
 </html>
