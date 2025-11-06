@@ -409,6 +409,51 @@
                 } catch (error) { console.error('Failed to load articles:', error); }
             }
             loadArticles();
+
+            // --- الكود الجديد لمعالجة تسجيل الدخول ---
+            const authForm = document.getElementById('authForm');
+            const authError = document.getElementById('dialogAuthError');
+            const authSubmitBtn = document.getElementById('authSubmitBtn');
+
+            if (authForm) {
+                authForm.addEventListener('submit', async function(event) {
+                    event.preventDefault(); // منع إعادة تحميل الصفحة
+
+                    authError.style.display = 'none';
+                    authSubmitBtn.disabled = true;
+                    authSubmitBtn.textContent = 'جاري التحقق...';
+
+                    const userId = document.getElementById('dialogUserId').value;
+                    const password = document.getElementById('dialogPassword').value;
+                    const SERVER_URL = 'https://quran-32vn.onrender.com';
+
+                    try {
+                        const response = await fetch(`${SERVER_URL}/api/login`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: userId, password: password })
+                        });
+
+                        const result = await response.json();
+
+                        if (!response.ok) {
+                            throw new Error(result.message || 'فشل تسجيل الدخول');
+                        }
+
+                        // حفظ بيانات المستخدم في sessionStorage
+                        sessionStorage.setItem('currentUser', JSON.stringify(result.user));
+                        
+                        // التوجيه إلى الصفحة المناسبة
+                        window.location.href = result.redirectTo;
+
+                    } catch (error) {
+                        authError.textContent = error.message;
+                        authError.style.display = 'block';
+                        authSubmitBtn.disabled = false;
+                        authSubmitBtn.textContent = 'تسجيل الدخول';
+                    }
+                });
+            }
         });
     </script>
 </body>
