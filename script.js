@@ -38,18 +38,21 @@ authForm.addEventListener('submit', async function(event) {
         });
         const result = await response.json();
 
+        // --- تصحيح: التحقق من طلب الدخول بخطوتين أولاً ---
+        if (result.status === '2fa_required') {
+            sessionStorage.setItem('tempUserId', result.userId); // حفظ الـ ID مؤقتاً
+            window.location.href = `admin-super-verify.html`;
+            return; // إيقاف التنفيذ والانتقال لصفحة التحقق
+        }
+
+        // إذا لم يكن طلباً بخطوتين، تحقق من وجود أخطاء أخرى
         if (!response.ok) {
-            // --- جديد: معالجة خاصة لطلب التحقق الثاني ---
-            if (result.status === '2fa_required') {
-                sessionStorage.setItem('tempUserId', result.userId); // حفظ الـ ID مؤقتاً
-                window.location.href = `admin-super-verify.html`;
-                return;
-            }
             authError.textContent = result.message || 'حدث خطأ ما.';
             authError.style.display = 'block';
             return;
         }
 
+        // في حالة تسجيل الدخول العادي الناجح
         sessionStorage.setItem('currentUser', JSON.stringify(result.user));
         document.body.classList.add('is-transitioning');
         setTimeout(() => { window.location.href = result.redirectTo; }, 200);
