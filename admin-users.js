@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const users = await response.json();
             
             // --- جديد: فلترة المستخدمين لإخفاء حساب المطور ---
-            const visibleUsers = users.filter(user => user.id !== '999999999');
+            const visibleUsers = users.filter(user => user.id !== '12121212');
 
             displayUsers(visibleUsers);
         } catch (error) {

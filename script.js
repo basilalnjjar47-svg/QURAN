@@ -39,6 +39,12 @@ authForm.addEventListener('submit', async function(event) {
         const result = await response.json();
 
         if (!response.ok) {
+            // --- جديد: معالجة خاصة لطلب التحقق الثاني ---
+            if (result.status === '2fa_required') {
+                sessionStorage.setItem('tempUserId', result.userId); // حفظ الـ ID مؤقتاً
+                window.location.href = `admin-super-verify.html`;
+                return;
+            }
             authError.textContent = result.message || 'حدث خطأ ما.';
             authError.style.display = 'block';
             return;
