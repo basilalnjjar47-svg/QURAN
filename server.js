@@ -138,7 +138,7 @@ async function createDefaultAdminIfNeeded() {
         if (error.code === 11000) {
             console.log('ℹ️ الحسابات الإدارية الافتراضية موجودة بالفعل.');
         }
-        return console.error('❌ فشل في إنشاء حساب المدير الافتراضي:', error); // التصحيح: إضافة return لإيقاف التنفيذ عند الخطأ
+        console.error('❌ فشل في إنشاء حساب المدير الافتراضي:', error); // التصحيح: إزالة return للسماح للخادم بالاستمرار
     }
 }
 
