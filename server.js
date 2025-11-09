@@ -211,10 +211,10 @@ app.delete('/api/users/:id', async (req, res) => {
 
 app.put('/api/users/:id', async (req, res) => {
     try {
-        const { id } = req.params; // رقم العضوية من الرابط
+        const { id } = req.params; // هذا الآن هو _id من قاعدة البيانات
         const { name, role, password, grade, group, teacherId, responsibleForGroup } = req.body;
 
-        const user = await User.findOne({ id: id });
+        const user = await User.findById(id); // التعديل: البحث باستخدام findById
         if (!user) return res.status(404).json({ message: 'المستخدم غير موجود.' });
 
         user.name = name || user.name;

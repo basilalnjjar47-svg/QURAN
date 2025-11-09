@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // تحديد الرابط والطريقة (إضافة أو تعديل)
-        const url = isEditing ? `${SERVER_URL}/api/users/${userData.id}` : `${SERVER_URL}/api/users`;
+        const url = isEditing ? `${SERVER_URL}/api/users/${editingUserId}` : `${SERVER_URL}/api/users`;
         const method = isEditing ? 'PUT' : 'POST';
 
         try {
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (userToEdit) {
                     editingUserId = userId;
-                    modalTitle.textContent = 'تعديل بيانات المستخدم';
+                    modalTitle.textContent = `تعديل بيانات: ${userToEdit.name}`;
                     document.getElementById('newUserName').value = userToEdit.name;
                     document.getElementById('newUserId').value = userToEdit.id;
                     document.getElementById('newUserId').readOnly = true;
