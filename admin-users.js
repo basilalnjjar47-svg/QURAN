@@ -48,6 +48,21 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // --- دالة جديدة: لتنسيق عرض التواريخ ---
+    function formatRelativeTime(dateString) {
+        if (!dateString) return 'لم يسجل دخول';
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInSeconds = Math.floor((now - date) / 1000);
+
+        if (diffInSeconds < 60) return `قبل ${diffInSeconds} ثانية`;
+        if (diffInSeconds < 3600) return `قبل ${Math.floor(diffInSeconds / 60)} دقيقة`;
+        if (diffInSeconds < 86400) return `قبل ${Math.floor(diffInSeconds / 3600)} ساعة`;
+        if (diffInSeconds < 2592000) return `قبل ${Math.floor(diffInSeconds / 86400)} يوم`;
+        
+        return date.toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
     function displayUsers(users) {
             usersTableBody.innerHTML = ''; // تفريغ الجدول قبل ملئه
 
@@ -73,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td>${user.grade || 'N/A'}</td>
                         <td>${user.group || 'N/A'}</td>
                         <td>${user.teacherId || 'N/A'}</td>
+                        <td>${formatRelativeTime(user.lastLogin)}</td>
                         <td>
                             <button class="btn btn-sm btn-outline-primary edit-btn" data-user-id="${user._id}">تعديل</button>
                             ${deleteBtn}

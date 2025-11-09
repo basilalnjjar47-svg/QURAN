@@ -69,6 +69,7 @@ const userSchema = new mongoose.Schema({
     teacherId: { type: String },
     responsibleForGroup: { type: String },
     createdAt: { type: Date, default: Date.now }, // حقل لتاريخ إنشاء الحساب
+    lastLogin: { type: Date }, // جديد: حقل لتسجيل آخر دخول
     schedule: [{
         day: String,
         time: String,
@@ -136,6 +137,11 @@ app.post('/api/login', async (req, res) => {
     const user = await User.findOne({ id: id });
     if (!user) return res.status(404).json({ message: 'المستخدم غير موجود.' });
     if (user.password !== password) return res.status(401).json({ message: 'كلمة المرور غير صحيحة.' });
+
+    // --- جديد: تحديث تاريخ آخر تسجيل دخول ---
+    user.lastLogin = new Date();
+    await user.save();
+
     const pages = { student: 'student-dashboard.html', teacher: 'teacher-dashboard.html', admin: 'admin-dashboard.html' };
     res.json({ message: 'تم تسجيل الدخول بنجاح', user: user, redirectTo: pages[user.role] });
 });
