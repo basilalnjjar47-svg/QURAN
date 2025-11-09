@@ -46,8 +46,8 @@
                 <label for="registerName">الاسم الكامل</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-control" id="registerId" placeholder="رقم العضوية (أرقام فقط)" required>
-                <label for="registerId">رقم العضوية (أرقام فقط)</label>
+                <input type="text" class="form-control" id="registerId" placeholder="رقم العضوية" required>
+                <label for="registerId">رقم العضوية</label>
             </div>
             <div class="form-floating mb-3">
                 <input type="password" inputmode="numeric" pattern="[0-9]*" class="form-control" id="registerPassword" placeholder="كلمة المرور (أرقام فقط)" required>
@@ -91,7 +91,7 @@
 
             try {
                 const response = await fetch(`${SERVER_URL}/api/users`, {
-                    method: 'POST',
+                    method: 'POST', // الطريقة الصحيحة لإرسال البيانات
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(userData)
                 });
