@@ -233,6 +233,34 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // --- جديد: التحقق من وجود المعلم ---
+    verifyTeacherBtn.addEventListener('click', async function() {
+        const teacherId = teacherIdInput.value.trim();
+        if (!teacherId) {
+            teacherNameDisplay.textContent = 'الرجاء إدخال رقم عضوية المعلم.';
+            teacherNameDisplay.className = 'form-text mt-2 text-danger';
+            return;
+        }
+
+        try {
+            const response = await fetch(`${SERVER_URL}/api/users/all`);
+            const users = await response.json();
+            const teacher = users.find(u => u.id === teacherId && u.role === 'teacher');
+
+            if (teacher) {
+                teacherNameDisplay.textContent = `تم العثور على المعلم: ${teacher.name}`;
+                teacherNameDisplay.className = 'form-text mt-2 text-success fw-bold';
+            } else {
+                teacherNameDisplay.textContent = 'لم يتم العثور على معلم بهذا الرقم.';
+                teacherNameDisplay.className = 'form-text mt-2 text-danger';
+            }
+        } catch (error) {
+            teacherNameDisplay.textContent = 'حدث خطأ أثناء التحقق.';
+            teacherNameDisplay.className = 'form-text mt-2 text-danger';
+        }
+    });
+
+
     // جلب المستخدمين عند تحميل الصفحة
     populateRoles();
     fetchAndDisplayUsers();
