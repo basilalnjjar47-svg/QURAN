@@ -513,10 +513,13 @@ app.get('/api/stats/overview', async (req, res) => {
 // تشغيل الخادم
 // =======================
 const PORT = process.env.PORT || 10000;
-server.listen(PORT, () => {
-    console.log(`الخادم يعمل على المنفذ ${PORT}`);
-    createDefaultAdminIfNeeded();
-});
+
+// --- تعديل: التأكد من إنشاء حسابات المدراء قبل تشغيل الخادم ---
+createDefaultAdminIfNeeded().then(() => {
+    server.listen(PORT, () => {
+        console.log(`✅ الخادم يعمل الآن على المنفذ ${PORT}`);
+    });
+}).catch(err => console.error("❌ فشل حاسم أثناء بدء تشغيل الخادم:", err));
 
 // =======================
 // إبقاء الخادم نشطاً على Render

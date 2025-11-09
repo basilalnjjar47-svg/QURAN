@@ -1,5 +1,3 @@
-const { startSession } = require("mongoose");
-
 function openLoginDialog(role) { // أعدنا role مؤقتاً للتوافق مع الاستدعاء القديم
     const dialog = document.getElementById('loginDialog');
     dialog.classList.add('visible');
