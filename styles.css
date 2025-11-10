@@ -102,6 +102,11 @@ body.is-transitioning {
     padding: 5px 10px;
     border-radius: 6px;
     transition: background-color 0.3s;
+    /* --- جديد: منع تحديد النص عند الضغط على الروابط في الهاتف --- */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE 10+ */
+    user-select: none; /* Standard */
 }
 .student-nav .nav-item:hover, .student-nav .nav-item.active {
     background-color: rgba(255, 255, 255, 0.15);
