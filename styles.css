@@ -1120,14 +1120,16 @@ body.is-transitioning {
 
 /* توحيد لون الأزرار الأساسية في كل الصفحات الداخلية */
 .btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: #fff;
+    background-color: var(--primary-color) !important; /* توحيد اللون الأخضر للزر الرئيسي */
+    border-color: var(--primary-color) !important;
+    color: #fff !important;
+    transition: background-color 0.3s, border-color 0.3s, transform 0.3s, box-shadow 0.3s;
 }
 .btn-primary:hover {
-    background-color: #083a27;
-    border-color: #083a27;
-    color: #fff;
+    background-color: #083a27 !important; /* لون أغمق عند المرور */
+    border-color: #083a27 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 /* قسم "عن المركز" */
