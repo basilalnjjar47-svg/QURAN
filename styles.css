@@ -288,6 +288,11 @@ body.is-transitioning {
     gap: 8px;
     padding: 12px 25px; /* زيادة حجم الزر قليلاً لجعله أكثر بروزاً */
     transition: 0.3s;
+    /* --- جديد: منع تحديد النص عند الضغط على الأزرار في الهاتف --- */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE 10+ */
+    user-select: none;         /* Standard */
 }
 
 /* primary button styles defined later; this empty rule removed */
