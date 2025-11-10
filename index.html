@@ -52,20 +52,17 @@
                 <i class="bi bi-moon-stars-fill logo-icon-main"></i>
                 مركز النوران
             </a>
+            <!-- تم نقل زر تسجيل الدخول هنا ليظهر دائماً على الهاتف -->
+            <div class="d-flex order-lg-2">
+                <button class="btn btn-primary" onclick="openLoginDialog('student')">تسجيل الدخول</button>
+            </div>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link active" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">الرئيسية</a></li>
-                    <li class="nav-item"><a class="nav-link" data-scroll-to="#halaqat">حلقاتنا</a></li>
-                    <li class="nav-item"><a class="nav-link" data-scroll-to="#articles">المقالات</a></li>
-                    <li class="nav-item"><a class="nav-link" data-scroll-to="#about">عن المركز</a></li>
-                    <li class="nav-item"><a class="nav-link" data-scroll-to="#footer">تواصل معنا</a></li>
                 </ul>
-                <div class="d-flex">
-                    <button class="btn btn-primary" onclick="openLoginDialog('student')">تسجيل الدخول</button>
-                </div>
             </div>
         </div>
     </nav>

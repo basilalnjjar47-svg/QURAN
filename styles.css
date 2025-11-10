@@ -925,11 +925,16 @@ body.is-transitioning {
 
 /* Mobile refinements */
 @media (max-width: 768px) {
+    .section-title-new { font-size: 2.2rem; } /* تصغير العناوين الرئيسية في الهاتف */
     #main-slider .row.g-0.h-100 { gap: 12px; }
-    .hero-banner-text h2 { font-size: 1.8rem; }
+    .hero-banner-text h2 { font-size: 2rem; } /* تعديل: تصغير حجم خط السلايدر قليلاً */
     .hero-banner-text .btn { width: 100%; }
     .hero-banner-img-square { width: 90%; border-radius: 24px; }
     .carousel-indicators { display: none; }
+    .feature-circle { width: 80px; height: 80px; } /* تعديل: تصغير حجم دوائر المميزات */
+    .feature-circle i { font-size: 2rem; } /* تعديل: تصغير حجم أيقونات المميزات */
+    .halaqa-title { font-size: 1.2rem; } /* تعديل: تصغير حجم عنوان الحلقة */
+    .article-card { margin-bottom: 1rem; } /* تعديل: إضافة مسافة بين بطاقات المقالات */
 }
 
 @media (max-width: 576px) {
@@ -937,6 +942,7 @@ body.is-transitioning {
     .hero-banner-text h2 { font-size: 1.5rem; }
     .hero-banner-text .lead { font-size: 0.95rem; }
     .hero-banner-img-square { width: 100%; border-radius: 20px; }
+    .article-card { margin-bottom: 1rem; } /* التأكد من وجود المسافة على الشاشات الأصغر أيضاً */
 }
 
 /* Subtle float-in for banner image */
