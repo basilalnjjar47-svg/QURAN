@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td>${user.grade || 'N/A'}</td>
                         <td>${user.group || 'N/A'}</td>
                         <td>${user.teacherId || 'N/A'}</td>
+                        <td>${formatRelativeTime(user.createdAt)}</td>
                         <td>${formatRelativeTime(user.lastLogin)}</td>
                         <td>
                             <button class="btn btn-sm btn-outline-primary edit-btn" data-user-id="${user._id}">تعديل</button>
