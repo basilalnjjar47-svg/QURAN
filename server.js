@@ -572,8 +572,8 @@ async function deleteInactiveUsers() {
         const result = await User.deleteMany({
             role: 'student',
             createdAt: { $lt: twoDaysAgo },
-            teacherId: null,
-            group: null
+            teacherId: { $in: [null, ''] }, // التصحيح: البحث عن الطلاب غير المرتبطين بمعلم
+            group: { $in: [null, ''] }      // التصحيح: البحث عن الطلاب غير المنضمين لمجموعة
         });
         if (result.deletedCount > 0) console.log(`✅ تم حذف ${result.deletedCount} من الطلاب غير النشطين.`);
     } catch (error) { console.error('❌ فشلت مهمة حذف المستخدمين غير النشطين:', error); }
