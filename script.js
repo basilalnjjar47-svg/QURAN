@@ -62,7 +62,8 @@ authForm.addEventListener('submit', async function(event) {
     }
 });
 
-document.querySelectorAll('a[data-scroll-to]').forEach(anchor => {
+// --- تعديل: جعل خاصية التمرير تعمل على أي عنصر (ليس فقط الروابط) ---
+document.querySelectorAll('[data-scroll-to]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.dataset.scrollTo);
