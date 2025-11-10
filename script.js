@@ -62,19 +62,6 @@ authForm.addEventListener('submit', async function(event) {
     }
 });
 
-// --- تعديل: جعل خاصية التمرير تعمل على أي عنصر (ليس فقط الروابط) ---
-document.querySelectorAll('[data-scroll-to]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.dataset.scrollTo);
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
 const observerOptions = {
     threshold: 0.1,
     rootMargin: '0px 0px -50px 0px'
@@ -101,6 +88,22 @@ window.addEventListener('scroll', () => {
 const mainNavbar = document.querySelector('.navbar-main');
 
 document.addEventListener('DOMContentLoaded', () => {
+    // --- التصحيح: تم نقل كود التمرير إلى هنا لضمان عمله بعد تحميل الصفحة ---
+    document.querySelectorAll('[data-scroll-to]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.dataset.scrollTo);
+            if (target) {
+                // إغلاق القائمة الجانبية في الهاتف قبل التمرير (تحسين إضافي)
+                const mainNav = document.getElementById('mainNav');
+                if (mainNav && mainNav.classList.contains('show')) {
+                    bootstrap.Collapse.getInstance(mainNav).hide();
+                }
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+
     // تأثير الظهور المتتالي للبطاقات ورؤوس الأقسام
     const elementsToObserve = document.querySelectorAll('.role-card, .feature-card, .section-header, .method-item, .stat-item');
     elementsToObserve.forEach((el, index) => {
