@@ -144,3 +144,31 @@ document.addEventListener('DOMContentLoaded', () => {
         startSessionObserver.observe(statsSection);
     }
 });
+
+// --- جديد: تحسين تجربة القائمة الجانبية (Navbar) في الهاتف ---
+document.addEventListener('DOMContentLoaded', function () {
+    const mainNav = document.getElementById('mainNav');
+    if (!mainNav) return;
+
+    const bsCollapse = new bootstrap.Collapse(mainNav, { toggle: false });
+    const navLinks = mainNav.querySelectorAll('.nav-link');
+
+    // 1. إغلاق القائمة عند الضغط على أي رابط بداخلها
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (mainNav.classList.contains('show')) {
+                bsCollapse.hide();
+            }
+        });
+    });
+
+    // 2. إغلاق القائمة عند الضغط في أي مكان خارجها
+    document.addEventListener('click', function (event) {
+        const isClickInsideNav = mainNav.contains(event.target);
+        const isToggler = event.target.closest('.navbar-toggler');
+
+        if (!isClickInsideNav && !isToggler && mainNav.classList.contains('show')) {
+            bsCollapse.hide();
+        }
+    });
+});
