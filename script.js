@@ -38,14 +38,7 @@ authForm.addEventListener('submit', async function(event) {
         });
         const result = await response.json();
 
-        // --- تصحيح: التحقق من طلب الدخول بخطوتين أولاً ---
-        if (result.status === '2fa_required') {
-            sessionStorage.setItem('tempUserId', result.userId); // حفظ الـ ID مؤقتاً
-            window.location.href = `admin-super-verify.html`;
-            return; // إيقاف التنفيذ والانتقال لصفحة التحقق
-        }
-
-        // إذا لم يكن طلباً بخطوتين، تحقق من وجود أخطاء أخرى
+        // التحقق من وجود أخطاء
         if (!response.ok) {
             authError.textContent = result.message || 'حدث خطأ ما.';
             authError.style.display = 'block';

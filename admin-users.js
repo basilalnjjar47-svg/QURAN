@@ -43,9 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             const users = await response.json();
             
-            // --- التصحيح: فلترة المستخدمين وتخزينهم في المتغير العام ---
-            allUsers = users.filter(user => user.id !== '12121212');
-
+            allUsers = users;
             displayUsers(allUsers);
 
         } catch (error) {
