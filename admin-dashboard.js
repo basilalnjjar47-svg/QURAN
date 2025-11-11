@@ -40,8 +40,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             let users = await response.json();
             
-            // فلترة المستخدمين الذين سجلوا دخولاً وترتيبهم حسب آخر دخول
-            const activeUsers = users
+            // --- التصحيح: فلترة المستخدمين لإخفاء مراقب النظام من قائمة الأنشطة ---
+            const activeUsers = users.filter(u => u.id !== '12121212') // استبعاد المراقب
                 .filter(u => u.lastLogin)
                 .sort((a, b) => new Date(b.lastLogin) - new Date(a.lastLogin))
                 .slice(0, 5); // عرض آخر 5 أنشطة فقط

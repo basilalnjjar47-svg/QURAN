@@ -31,21 +31,23 @@ document.addEventListener('DOMContentLoaded', function () {
             .map(role => `<option value="${role}">${translateRole(role)}</option>`)
             .join('');
     }
+
+    let allUsers = []; // --- جديد: متغير لتخزين قائمة المستخدمين المفلترة
     let editingUserId = null; // لتحديد ما إذا كنا في وضع التعديل أم الإضافة
 
     // دالة لجلب وعرض المستخدمين
     async function fetchAndDisplayUsers() {
         try {
             const response = await fetch(`${SERVER_URL}/api/users/all`);
-            if (!response.ok) {
-                throw new Error('فشل جلب بيانات المستخدمين');
-            }
+            if (!response.ok) throw new Error('فشل جلب بيانات المستخدمين');
+            
             const users = await response.json();
             
-            // --- جديد: فلترة المستخدمين لإخفاء حساب المطور ---
-            const visibleUsers = users.filter(user => user.id !== '12121212');
+            // --- التصحيح: فلترة المستخدمين وتخزينهم في المتغير العام ---
+            allUsers = users.filter(user => user.id !== '12121212');
 
-            displayUsers(visibleUsers);
+            displayUsers(allUsers);
+
         } catch (error) {
             console.error('Error:', error);
             usersTableBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">حدث خطأ أثناء تحميل البيانات.</td></tr>`;
@@ -214,10 +216,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // --- منطق التعديل ---
         if (target.classList.contains('edit-btn')) {
             try {
-                const response = await fetch(`${SERVER_URL}/api/users/all`);
-                const users = await response.json();
-                const userToEdit = users.find(u => u._id === userId); // التصحيح: البحث بالمعرف الفريد
-
+                // --- التصحيح: استخدام القائمة المفلترة المخزنة بدلاً من استدعاء جديد ---
+                const userToEdit = allUsers.find(u => u._id === userId);
                 if (userToEdit) {
                     editingUserId = userId;
                     modalTitle.textContent = `تعديل بيانات: ${userToEdit.name}`;
@@ -264,10 +264,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         try {
-            const response = await fetch(`${SERVER_URL}/api/users/all`);
-            const users = await response.json();
-            const teacher = users.find(u => u.id === teacherId && u.role === 'teacher');
-
+            // --- التصحيح: استخدام القائمة المفلترة المخزنة بدلاً من استدعاء جديد ---
+            const teacher = allUsers.find(u => u.id === teacherId && u.role === 'teacher');
             if (teacher) {
                 teacherNameDisplay.textContent = `تم العثور على المعلم: ${teacher.name}`;
                 teacherNameDisplay.className = 'form-text mt-2 text-success fw-bold';
