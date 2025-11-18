@@ -1,3 +1,6 @@
+// تعريف مركزي لعنوان الخادم لتسهيل التعديلات المستقبلية
+const SERVER_URL = 'https://instant-leela-basilalnjjar47-3d3369a6.koyeb.app';
+
 function openLoginDialog(role) { // أعدنا role مؤقتاً للتوافق مع الاستدعاء القديم
     const dialog = document.getElementById('loginDialog');
     dialog.classList.add('visible');
@@ -23,7 +26,6 @@ const authError = document.getElementById('dialogAuthError');
 authForm.addEventListener('submit', async function(event) {
     event.preventDefault();
     authError.style.display = 'none';
-    const SERVER_URL = 'https://instant-leela-basilalnjjar47-3d3369a6.koyeb.app';
 
     const loginData = {
         id: document.getElementById('dialogUserId').value,
