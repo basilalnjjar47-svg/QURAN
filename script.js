@@ -23,7 +23,7 @@ const authError = document.getElementById('dialogAuthError');
 authForm.addEventListener('submit', async function(event) {
     event.preventDefault();
     authError.style.display = 'none';
-    const SERVER_URL = 'https://quran-32vn.onrender.com';
+    const SERVER_URL = 'https://instant-leela-basilalnjjar47-3d3369a6.koyeb.app';
 
     const loginData = {
         id: document.getElementById('dialogUserId').value,
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const statsSection = document.getElementById('stats');
     if (statsSection) {
-        startSessionObserver.observe(statsSection);
+        statsObserver.observe(statsSection);
     }
 });
 

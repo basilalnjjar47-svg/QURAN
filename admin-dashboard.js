@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const studentCountEl = document.getElementById('studentTotalCount');
     const teacherCountEl = document.getElementById('teacherTotalCount');
-    const SERVER_URL = 'https://quran-32vn.onrender.com';
+    const SERVER_URL = 'https://instant-leela-basilalnjjar47-3d3369a6.koyeb.app';
     const activityLogList = document.getElementById('activityLogList');
 
     async function fetchStats() {

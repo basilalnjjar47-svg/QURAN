@@ -515,18 +515,6 @@ createDefaultAdminIfNeeded().then(() => {
 }).catch(err => console.error("❌ فشل حاسم أثناء بدء تشغيل الخادم:", err));
 
 // =======================
-// إبقاء الخادم نشطاً على Render
-// =======================
-if (process.env.RENDER_EXTERNAL_URL) {
-    const PING_URL = process.env.RENDER_EXTERNAL_URL;
-    setInterval(() => {
-        axios.get(PING_URL, { timeout: 10000 })
-            .then(response => console.log(`Self-ping successful at ${new Date().toISOString()}. Status: ${response.status}`))
-            .catch(err => console.error(`Self-ping error to ${PING_URL}:`, err.message));
-    }, 14 * 60 * 1000);
-}
-
-// =======================
 // مهمة مجدولة لحذف الحسابات غير النشطة
 // =======================
 async function deleteInactiveUsers() {
