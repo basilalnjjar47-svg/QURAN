@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const verifyTeacherBtn = document.getElementById('verifyTeacherBtn');
     const teacherNameDisplay = document.getElementById('teacherNameDisplay');
 
-    // تم تحديث الرابط بعنوان الخادم الحقيقي على Render
-    const SERVER_URL = 'https://quran-32vn.onrender.com';
+    // تم التحديث ليعمل مع Koyeb
+    const SERVER_URL = 'https://instant-leela-basilalnjjar47-3d3369a6.koyeb.app';
 
     // --- بيانات وهمية للمحاكاة المحلية ---
     // دالة لترجمة الأدوار إلى العربية
